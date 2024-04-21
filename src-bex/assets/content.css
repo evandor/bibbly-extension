@@ -1,0 +1,7 @@
+/* Global CSS used within your BEX. This is not preprocessed so this has to be pure CSS. */
+
+/* overlay logic */
+.tabsets_overlay_container {
+  position: relative;
+  //border:10px solid yellow;
+}
