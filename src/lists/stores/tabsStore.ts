@@ -6,8 +6,9 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
-import {Tabset, TabsetStatus} from "src/lists/models/Tabset";
+import {Tabset, TabsetSharing, TabsetStatus, TabsetType} from "src/lists/models/Tabset";
 import {Tab} from "src/lists/models/Tab";
+import {useTabsetService} from "src/lists/services/TabsetService2";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
   // @ts-ignore
@@ -264,9 +265,6 @@ export const useTabsStore = defineStore('tabs', {
     },
 
     async loadTabs(eventName: string) {
-      // potentially expansive method
-      // console.log(`${eventName}: -- loading tabs for tabset '${this.currentTabsetId}'`)
-      //console.log(`${eventName}: -- loading tabs for tabset 'current'`)
       this.tabs = await queryTabs()
       const current = new Tabset("current", "current",
         _.map(this.tabs, t => {
@@ -391,52 +389,9 @@ export const useTabsStore = defineStore('tabs', {
         ts.color = color
         this.tabsets.set(useId, ts)
       }
-      if (currentSpace && currentSpace.id && ts.spaces.findIndex(s => s === currentSpace.id) < 0) {
-        ts.spaces.push(currentSpace.id)
-      }
 
 
       return new NewOrReplacedTabset(foundTS !== undefined, ts)
-    },
-
-    getOrCreateSpecialTabset(ident: SpecialTabsetIdent, type: TabsetType): Tabset {
-      console.log("creating special tabset", ident, type)
-      const foundTS: Tabset | undefined = _.find([...this.tabsets.values()] as Tabset[], ts => ts.id === ident.toString())
-      let ts: Tabset = null as unknown as Tabset
-      if (foundTS) {
-        ts = foundTS
-        ts.status = TabsetStatus.DEFAULT
-      } else {
-        const id = ident.toString()
-        ts = new Tabset(id, id, [])
-        if (ident === SpecialTabsetIdent.HELP) {
-          const documentation = ChromeApi.createChromeTabObject(
-            "Documentation", "https://docs.tabsets.net")
-          const documentationTab = new Tab(uid(), documentation)
-          documentationTab.description = "find out about Tabsets' Features"
-          ts = new Tabset(id, id, [
-            documentationTab,
-            new Tab(uid(), ChromeApi.createChromeTabObject(
-              "Philosophy", "https://tabsets.web.app/#/philosophy")),
-            // new Tab(uid(), ChromeApi.createChromeTabObject(
-            //     "Glossary","https://tabsets.web.app/#/glossary")),
-            // new Tab(uid(), ChromeApi.createChromeTabObject(
-            //     "Features","https://tabsets.web.app/#/features")),
-            // new Tab(uid(), ChromeApi.createChromeTabObject(
-            //     "FAQ","https://tabsets.web.app/#/faq")),
-            new Tab(uid(), ChromeApi.createChromeTabObject(
-              "Pricacy", "https://tabsets.web.app/#/privacy")),
-            new Tab(uid(), ChromeApi.createChromeTabObject(
-              "Terms of service", "https://tabsets.web.app/#/tos")),
-          ])
-          ts.status = TabsetStatus.HIDDEN
-        }
-
-        this.tabsets.set(id, ts)
-        console.log("tabsets set to ", this.tabsets)
-      }
-      ts.type = type
-      return ts
     },
 
     deleteTabset(tabsetId: string) {
@@ -468,7 +423,7 @@ export const useTabsStore = defineStore('tabs', {
           if (!t.comments) {
             t.comments = []
           }
-          t.comments.push(new TabComment("", t.note))
+          //t.comments.push(new TabComment("", t.note))
           delete t['note' as keyof object]
         }
       })
@@ -510,23 +465,6 @@ export const useTabsStore = defineStore('tabs', {
       this.pendingTabset.tabs.push(tab)
     },
 
-    tabHistoryBack() {
-      if (this.chromeTabsHistoryPosition > 0) {
-        console.log("called tabHistoryBack with", this.chromeTabsHistoryPosition)
-        this.chromeTabsHistoryPosition -= 1
-        this.chromeTabsHistoryNavigating = true
-      }
-      return this.chromeTabsHistory[this.chromeTabsHistoryPosition]
-    },
-
-    tabHistoryForward() {
-      if (this.chromeTabsHistoryPosition < this.chromeTabsHistory.length - 1) {
-        console.log("called tabHistoryForward with", this.chromeTabsHistoryPosition, this.chromeTabsHistory.length)
-        this.chromeTabsHistoryPosition += 1
-        this.chromeTabsHistoryNavigating = true
-      }
-      return this.chromeTabsHistory[this.chromeTabsHistoryPosition]
-    },
 
     clearTabsets() {
       this.tabsets = new Map<string, Tabset>()

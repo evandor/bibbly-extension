@@ -16,6 +16,7 @@ import {Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion
 import {Tabset, TabsetStatus, TabsetType} from "src/lists/models/Tabset";
 import {useTabsStore} from "src/lists/stores/tabsStore";
 import {Tab} from "src/lists/models/Tab";
+import {TabInFolder} from "src/lists/models/TabInFolder";
 
 let db: PersistenceService = null as unknown as PersistenceService
 
@@ -30,8 +31,8 @@ export function useTabsetService() {
 
     await db.loadTabsets()
     if (!doNotInitSearchIndex) {
-      useSearchStore().populateFromContent(db.getContents())
-      useSearchStore().populateFromTabsets()
+      // useSearchStore().populateFromContent(db.getContents())
+      // useSearchStore().populateFromTabsets()
     }
 
     // check TODO!
@@ -41,7 +42,7 @@ export function useTabsetService() {
       useTabsStore().selectCurrentTabset(selectedTS)
     }
 
-    ChromeApi.buildContextMenu("tabsetService2")
+    //  ChromeApi.buildContextMenu("tabsetService2")
 
     useTabsStore().tabsets.forEach(ts => {
       if (ts.sharedId) {
@@ -353,22 +354,6 @@ export function useTabsetService() {
     return undefined
   }
 
-  // TODO make command
-  const moveTabToFolder = (tabset: Tabset, tabIdToDrag: string, moveToFolderId: string) => {
-    console.log(`moving tab ${tabIdToDrag} to folder ${moveToFolderId} in tabset ${tabset.id}`)
-    const tabWithFolder = findTabInFolder([tabset], tabIdToDrag)
-    console.log("found tabWithFolder", tabWithFolder)
-    const newParentFolder = findFolder([tabset], moveToFolderId)
-    if (newParentFolder && tabWithFolder) {
-      console.log("newParentFolder", newParentFolder)
-      newParentFolder.tabs.push(tabWithFolder.tab)
-      saveTabset(tabset).then(() => {
-        tabWithFolder.folder.tabs = _.filter(tabWithFolder.folder.tabs, t => t.id !== tabIdToDrag)
-        saveTabset(tabset)
-      })
-    }
-  }
-
 
   return {
     init,
@@ -391,7 +376,6 @@ export function useTabsetService() {
     deleteTabsetDescription,
     findFolder,
     findTabInFolder,
-    moveTabToFolder,
     deleteTabsetFolder
   }
 
