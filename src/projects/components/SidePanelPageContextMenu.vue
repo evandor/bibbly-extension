@@ -144,9 +144,9 @@ import ContextMenuItem from "pages/sidepanel/helper/ContextMenuItem.vue";
 import {PropType} from "vue";
 import {useRouter} from "vue-router";
 import {SidePanelView, useUiStore} from "stores/uiStore";
-import {useTabsStore} from "src/lists/stores/tabsStore";
-import {Tabset} from "src/lists/models/Tabset";
-import {useTabsetService} from "src/lists/services/TabsetService2";
+import {useTabsStore} from "src/projects/stores/tabsStore";
+import {Project} from "src/projects/models/Project";
+import {useTabsetService} from "src/projects/services/TabsetService2";
 
 const {inBexMode} = useUtils()
 
@@ -154,21 +154,21 @@ const $q = useQuasar()
 const router = useRouter()
 
 const props = defineProps({
-  tabset: {type: Object as PropType<Tabset>, required: true}
+  tabset: {type: Object as PropType<Project>, required: true}
 })
 
 const emits = defineEmits(['editHeaderDescription'])
 
 const publictabsetsPath = "https://public.tabsets.net/tabsets/"
 
-const startTabsetNote = (tabset: Tabset) => {
+const startTabsetNote = (tabset: Project) => {
   const url = chrome && chrome.runtime && chrome.runtime.getURL ?
     chrome.runtime.getURL('www/index.html') + "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true" :
     "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true"
   NavigationService.openOrCreateTab([url])
 }
 
-const createSubfolder = (tabset: Tabset) => {
+const createSubfolder = (tabset: Project) => {
   $q.dialog({
     component: NewSubfolderDialog,
     componentProps: {
@@ -178,7 +178,7 @@ const createSubfolder = (tabset: Tabset) => {
   })
 }
 
-const openEditTabsetDialog = (tabset: Tabset) => {
+const openEditTabsetDialog = (tabset: Project) => {
   $q.dialog({
     component: EditTabsetDialog,
     //TODO switch to tabset: tabset?
@@ -194,7 +194,7 @@ const openEditTabsetDialog = (tabset: Tabset) => {
 }
 
 
-const focus = (tabset: Tabset) =>
+const focus = (tabset: Project) =>
   router.push("/sidepanel/tabsets/" + tabset.id)
 
 

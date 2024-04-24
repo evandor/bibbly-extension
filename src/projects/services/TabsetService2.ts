@@ -13,10 +13,10 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {useUiStore} from "stores/uiStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import {Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion";
-import {Tabset, TabsetStatus, TabsetType} from "src/lists/models/Tabset";
-import {useTabsStore} from "src/lists/stores/tabsStore";
-import {Tab} from "src/lists/models/Tab";
-import {TabInFolder} from "src/lists/models/TabInFolder";
+import {Project, TabsetStatus, TabsetType} from "src/projects/models/Project";
+import {useTabsStore} from "src/projects/stores/tabsStore";
+import {Tab} from "src/projects/models/Tab";
+import {TabInFolder} from "src/projects/models/TabInFolder";
 
 let db: PersistenceService = null as unknown as PersistenceService
 
@@ -54,18 +54,18 @@ export function useTabsetService() {
 
 
 
-  const getTabset = (tabsetId: string): Tabset | undefined => {
+  const getTabset = (tabsetId: string): Project | undefined => {
     const tabsStore = useTabsStore()
-    return _.find([...tabsStore.tabsets.values()] as Tabset[], ts => ts.id === tabsetId)
+    return _.find([...tabsStore.tabsets.values()] as Project[], ts => ts.id === tabsetId)
   }
 
   const reloadTabset = async (tabsetId: string) => {
     return db.reloadTabset(tabsetId)
   }
 
-  const getCurrentTabset = (): Tabset | undefined => {
+  const getCurrentTabset = (): Project | undefined => {
     const tabsStore = useTabsStore()
-    return tabsStore.tabsets.get(tabsStore.currentTabsetId) as Tabset
+    return tabsStore.tabsets.get(tabsStore.currentTabsetId) as Project
   }
 
 
@@ -111,7 +111,7 @@ export function useTabsetService() {
     return Promise.reject("could not get tabset for id")
   }
 
-  const deleteTabsetFolder = (tabset: Tabset, folder: Tabset): Promise<string> => {
+  const deleteTabsetFolder = (tabset: Project, folder: Project): Promise<string> => {
     removeFolder(tabset, folder.id)
     tabset.folderActive = undefined
     useTabsetService().saveTabset(tabset)
@@ -133,7 +133,7 @@ export function useTabsetService() {
 
   }
 
-  const rootTabsetFor = (ts: Tabset | undefined): Tabset | undefined => {
+  const rootTabsetFor = (ts: Project | undefined): Project | undefined => {
     if (!ts) {
       return undefined
     }
@@ -143,7 +143,7 @@ export function useTabsetService() {
     return ts
   }
 
-  const saveTabset = async (tabset: Tabset): Promise<any> => {
+  const saveTabset = async (tabset: Project): Promise<any> => {
     if (tabset.id) {
       tabset.updated = new Date().getTime()
       // seems necessary !?
@@ -160,7 +160,7 @@ export function useTabsetService() {
     return Promise.reject("tabset id not set")
   }
 
-  const addToTabsetId = async (tsId: string, tab: Tab, useIndex: number | undefined = undefined): Promise<Tabset> => {
+  const addToTabsetId = async (tsId: string, tab: Tab, useIndex: number | undefined = undefined): Promise<Project> => {
     const ts = getTabset(tsId)
     if (ts) {
       return addToTabset(ts, tab, useIndex)
@@ -192,11 +192,11 @@ export function useTabsetService() {
     return tabsets;
   }
 
-  const tabsetFor = (id: string): Tabset | undefined => {
-    let tabset: Tabset | undefined = undefined
+  const tabsetFor = (id: string): Project | undefined => {
+    let tabset: Project | undefined = undefined
     for (let ts of [...useTabsStore().tabsets.values()]) {
       if (_.find(ts.tabs, t => t.id === id)) {
-        tabset = ts as Tabset
+        tabset = ts as Project
       }
     }
     return tabset
@@ -211,7 +211,7 @@ export function useTabsetService() {
    * @param tab
    * @param useIndex
    */
-  const addToTabset = async (ts: Tabset, tab: Tab, useIndex: number | undefined = undefined): Promise<Tabset> => {
+  const addToTabset = async (ts: Project, tab: Tab, useIndex: number | undefined = undefined): Promise<Project> => {
     if (tab.url) {
       const indexInTabset = _.findIndex(ts.tabs, t => t.url === tab.url)
       if (indexInTabset >= 0 && !tab.image) {
@@ -238,7 +238,7 @@ export function useTabsetService() {
   }
 
 
-  const deleteTab = (tab: Tab, tabset: Tabset): Promise<Tabset> => {
+  const deleteTab = (tab: Tab, tabset: Project): Promise<Project> => {
     console.log("deleting tab", tab.id, tab.chromeTabId, tabset.id)
     const tabUrl = tab.url || ''
     if (tabsetsFor(tabUrl).length <= 1) {
@@ -285,15 +285,15 @@ export function useTabsetService() {
     return false;
   }
 
-  const tabsToShow = (tabset: Tabset): Tab[] => {
+  const tabsToShow = (tabset: Project): Tab[] => {
     if (tabset.type === TabsetType.DYNAMIC &&
       tabset.dynamicTabs && tabset.dynamicTabs.type === DynamicTabSourceType.TAG) {
       const results: Tab[] = []
       //console.log("checking", tabset.dynamicTabs)
       const tag = tabset.dynamicTabs?.config['tags' as keyof object][0]
       //console.log("using tag", tag)
-      const tabsets: Tabset[] = [...useTabsStore().tabsets.values()] as Tabset[]
-      _.forEach(tabsets, (tabset: Tabset) => {
+      const tabsets: Project[] = [...useTabsStore().tabsets.values()] as Project[]
+      _.forEach(tabsets, (tabset: Project) => {
         _.forEach(tabset.tabs, (tab: Tab) => {
           if (tab.tags?.indexOf(tag) >= 0) {
             results.push(tab)
@@ -318,7 +318,7 @@ export function useTabsetService() {
     })
   }
 
-  const findFolder = (folders: Tabset[], folderId: string): Tabset | undefined => {
+  const findFolder = (folders: Project[], folderId: string): Project | undefined => {
     for (const f of folders) {
       if (f.id === folderId) {
         //console.log("found active folder", f)
@@ -331,14 +331,14 @@ export function useTabsetService() {
     return undefined
   }
 
-  const removeFolder = (root: Tabset, folderId: string): void => {
+  const removeFolder = (root: Project, folderId: string): void => {
     root.folders = _.filter(root.folders, f => f.id !== folderId)
     for (const f of root.folders) {
       removeFolder(f, folderId)
     }
   }
 
-  const findTabInFolder = (folders: Tabset[], tabId: string): TabInFolder | undefined => {
+  const findTabInFolder = (folders: Project[], tabId: string): TabInFolder | undefined => {
     for (const f of folders) {
       for (const t of f.tabs) {
         if (t.id === tabId) {

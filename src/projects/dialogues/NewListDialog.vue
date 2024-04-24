@@ -8,7 +8,7 @@
 
 import {useDialogPluginComponent} from "quasar";
 import NewTabsetDialogBody from "components/dialogues/helper/NewTabsetDialogBody.vue";
-import NewListDialogBody from "src/lists/dialogues/NewListDialogBody.vue";
+import NewListDialogBody from "src/projects/dialogues/NewListDialogBody.vue";
 
 defineEmits([
   ...useDialogPluginComponent.emits

@@ -15,8 +15,8 @@
                    dense autofocus
                    @update:model-value="(val:string | number | null) => checkIsValid()"
                    :rules="[
-                       (val:string) => Tabset.newTabsetNameIsValid(val) || 'Please do not use special Characters',
-                       (val:string) => Tabset.newTabsetNameIsShortEnough(val) || 'the maximum length is 32',
+                       (val:string) => Project.newTabsetNameIsValid(val) || 'Please do not use special Characters',
+                       (val:string) => Project.newTabsetNameIsShortEnough(val) || 'the maximum length is 32',
                        (val:string) => doesNotExistYet(val) || 'Tabset already exists...'
                        ]"
                    data-testid="newTabsetName">
@@ -80,10 +80,10 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {useUtils} from "src/services/Utils";
 import DialogButton from "components/buttons/DialogButton.vue";
-import {useTabsStore} from "src/lists/stores/tabsStore";
-import {Tabset, TabsetStatus} from "src/lists/models/Tabset";
-import {useTabsetService} from "src/lists/services/TabsetService2";
-import {CreateListCommand} from "src/lists/commands/CreateListCommand";
+import {useTabsStore} from "src/projects/stores/tabsStore";
+import {Project, TabsetStatus} from "src/projects/models/Project";
+import {useTabsetService} from "src/projects/services/TabsetService2";
+import {CreateProjectCommand} from "src/projects/commands/CreateProjectCommand";
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 const {inBexMode} = useUtils()
@@ -152,7 +152,7 @@ const submit = () => {
       }
     }
     useCommandExecutor()
-      .executeFromUi(new CreateListCommand(newTabsetName.value, tabsToUse, windowModel.value, theColor.value))
+      .executeFromUi(new CreateProjectCommand(newTabsetName.value, tabsToUse, windowModel.value, theColor.value))
       .then((res) => {
         if (!props.fromPanel) {
           router.push("/tabsets/" + res.result.tabsetId)

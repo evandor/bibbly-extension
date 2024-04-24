@@ -3,7 +3,7 @@ import {RouteRecordRaw} from 'vue-router';
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    redirect: '/sidepanel/lists'
+    redirect: '/sidepanel/projects'
   },
   {
     path: '/sidepanel',
@@ -16,9 +16,9 @@ const routes: RouteRecordRaw[] = [
     children: [{path: '', component: () => import('pages/sidepanel/WelcomePage.vue')}],
   },
   {
-    path: '/sidepanel/lists',
+    path: '/sidepanel/projects',
     component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{path: '', component: () => import('src/lists/pages/SidePanelListsPage.vue')}],
+    children: [{path: '', component: () => import('src/projects/pages/SidePanelProjectsPage.vue')}],
   },
   {
     path: '/mainpanel/settings',

@@ -11,6 +11,7 @@ import PersistenceService from "src/services/PersistenceService";
 import {useUiStore} from "stores/uiStore";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {FeatureIdent} from "src/models/AppFeature";
+import {useProjectsStore} from "src/projects/stores/projectsStore";
 
 class AppService {
 
@@ -66,6 +67,9 @@ class AppService {
       await useWindowsStore().initialize()
       useWindowsStore().initListeners()
     }
+
+    await useProjectsStore().initialize()
+
 
     useUiStore().appLoading = undefined
   }

@@ -5,9 +5,9 @@
       <router-view/>
     </q-page-container>
 
-<!--    <q-footer elevated>-->
-<!--      <SidePanelFooter/>-->
-<!--    </q-footer>-->
+    <q-footer elevated>
+      <SidePanelBibblyFooter />
+    </q-footer>
 
   </q-layout>
 
@@ -16,8 +16,8 @@
 <script setup lang="ts">
 
 import {ref, watchEffect} from "vue";
-import SidePanelFooter from "components/SidePanelFooter.vue";
 import {useMeta, useQuasar} from "quasar";
+import SidePanelBibblyFooter from "components/SidePanelBibblyFooter.vue";
 
 const location = ref('')
 

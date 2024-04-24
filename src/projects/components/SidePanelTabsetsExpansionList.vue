@@ -16,9 +16,9 @@
   <q-list dense
           class="rounded-borders q-ma-none q-pa-none" :key="tabset.id"
           v-for="(tabset,index) in props.tabsets">
-    <q-expansion-item v-if="showTabset(tabset as Tabset)"
+    <q-expansion-item v-if="showTabset(tabset as Project)"
                       header-class="q-ma-none q-pa-none q-pr-md"
-                      :header-style="headerStyle(tabset as Tabset)"
+                      :header-style="headerStyle(tabset as Project)"
                       group="tabsets"
                       :default-opened="tabsStore.tabsets.size === 1"
                       switch-toggle-side
@@ -34,19 +34,19 @@
           @mouseleave="hoveredTabset = undefined">
           <q-item-label :class="tabsStore.currentTabsetId === tabset.id ? 'text-bold text-underline' : ''">
 
-            {{ tabsetSectionName(tabset as Tabset) }}
+            {{ tabsetSectionName(tabset as Project) }}
 
           </q-item-label>
           <q-item-label class="text-caption text-grey-5">
             {{
-              tabsetCaption(useTabsetService().tabsToShow(tabset as Tabset), tabset.window, tabset.folders?.length)
+              tabsetCaption(useTabsetService().tabsToShow(tabset as Project), tabset.window, tabset.folders?.length)
             }}
           </q-item-label>
           <q-item-label v-if="tabset.sharedId" class="q-mb-xs"
                         @mouseover="hoveredPublicLink = true"
                         @mouseleave="hoveredPublicLink = false">
             <q-icon style="position: relative;top:-2px;left:-2px"
-                    @click="shareTabsetPubliclyDialog(tabset as Tabset, tabset.sharing.toString().toLowerCase().indexOf('_outdated') >= 0)"
+                    @click="shareTabsetPubliclyDialog(tabset as Project, tabset.sharing.toString().toLowerCase().indexOf('_outdated') >= 0)"
                     name="ios_share"
                     class="q-ma-none q-pa-none q-mr-xs"
                     :class="tabset.sharing.toString().toLowerCase().indexOf('_outdated') >= 0 ? 'cursor-pointer' : ''"
@@ -88,7 +88,7 @@
             <!--                  data-testid="saveInTabsetBtn">-->
             <!--                </q-icon>-->
             <q-btn outline
-                   v-if="showAddTabButton(tabset as Tabset, currentChromeTab)"
+                   v-if="showAddTabButton(tabset as Project, currentChromeTab)"
                    @click.stop="saveInTabset(tabset.id, tabset.folderActive)"
                    class="q-ma-none q-px-sm q-py-none"
                    name="o_bookmark_add"
@@ -100,7 +100,7 @@
               <!--                  <q-icon right class="q-ma-none q-pa-none" size="2em" name="o_south" />-->
             </q-btn>
             <span
-              v-if="!alreadyInTabset() && showAddTabButton(tabset as Tabset, currentChromeTab) && tsBadges.length > 0"
+              v-if="!alreadyInTabset() && showAddTabButton(tabset as Project, currentChromeTab) && tsBadges.length > 0"
               style="color: grey;font-size: 7px;position: relative;top:-2px;left:-11px;">{{
                 tsBadges.length
               }}</span>
@@ -121,7 +121,7 @@
               to<br> add the current<br>tab to this tabset
             </q-tooltip>
             <q-tooltip class="tooltip-small" v-else>
-              Add current Tab to '{{ tabsetNameOrChain(tabset as Tabset) }}'
+              Add current Tab to '{{ tabsetNameOrChain(tabset as Project) }}'
             </q-tooltip>
 
           </q-item-label>
@@ -132,8 +132,8 @@
                         @mouseleave="hoveredTabset = undefined">
           <q-item-label>
             <q-icon class="cursor-pointer" name="more_horiz" size="16px"/>
-            <SidePanelPageContextMenu :tabset="tabset as Tabset"
-                                      @edit-header-description="toggleEditHeader(tabset as Tabset, index)"/>
+            <SidePanelPageContextMenu :tabset="tabset as Project"
+                                      @edit-header-description="toggleEditHeader(tabset as Project, index)"/>
           </q-item-label>
         </q-item-section>
       </template>
@@ -172,7 +172,7 @@
         </template>
 
         <q-list>
-          <q-item v-for="folder in calcFolders(tabset as Tabset)"
+          <q-item v-for="folder in calcFolders(tabset as Project)"
                   clickable
                   v-ripple
                   class="q-ma-none q-pa-sm greyBorderBottom"
@@ -183,13 +183,13 @@
                   @drop="drop($event, folder)"
                   :key="'panelfolderlist_' + folder.id">
 
-            <q-item-section @click="selectFolder(tabset as Tabset, folder as Tabset)"
+            <q-item-section @click="selectFolder(tabset as Project, folder as Project)"
                             class="q-mr-sm text-right" style="justify-content:start;width:45px;max-width:45px">
               <div class="q-pa-none q-pl-md">
                 <q-icon name="o_folder" color="warning" size="sm"/>
               </div>
             </q-item-section>
-            <q-item-section @click="selectFolder(tabset as Tabset, folder as Tabset)">
+            <q-item-section @click="selectFolder(tabset as Project, folder as Project)">
               <q-item-label>
                 <div class="text-bold">
                   {{ folder.name }}
@@ -231,7 +231,7 @@
 
 <script lang="ts" setup>
 
-import SidePanelPageContextMenu from "src/lists/components/SidePanelPageContextMenu.vue";
+import SidePanelPageContextMenu from "src/projects/components/SidePanelPageContextMenu.vue";
 import SidePanelSubfolderContextMenu from "pages/sidepanel/SidePanelSubfolderContextMenu.vue";
 import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
 import {onMounted, PropType, ref, watchEffect} from "vue";
@@ -247,14 +247,14 @@ import getScrollTarget = scroll.getScrollTarget;
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
-import {Tabset} from "src/lists/models/Tabset";
-import {useTabsStore} from "src/lists/stores/tabsStore";
-import {Tab} from "src/lists/models/Tab";
-import {useTabsetService} from "src/lists/services/TabsetService2";
-import NewListDialog from "src/lists/dialogues/NewListDialog.vue";
+import {Project} from "src/projects/models/Project";
+import {useTabsStore} from "src/projects/stores/tabsStore";
+import {Tab} from "src/projects/models/Tab";
+import {useTabsetService} from "src/projects/services/TabsetService2";
+import NewListDialog from "src/projects/dialogues/NewListDialog.vue";
 
 const props = defineProps({
-  tabsets: {type: Array as PropType<Array<Tabset>>, required: true}
+  tabsets: {type: Array as PropType<Array<Project>>, required: true}
 })
 
 const {setVerticalScrollPosition} = scroll
@@ -312,7 +312,7 @@ watchEffect(() => {
   selected_model.value = {}
   selected_model.value[currentTabsetId] = true
   tabsetExpanded.value.set(currentTabsetId, true)
-  const index = _.findIndex(props.tabsets as Tabset[], (ts: Tabset) => ts.id === currentTabsetId)
+  const index = _.findIndex(props.tabsets as Project[], (ts: Project) => ts.id === currentTabsetId)
   scrollToElement(document.getElementsByClassName("q-expansion-item")[index], 300)
   // useUiStore().tabsetsExpanded = true
 })
@@ -328,7 +328,7 @@ watchEffect(() => {
 watchEffect(() => {
   if (useTabsStore().tabsets) {
     //console.log(" >>> change in tabsets...")
-    tabsetNameOptions.value = _.map([...useTabsStore().tabsets.values()] as Tabset[], (ts: Tabset) => {
+    tabsetNameOptions.value = _.map([...useTabsStore().tabsets.values()] as Project[], (ts: Project) => {
       return {
         label: ts.name,
         value: ts.id
@@ -369,12 +369,12 @@ watchEffect(() => {
   })
 })
 
-const showTabset = (tabset: Tabset) => !useUiStore().tabsFilter ?
+const showTabset = (tabset: Project) => !useUiStore().tabsFilter ?
   true :
   (useUiStore().tabsFilter === '' || useTabsetService().tabsToShow(tabset).length > 0)
 
 
-const headerStyle = (tabset: Tabset) => {
+const headerStyle = (tabset: Project) => {
   const tabsetOpened: boolean = _.findIndex([...tabsetExpanded.value.keys()],
     (key: string) => (key !== null) && tabsetExpanded.value.get(key) !== undefined) >= 0
   let style = tabsetExpanded.value.get(tabset.id) ?
@@ -409,7 +409,7 @@ const importSharedTabset = () => {
     const tabsetId = urlSplit[urlSplit.length - 1]
     FirebaseCall.get("/share/public/" + tabsetId + "?cb=" + new Date().getTime(), false)
       .then((res: any) => {
-        const newTabset = res as Tabset
+        const newTabset = res as Project
         newTabset.sharing = TabsetSharing.UNSHARED
         //_.forEach(newTabset.tabs, t => t.preview = TabPreview.THUMBNAIL)
         useTabsetService().saveTabset(newTabset)
@@ -444,7 +444,7 @@ const updateSelectedTabset = (tabsetId: string, open: boolean, index: number | u
   }
 }
 
-const toggleEditHeader = (tabset: Tabset, index: number) => {
+const toggleEditHeader = (tabset: Project, index: number) => {
   editHeaderDescription.value = !editHeaderDescription.value
   if (editHeaderDescription.value) {
     updateSelectedTabset(tabset.id, true, index)
@@ -452,12 +452,12 @@ const toggleEditHeader = (tabset: Tabset, index: number) => {
   }
 }
 
-const calcFolders = (tabset: Tabset): Tabset[] => {
+const calcFolders = (tabset: Project): Project[] => {
   //console.log("calcFolders", tabset)
   if (tabset.folderActive) {
     const af = useTabsetService().findFolder(tabset.folders, tabset.folderActive)
     if (af && af.folderParent) {
-      return [new Tabset(af.folderParent, "..", [])].concat(af.folders)
+      return [new Project(af.folderParent, "..", [])].concat(af.folders)
     }
   }
   return tabset.folders
@@ -465,7 +465,7 @@ const calcFolders = (tabset: Tabset): Tabset[] => {
 
 const openPageNote = () => openURL(chrome.runtime.getURL("/www/index.html#/tabsets/" + useTabsStore().currentTabsetId + "?tab=page"))
 
-const startDrag = (evt: any, folder: Tabset) => {
+const startDrag = (evt: any, folder: Project) => {
   console.log("start dragging", evt, folder)
   if (evt.dataTransfer) {
     evt.dataTransfer.dropEffect = 'all'
@@ -475,17 +475,17 @@ const startDrag = (evt: any, folder: Tabset) => {
   }
   console.log("evt.dataTransfer.getData('text/plain')", evt.dataTransfer.getData('text/plain'))
 }
-const enterDrag = (evt: any, folder: Tabset) => {
+const enterDrag = (evt: any, folder: Project) => {
   //console.log("enter drag", evt, folder)
 }
-const overDrag = (event: any, folder: Tabset) => {
+const overDrag = (event: any, folder: Project) => {
   //console.log("enter drag", event, folder)
   event.preventDefault();
 }
-const endDrag = (evt: any, folder: Tabset) => {
+const endDrag = (evt: any, folder: Project) => {
   console.log("end drag", evt, folder)
 }
-const drop = (evt: any, folder: Tabset) => {
+const drop = (evt: any, folder: Project) => {
   console.log("drop", evt, folder)
   const tabToDrag = useUiStore().tabBeingDragged
   const tabset = useTabsetService().getCurrentTabset()
@@ -497,12 +497,12 @@ const drop = (evt: any, folder: Tabset) => {
   }
 }
 
-const folderCaption = (folder: Tabset) =>
+const folderCaption = (folder: Project) =>
   (folder.name !== "..") ?
     folder.tabs.length + " tab" + (folder.tabs.length !== 1 ? 's' : '') :
     ""
 
-const tabsetSectionName = (tabset: Tabset) => {
+const tabsetSectionName = (tabset: Project) => {
   if (!tabset.folderActive || tabset.id === tabset.folderActive) {
     return tabset.name
   }
@@ -557,7 +557,7 @@ const openPublicShare = (tabsetId: string) => {
   }
 }
 
-const getPublicTabsetLink = (ts: Tabset) => {
+const getPublicTabsetLink = (ts: Project) => {
   let image = "https://tabsets.web.app/favicon.ico"
   if (ts && ts.sharedId) {
     //return PUBLIC_SHARE_URL + "#/pwa/imp/" + ts.sharedId + "?n=" + btoa(ts.name) + "&a=" + btoa(ts.sharedBy || 'n/a') + "&d=" + ts.sharedAt
@@ -575,7 +575,7 @@ const copyPublicShareToClipboard = (tabsetId: string) => {
   }
 }
 
-const showAddTabButton = (tabset: Tabset, currentChromeTab: chrome.tabs.Tab) => {
+const showAddTabButton = (tabset: Project, currentChromeTab: chrome.tabs.Tab) => {
   return inBexMode() &&
     tabset.type !== TabsetType.DYNAMIC &&
     currentChromeTab &&
@@ -602,18 +602,18 @@ const saveTabsetDescription = () => {
   }
 }
 
-const activeFolderNameFor = (ts: Tabset, activeFolder: string) => {
+const activeFolderNameFor = (ts: Project, activeFolder: string) => {
   const folder = useTabsetService().findFolder(ts.folders, activeFolder)
   return folder ? folder.name : ts.name
 }
 
-const selectFolder = (tabset: Tabset, folder: Tabset) => {
+const selectFolder = (tabset: Project, folder: Project) => {
   console.log("selectiong folder", tabset.id, folder.id)
   tabset.folderActive = folder.id
   useTabsetService().saveTabset(tabset)
 }
 
-const tabsetNameOrChain = (tabset: Tabset) => {
+const tabsetNameOrChain = (tabset: Project) => {
   if (tabset.folderActive) {
     return activeFolderNameFor(tabset, tabset.folderActive)
   }
@@ -628,7 +628,7 @@ const alreadyInTabset = () => {
 }
 
 const saveInTabset = (tabsetId: string, activeFolder: string | undefined) => {
-  const useTS: Tabset | undefined = useTabsetService().getTabset(tabsetId)
+  const useTS: Project | undefined = useTabsetService().getTabset(tabsetId)
   if (useTS) {
     // if (alreadyInTabset()) {
     //   return
@@ -639,7 +639,7 @@ const saveInTabset = (tabsetId: string, activeFolder: string | undefined) => {
   }
 }
 
-const tabsetForTabList = (tabset: Tabset) => {
+const tabsetForTabList = (tabset: Project) => {
   if (tabset.folderActive) {
     const af = useTabsetService().findFolder(tabset.folders, tabset.folderActive)
     //console.log("result af", af)
@@ -650,7 +650,7 @@ const tabsetForTabList = (tabset: Tabset) => {
   return tabset
 }
 
-async function handleHeadRequests(selectedTabset: Tabset) {
+async function handleHeadRequests(selectedTabset: Project) {
   //selectedTabset.tabs.forEach((t: Tab) => {
   for (const t of selectedTabset.tabs) {
     if (t.url && !t.url.startsWith("chrome")) {
