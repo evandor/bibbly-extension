@@ -1,8 +1,5 @@
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
-import {ListDetailLevel} from "stores/uiStore";
-import {Tab} from "src/projects/models/Tab";
-
-
+import {Source} from "src/projects/models/Source";
 
 export const TABSET_NAME_MAX_LENGTH = 32;
 
@@ -12,10 +9,10 @@ export class Project {
   name: string
   created: number
   updated: number
-  //tabs: Tab[]
   description: string
+  sources: Source[]
 
-  constructor(id: string, name: string, description: string) {
+  constructor(id: string, name: string, description: string, sources: Source[] = []) {
 
     // some guards
     if (!Project.newTabsetNameIsValid) {
@@ -28,9 +25,10 @@ export class Project {
     // assignments
     this.id = id
     this.name = name
+    this.sources = sources
     this.created = new Date().getTime()
     this.updated = new Date().getTime()
-    //this.tabs = tabs
+    this.description = description
   }
 
   static newTabsetNameIsValid = (val: string) => {

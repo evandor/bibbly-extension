@@ -1,17 +1,21 @@
 <template>
-  <div class="row q-ma-md q-pa-md bg-white items-start"
-       style="position: absolute;bottom:10px;top:110px;left:5px;right:5px;">
+  <div class="row q-ma-none">
     <div class="col-12 text-body1">
-      New Project
+      <q-icon name="list" class="q-mr-sm" color="primary" />New Project
     </div>
     <div class="col-12">
-      <q-input label="Name" v-model="name"/>
+      <hr style="border-top: 1px solid #efefef">
+    </div>
+    <div class="col-12 q-mt-lg">
+      <q-input class="q-my-sm" square outlined label="Name" v-model="name"/>
     </div>
     <div class="col-12">
-      <q-input label="Description" v-model="description"/>
+      <q-input class="q-my-sm" type="textarea" square outlined label="Description" v-model="description"/>
     </div>
     <div class="col-12 q-my-lg">
-      <q-btn class="q-mx-lg q-px-lg" outline rounded color="primary" label="skip"/>
+      <q-btn class="q-mx-lg q-px-lg" outline rounded color="primary"
+             @click="emits('skip')"
+             label="skip"/>
       <q-btn class="q-mx-lg q-px-lg"
              style="background: #21B6A8; color: white"
              @click="emits('projectCreated', {name,description})"
@@ -26,7 +30,7 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateProjectCommand} from "src/projects/commands/CreateProjectCommand";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 
-const emits = defineEmits(['projectCreated'])
+const emits = defineEmits(['projectCreated', 'skip'])
 
 const name = ref('')
 const description = ref('')

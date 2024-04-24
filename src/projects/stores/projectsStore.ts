@@ -34,9 +34,15 @@ export const useProjectsStore =
       return Promise.resolve(newProject)
     }
 
+    async function findProject(id: string) {
+      console.log("search for project", id)
+      return await storage.findProjectById(id)
+    }
+
     return {
       initialize,
       createProject,
-      projects
+      projects,
+      findProject
     }
   })

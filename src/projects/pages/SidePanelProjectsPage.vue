@@ -5,7 +5,6 @@
     <!-- search -->
     <div class="row q-ma-md q-pa-md">
       <div class="col-12">
-
         <q-input rounded standout dense v-model="search" label="Search" bg-color="white">
           <template v-slot:prepend>
             <q-icon name="search"/>
@@ -14,55 +13,42 @@
             <q-icon name="close" @click="search = ''" class="cursor-pointer"/>
           </template>
         </q-input>
-
       </div>
     </div>
 
     <!-- white main box -->
-    <div class="column fitpage q-pa-sm q-mx-sm q-mt-md bg-white" style="border:1px solid grey">
+    <div class="column fitpage q-pa-sm q-mx-sm q-mt-md bg-white">
       <div class="col">
 
-
-        <div class="row q-ma-md q-pa-md items-start">
-          <div class="col-12">
-            <q-select filled v-model="project" :options="projectOptions" label="Project"
-                      style="border: 2px solid #21B6A8"
-            />
+        <template v-if="view === 'projects'">
+          <div class="row q-ma-md q-pa-md items-start">
+            <div class="col-12">
+              <q-select filled v-model="project" :options="projectOptions" label="Project"
+                        style="border: 2px solid #21B6A8"
+              />
+            </div>
+            <div class="col-12 q-my-lg text-center">
+              <q-btn unelevated rounded class="q-mx-md q-px-lg" color="primary" label="+ add current webpage"
+                     @click="addCurrentTab()"
+              />
+            </div>
+            <div class="col-12">
+              {{ currentProject }}
+            </div>
           </div>
-          <div class="col-12 q-my-lg">
-<!--            <q-btn class="q-mx-lg q-px-lg" outline rounded color="primary" label=""/>-->
-            <q-btn unelevated rounded color="primary" label="add current webpage" />
+        </template>
+
+        <!-- Formular for new/edit project -->
+        <template v-if="view === 'new_project'">
+          <div class="row q-ma-md q-pa-md">
+            <div class="col-12">
+              <ProjectForm @project-created="e => createProject(e)" @skip="view = 'projects'"/>
+            </div>
           </div>
-
-          <div class="col-12">
-            ***{{projects}}
-          </div>
-
-        </div>
-
-
-
-
+        </template>
       </div>
     </div>
 
-    <template v-if="view === 'projects'">
-
-
-
-
-    </template>
-
-    <template v-if="view === 'new_project'">
-      <div class="row q-ma-md q-pa-md">
-        <div class="col-12">
-
-          <ProjectForm @project-created="e => createProject(e)"/>
-
-        </div>
-      </div>
-
-    </template>
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
       <FirstToolbarHelper title="Bibbly">
@@ -85,30 +71,23 @@ import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import {onMounted, ref, watchEffect} from "vue";
 import Analytics from "src/utils/google-analytics";
 import {usePermissionsStore} from "stores/permissionsStore";
-import SidePanelTabsetsExpansionList from "src/projects/components/SidePanelTabsetsExpansionList.vue";
 import ProjectForm from "src/projects/forms/ProjectForm.vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateProjectCommand} from "src/projects/commands/CreateProjectCommand";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useProjectsStore} from "src/projects/stores/projectsStore";
 import {Project} from "src/projects/models/Project";
-
-const showOnlyFolders = ref(true)
+import _ from "lodash"
+import {Source} from "src/projects/models/Source";
+import {uid} from "quasar";
 
 const projects = ref<Project[]>([])
 const project = ref('')
+const currentProject = ref<Project | undefined>(undefined)
 const search = ref('')
 const view = ref('projects')
 
-const projectOptions = [
-  {
-    label: 'Create new Project',
-    value: 'new_project'
-  },
-  {
-    label: 'Facebook',
-    value: 'Facebook'
-  }]
+const projectOptions = ref<object[]>([])
 
 onMounted(() => {
   Analytics.firePageViewEvent('SidePanelProjectsPage', document.location.href);
@@ -116,14 +95,24 @@ onMounted(() => {
 
 watchEffect(() => {
   projects.value = useProjectsStore().projects
-  console.log("hier!!!", projects.value)
+  projectOptions.value = []
+  _.forEach(projects.value as Project[], (p: Project) => {
+    projectOptions.value.push({label: p.name, value: p.id})
+  })
+  projectOptions.value = _.sortBy(projectOptions.value, "label")
+  projectOptions.value.push({
+    label: 'Create new Project', value: 'new_project'
+  })
 })
 
-watchEffect(() => {
+watchEffect(async () => {
   console.log("new Project", project.value)
-  if (project.value.value === "new_project") {
-    view.value = 'new_project'
+  if (project.value && project.value.value) {
+    currentProject.value = await useProjectsStore().findProject(project.value.value)
   }
+  // if (project.value.value === "new_project") {
+  //   view.value = 'new_project'
+  // }
 })
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -138,22 +127,24 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 })
 
-const toggleShowOnlyFolders = () => {
-  showOnlyFolders.value = !showOnlyFolders.value
-}
-
-const createProject = (e: object) => {
-  console.log("e", e)
+const createProject = (e: object) =>
   useCommandExecutor().executeFromUi(new CreateProjectCommand(e.name, e.description))
     .then((res: ExecutionResult<any>) => {
-
+      view.value = 'projects'
     })
-}
 
+const addCurrentTab = async () => {
+  let queryOptions = {active: true, lastFocusedWindow: true};
+  let [currentTab] = await chrome.tabs.query(queryOptions);
+  if (currentTab && project.value) {
+    console.log("currentTab", currentTab)
+    project.value.sources.push(new Source(uid(), currentTab.title || '???', currentTab.url))
+  }
+}
 </script>
 
 <style scoped>
 .fitpage {
-  height: calc(100vh - 170px);
+  height: calc(100vh - 200px);
 }
 </style>

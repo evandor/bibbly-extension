@@ -37,7 +37,7 @@ class IndexedDbProjectsPersistence implements ProjectsPersistence {
   }
 
   async findProjectById(id: string) {
-    return await this.db.get('entities', id)
+    return await this.db.get(this.STORE_IDENT, id)
   }
 
   async getProjects(): Promise<Project[]> {
