@@ -36,21 +36,21 @@ class IndexedDbProjectsPersistence implements ProjectsPersistence {
     return Promise.resolve(undefined);
   }
 
-  deleteProject(projectId: string): Promise<void> {
-    return Promise.resolve(undefined);
+  async findProjectById(id: string) {
+    return await this.db.get('entities', id)
   }
 
-  findProjectById(id: string): Promise<Project> {
-    return Promise.reject("undefined");
-  }
-
-  getEntities(): Promise<[]> {
-    return Promise.resolve([]);
+  async getProjects(): Promise<Project[]> {
+    return await this.db.getAll(this.STORE_IDENT)
   }
 
   saveProject(project: Project): void {
+    this.db.put(this.STORE_IDENT, project, project.id)
   }
 
+  deleteProject(projectId: string): Promise<void> {
+    return Promise.resolve(undefined);
+  }
 
 
 }

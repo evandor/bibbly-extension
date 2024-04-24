@@ -7,7 +7,7 @@ interface ProjectsPersistence {
   init(): Promise<any>
 
   saveProject(project: Project): void
-  getEntities(): Promise<Project[]>
+  getProjects(): Promise<Project[]>
   findProjectById(id: string): Promise<Project>
   deleteProject(projectId: string): Promise<void>;
 

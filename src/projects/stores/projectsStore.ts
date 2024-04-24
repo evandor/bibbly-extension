@@ -23,18 +23,20 @@ export const useProjectsStore =
       storage = IndexedDbProjectsPersistence
       await storage.init()
       //await setup("initialization")
+      projects.value = await storage.getProjects()
     }
 
     async function createProject(name: string, description: string) {
       const newProject = new Project(uid(), name, description)
       storage.saveProject(newProject)
-      projects.value = await storage.getEntities()
+      projects.value = await storage.getProjects()
 //updated.value = new Date().getTime()
       return Promise.resolve(newProject)
     }
 
     return {
       initialize,
-      createProject
+      createProject,
+      projects
     }
   })

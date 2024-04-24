@@ -20,22 +20,7 @@ export class CreateProjectCommand implements Command<any> {
     try {
       //const trustedWindowName = this.windowToOpen.replace(STRIP_CHARS_IN_USER_INPUT, '')
       const result = await useProjectsStore().createProject(this.name, this.description)
-        // .then(res => {
-        //   //JsUtils.gaEvent('tabset-created', {"tabsCount": this.tabsToUse.length})
-        //   //Analytics.fireEvent('tabset-created', {"tabsCount": this.tabsToUse.length})
-        //   return res
-        // })
-        // .then((res:any) => {
-        //     if (useTabsStore().tabsets.size >= 15 &&
-        //       process.env.MODE === 'bex') {
-        //       useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_SPACES_FEATURE))
-        //     }
-        //     //sendMsg('tabset-added', {tabsetId: res.tabset.id})
-        //     return res
-        //   }
-       // )
-      let doneMsg = 'Tabset created'
-      return Promise.resolve(new ExecutionResult<any>(result, doneMsg))
+      return Promise.resolve(new ExecutionResult<any>(result, "Project created"))
     } catch (err) {
       return Promise.reject(err)
     }

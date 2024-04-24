@@ -14,7 +14,7 @@
       <q-btn class="q-mx-lg q-px-lg" outline rounded color="primary" label="skip"/>
       <q-btn class="q-mx-lg q-px-lg"
              style="background: #21B6A8; color: white"
-             @click="addProject()"
+             @click="emits('projectCreated', {name,description})"
              rounded label="add"/>
     </div>
   </div>
@@ -24,11 +24,11 @@
 import {ref} from "vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateProjectCommand} from "src/projects/commands/CreateProjectCommand";
+import {ExecutionResult} from "src/domain/ExecutionResult";
+
+const emits = defineEmits(['projectCreated'])
 
 const name = ref('')
 const description = ref('')
-
-const addProject = () =>
-  useCommandExecutor().executeFromUi(new CreateProjectCommand(name.value, description.value))
 
 </script>
