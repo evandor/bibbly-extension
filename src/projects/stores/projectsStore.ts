@@ -34,6 +34,11 @@ export const useProjectsStore =
       return Promise.resolve(newProject)
     }
 
+    async function updateProject(p: Project) {
+      storage.saveProject(JSON.parse(JSON.stringify(p)))
+      projects.value = await storage.getProjects()
+    }
+
     async function findProject(id: string) {
       console.log("search for project", id)
       return await storage.findProjectById(id)
@@ -43,6 +48,7 @@ export const useProjectsStore =
       initialize,
       createProject,
       projects,
-      findProject
+      findProject,
+      updateProject
     }
   })

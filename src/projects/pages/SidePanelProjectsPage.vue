@@ -25,15 +25,30 @@
             <div class="col-12">
               <q-select filled v-model="project" :options="projectOptions" label="Project"
                         style="border: 2px solid #21B6A8"
+                        @update:modelValue="a => projectListWasClicked(a)"
               />
             </div>
-            <div class="col-12 q-my-lg text-center">
+            <div class="col-12 q-my-lg text-center" v-if="currentProject">
               <q-btn unelevated rounded class="q-mx-md q-px-lg" color="primary" label="+ add current webpage"
                      @click="addCurrentTab()"
               />
             </div>
             <div class="col-12">
-              {{ currentProject }}
+
+              <q-list class="q-ma-none">
+                <q-item v-for="s in currentProject?.sources as Source[] || []"
+                  clickable
+                  v-ripple
+                  class="q-ma-none q-px-sm q-pt-xs q-pb-none q-ml-sm"
+                  :key="'source_' + s.id">
+
+                  <SourceWidget :source="s" />
+
+                </q-item>
+              </q-list>
+
+
+
             </div>
           </div>
         </template>
@@ -80,6 +95,7 @@ import {Project} from "src/projects/models/Project";
 import _ from "lodash"
 import {Source} from "src/projects/models/Source";
 import {uid} from "quasar";
+import SourceWidget from "src/projects/widget/SourceWidget.vue";
 
 const projects = ref<Project[]>([])
 const project = ref('')
@@ -105,40 +121,61 @@ watchEffect(() => {
   })
 })
 
-watchEffect(async () => {
-  console.log("new Project", project.value)
+// watchEffect(async () => {
+//   console.log("new Project", project.value)
+//   if (project.value && project.value.value) {
+//     currentProject.value = await useProjectsStore().findProject(project.value.value)
+//   }
+//   if (project.value.value === "new_project") {
+//     view.value = 'new_project'
+//   }
+// })
+
+const projectListWasClicked = async (a:any) => {
+  console.log("Hier", project.value, a)
   if (project.value && project.value.value) {
     currentProject.value = await useProjectsStore().findProject(project.value.value)
   }
-  // if (project.value.value === "new_project") {
-  //   view.value = 'new_project'
-  // }
-})
-
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log(" <<< received message", message)
-  // if (inIgnoredMessages(message)) {
-  //   return true
-  // }
-  if (message.name === 'feature-activated') {
-    usePermissionsStore().addActivateFeature(message.data.feature)
-  } else if (message.name === 'feature-deactivated') {
-    usePermissionsStore().removeActivateFeature(message.data.feature)
+  if (project.value.value === "new_project") {
+    view.value = 'new_project'
   }
-})
+}
+
+// chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+//   console.log(" <<< received message", message)
+//   // if (inIgnoredMessages(message)) {
+//   //   return true
+//   // }
+//   if (message.name === 'feature-activated') {
+//     usePermissionsStore().addActivateFeature(message.data.feature)
+//   } else if (message.name === 'feature-deactivated') {
+//     usePermissionsStore().removeActivateFeature(message.data.feature)
+//   }
+// })
 
 const createProject = (e: object) =>
   useCommandExecutor().executeFromUi(new CreateProjectCommand(e.name, e.description))
     .then((res: ExecutionResult<any>) => {
       view.value = 'projects'
+      currentProject.value = res.result
+      project.value = res.result.name
     })
 
 const addCurrentTab = async () => {
   let queryOptions = {active: true, lastFocusedWindow: true};
-  let [currentTab] = await chrome.tabs.query(queryOptions);
-  if (currentTab && project.value) {
-    console.log("currentTab", currentTab)
-    project.value.sources.push(new Source(uid(), currentTab.title || '???', currentTab.url))
+  if (!currentProject.value) {
+    console.warn("current project not set")
+    return
+  }
+  try {
+    let [currentTab] = await chrome.tabs.query(queryOptions);
+    if (currentTab) {
+      currentProject.value.sources.push(Source.newFrom(currentTab))
+      await useProjectsStore().updateProject(currentProject.value as Project)
+    }
+  } catch (err:any) {
+    currentProject.value.sources.push(new Source(uid(), err.toString(), 'https://example.com'))
+    await useProjectsStore().updateProject(currentProject.value as Project)
   }
 }
 </script>

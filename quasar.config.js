@@ -114,7 +114,7 @@ module.exports = configure(function (ctx) {
           include: [path.resolve(__dirname, './src/i18n/**')],
         }],
         ['vite-plugin-package-version' ,{}],
-        VueDevTools(),
+       // [VueDevTools()],
       ]
     },
 

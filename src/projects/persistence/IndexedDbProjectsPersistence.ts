@@ -44,8 +44,8 @@ class IndexedDbProjectsPersistence implements ProjectsPersistence {
     return await this.db.getAll(this.STORE_IDENT)
   }
 
-  saveProject(project: Project): void {
-    this.db.put(this.STORE_IDENT, project, project.id)
+  saveProject(project: Project) {
+    return this.db.put(this.STORE_IDENT, project, project.id)
   }
 
   deleteProject(projectId: string): Promise<void> {
