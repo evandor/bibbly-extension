@@ -12,7 +12,6 @@
 const { configure } = require('quasar/wrappers');
 const path = require('path');
 const fs = require("fs");
-const VueDevTools = require( 'vite-plugin-vue-devtools')
 
 module.exports = configure(function (ctx) {
 

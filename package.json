@@ -58,7 +58,6 @@
     "@wdio/cli": "^8.13.5",
     "autoprefixer": "^10.4.2",
     "typescript": "^5.1.6",
-    "vite-plugin-vue-devtools": "^7.0.25",
     "vitest": "^1.4.0",
     "workbox-build": "^7.0.0",
     "workbox-cacheable-response": "^7.0.0",

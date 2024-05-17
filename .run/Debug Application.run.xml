@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Debug Application" type="JavascriptDebugType" uri="chrome-extension://ekckmagjbgbjkedejehhofenkoeajack/www/index.html#/sidepanel/projects">
+  <configuration default="false" name="Debug Application" type="JavascriptDebugType" uri="chrome-extension://ekckmagjbgbjkedejehhofenkoeajack/www/index.html#/sidepanel/projects" useFirstLineBreakpoints="true">
     <method v="2" />
   </configuration>
 </component>
