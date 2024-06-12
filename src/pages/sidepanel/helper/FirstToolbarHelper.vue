@@ -37,7 +37,7 @@ import {useRouter} from "vue-router";
 import {ref, watchEffect} from "vue";
 import {useUiStore} from "stores/uiStore";
 import {useQuasar} from "quasar";
-import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
+import SidePanelToolbarButton from "src/core/components/SidePanelToolbarButton.vue";
 
 const props = defineProps({
   title: {type: String, default: "My Tabsets"},

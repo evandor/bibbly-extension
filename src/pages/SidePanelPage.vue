@@ -117,7 +117,7 @@ import Analytics from "src/utils/google-analytics";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import {TITLE_IDENT} from "boot/constants";
 import AppService from "src/services/AppService";
-import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
+import SidePanelToolbarButton from "src/core/components/SidePanelToolbarButton.vue";
 import {useI18n} from 'vue-i18n'
 
 const {t} = useI18n({locale: navigator.language, useScope: "global"})
