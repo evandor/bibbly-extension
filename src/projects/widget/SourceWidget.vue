@@ -17,6 +17,12 @@
     </q-item-label>
   </q-item-section>
 
+  <q-item-section class="q-mb-sm" @click="router.push('/sidepanel/source/' + props.source.id)">
+    <q-item-label>
+      ...
+    </q-item-label>
+  </q-item-section>
+
 </template>
 
 <script lang="ts" setup>
@@ -24,9 +30,12 @@
 import {PropType} from "vue";
 import {Source} from "src/projects/models/Source";
 import {openURL} from "quasar";
+import {useRouter} from "vue-router";
 
 const props = defineProps({
   source: {type: Object as PropType<Source>, required: true}
 })
+
+const router = useRouter()
 
 </script>

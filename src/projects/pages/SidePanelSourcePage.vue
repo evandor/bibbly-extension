@@ -20,47 +20,28 @@
     <div class="column fitpage q-pa-sm q-mx-sm q-mt-md bg-white">
       <div class="col">
 
-        <template v-if="view === 'projects'">
+        <template>
           <div class="row q-ma-md q-pa-md items-start">
             <div class="col-12">
-              <q-select filled v-model="project" :options="projectOptions" label="Project"
-                        style="border: 2px solid #21B6A8"
-                        @update:modelValue="a => projectListWasClicked(a)"
-              />
+
             </div>
-            <div class="col-12 q-my-lg text-center" v-if="currentProject">
-              <q-btn unelevated rounded class="q-mx-md q-px-lg" color="primary" label="+ add current webpage"
-                     @click="addCurrentTab()"
-              />
-            </div>
+
             <div class="col-12">
 
-              <q-list class="q-ma-none">
-                <q-item v-for="s in currentProject?.sources as Source[] || []"
-                  clickable
-                  v-ripple
-                  class="q-ma-none q-px-sm q-pt-xs q-pb-none q-ml-sm"
-                  :key="'source_' + s.id">
-
-                  <SourceWidget :source="s" />
-
-                </q-item>
-              </q-list>
-
+              <!-- TODO :disabled="!isOpen(tab as Tab)" -->
+              <q-btn
+                @click.stop="saveHtml(source as Source)"
+                flat round color="primary" size="11px" icon="image"
+              >
+                <q-tooltip>Save this tab as HTML</q-tooltip>
+              </q-btn>
 
 
             </div>
           </div>
         </template>
 
-        <!-- Formular for new/edit project -->
-        <template v-if="view === 'new_project'">
-          <div class="row q-ma-md q-pa-md">
-            <div class="col-12">
-              <ProjectForm @project-created="e => createProject(e)" @skip="view = 'projects'"/>
-            </div>
-          </div>
-        </template>
+
       </div>
     </div>
 
@@ -85,8 +66,6 @@
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import {onMounted, ref, watchEffect} from "vue";
 import Analytics from "src/utils/google-analytics";
-import {usePermissionsStore} from "stores/permissionsStore";
-import ProjectForm from "src/projects/forms/ProjectForm.vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateProjectCommand} from "src/projects/commands/CreateProjectCommand";
 import {ExecutionResult} from "src/domain/ExecutionResult";
@@ -95,13 +74,15 @@ import {Project} from "src/projects/models/Project";
 import _ from "lodash"
 import {Source} from "src/projects/models/Source";
 import {uid} from "quasar";
-import SourceWidget from "src/projects/widget/SourceWidget.vue";
-import {useRouter} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
+import {SaveHtmlCommand} from "src/snapshots/domain/SaveHtml";
 
 const router = useRouter()
+const route = useRoute()
 
 const projects = ref<Project[]>([])
-const project = ref('')
+const sourceId = ref('')
+const source = ref<Source | undefined>(undefined)
 const currentProject = ref<Project | undefined>(undefined)
 const search = ref('')
 const view = ref('projects')
@@ -109,7 +90,17 @@ const view = ref('projects')
 const projectOptions = ref<object[]>([])
 
 onMounted(() => {
-  Analytics.firePageViewEvent('SidePanelProjectsPage', document.location.href);
+  Analytics.firePageViewEvent('SidePanelSourcePage', document.location.href);
+  sourceId.value = route.params.sourceId as string
+  console.log("sourceId", sourceId.value)
+
+  // TODO
+  source.value = _.find(
+    _.flatMap(
+      [...useProjectsStore().projects] as Project[],
+      (p: Project) => p.sources),
+    (s: Source) => s.id === sourceId.value)
+
 })
 
 watchEffect(() => {
@@ -138,13 +129,9 @@ watchEffect(() => {
 //   }
 // })
 
-const projectListWasClicked = async (a:any) => {
-  console.log("Hier", project.value, a)
-  if (project.value && project.value.value) {
-    currentProject.value = await useProjectsStore().findProject(project.value.value)
-  }
-  if (project.value.value === "new_project") {
-    view.value = 'new_project'
+const saveHtml = (source: Source | undefined) => {
+  if (source) {
+    useCommandExecutor().execute(new SaveHtmlCommand(tab, "saved by user"))
   }
 }
 
@@ -180,7 +167,7 @@ const addCurrentTab = async () => {
       currentProject.value.sources.push(Source.newFrom(currentTab))
       await useProjectsStore().updateProject(currentProject.value as Project)
     }
-  } catch (err:any) {
+  } catch (err: any) {
     currentProject.value.sources.push(new Source(uid(), err.toString(), 'https://example.com'))
     await useProjectsStore().updateProject(currentProject.value as Project)
   }

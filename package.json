@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "quasar dev -m bex",
     "dev --devtools": "quasar dev --devtools",
+    "dev spa": "quasar dev",
     "build": "quasar build -m bex",
     "test:unit:ui": "vitest --ui",
     "test:unit": "vitest",

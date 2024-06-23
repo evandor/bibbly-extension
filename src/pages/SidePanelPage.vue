@@ -149,22 +149,22 @@ onUnmounted(() => {
   window.removeEventListener('keypress', checkKeystroke);
 })
 
-
-watchEffect(() => {
-  if (useUiStore().tabsFilter) {
-    console.log("filtering:::", useUiStore().tabsFilter)
-  }
-})
-
-const getTabsetOrder =
-  [
-    function (o: Tabset) {
-      return o.status === TabsetStatus.FAVORITE ? 0 : 1
-    },
-    function (o: Tabset) {
-      return o.name?.toLowerCase()
-    }
-  ]
+//
+// watchEffect(() => {
+//   if (useUiStore().tabsFilter) {
+//     console.log("filtering:::", useUiStore().tabsFilter)
+//   }
+// })
+//
+// const getTabsetOrder =
+//   [
+//     function (o: Tabset) {
+//       return o.status === TabsetStatus.FAVORITE ? 0 : 1
+//     },
+//     function (o: Tabset) {
+//       return o.name?.toLowerCase()
+//     }
+//   ]
 
 
 function inIgnoredMessages(message: any) {
@@ -195,8 +195,8 @@ if (inBexMode()) {
       } else if (message.data.feature === 'bookmarks') {
         usePermissionsStore().load()
           .then(() => {
-            useBookmarksStore().init()
-            useBookmarksStore().loadBookmarks()
+            // useBookmarksStore().init()
+            // useBookmarksStore().loadBookmarks()
           })
       }
     } else if (message.name === "feature-deactivated") {

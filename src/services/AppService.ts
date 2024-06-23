@@ -72,6 +72,10 @@ class AppService {
 
 
     useUiStore().appLoading = undefined
+
+    if (useProjectsStore().projects.length > 0) {
+      router.push("/sidepanel/projects")
+    }
   }
 
 }

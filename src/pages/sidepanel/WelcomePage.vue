@@ -1,207 +1,135 @@
 <template>
-  <q-page-container>
-    <q-page>
 
-      <div class="q-ma-none q-pa-md fit">
-        <div class="row q-mt-lg">
-          <div class="row">
-            <div class="col-12 text-caption">
-              The Art Of Linking
+  <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 54px">
+
+    <!-- white main box -->
+
+    <div class="column fitpage q-pa-sm q-mx-sm q-mt-md bg-white">
+      <div class="col">
+
+        <template v-if="view === 'add-project'">
+          <div class="row q-ma-md q-pa-md">
+            <div class="col-12 text-black">
+              <ProjectForm @project-created="e => createProject(e)" @skip="view = 'projects'"/>
             </div>
           </div>
-          <div class="col-12 text-h6 q-mb-md">
-            {{ t('welcome_to_tabsets') }} {{ stageIdentifier() }}
+        </template>
+
+        <template v-else>
+
+
+          <div class="row q-ma-md q-pa-md items-start text-primary">
+            <div class="col-12">
+              <div class="text-h6 text-black q-mb-lg">
+                Thank you for choosing Bibbly - we appreciate it
+              </div>
+
+              <div class="text-body1 text-black q-mb-lg">
+                Let's begin without further delay!
+              </div>
+              <div class="text-body1 text-black q-mb-lg">
+
+                Create your first project so that you can start adding webpages to it! A project can be writing a book,
+                your master thesis or just collecting ideas on recipes, interior design or shopping :-).
+              </div>
+              <div class="text-body1 text-black q-mb-lg">
+                For more info check our FAQ at
+                bibbly.me.
+              </div>
+
+            </div>
+            <div class="col-12 q-my-lg text-center text-black">
+              <q-btn unelevated rounded class="q-mx-md q-px-lg" color="primary" label="+ add project"
+                     @click="addProject()"
+              />
+
+            </div>
+            <div class="col-12">
+
+            </div>
           </div>
-<!--          <div class="col-12 text-caption text-primary q-mx-sm q-my-sm">-->
-<!--            {{ t('one_line_about_tabsets1') }}<br>-->
-<!--            {{ t('one_line_about_tabsets2') }}-->
-<!--          </div>-->
-        </div>
 
-        <div class="q-pa-sm q-mb-none row items-start q-gutter-md" @click.stop="selected()">
-          <q-card class="my-card fit">
-            <q-card-section>
-              <span class="text-subtitle2">{{ t('create_your_first_ts') }}</span>
-              <br>
-              {{ t('provide_name_add_later')}}
-            </q-card-section>
-            <q-card-section class="q-pb-none">
-              <q-input v-model="tabsetName"
-                       class="input-box"
-                       dense
-                       autofocus
-                       ref="tabsetNameRef"
-                       :error-message="t('no_special_chars_and_length')"
-                       :error="!newTabsetNameIsValid()"
-                       data-testid="newTabsetName"
-                       @keydown.enter="addFirstTabset()"
-                       :label="t('tabset_name')"/>
-            </q-card-section>
-            <q-card-actions align="right" class="q-pr-md q-pb-md q-ma-none">
-              <DialogButton
-                :label="t('add_tabset')"
-                @was-clicked="addFirstTabset"
-                :disable="tabsetName.trim().length === 0 || !newTabsetNameIsValid()"/>
-            </q-card-actions>
-            <q-card-actions align="right" class="q-pr-md q-pb-md q-ma-none">
-              <span class="q-mx-none cursor-pointer text-primary" style="font-size:smaller"
-                    @click.stop="openBookmarksView">or open Bookmark Manager</span>
-            </q-card-actions>
-          </q-card>
-        </div>
-        <div class="row q-mr-sm">
-          <div class="col-12 text-right">
-            <span class="text-grey q-mx-none cursor-pointer" style="font-size:smaller"
-                  @click.stop="clicked('https://tabsets.web.app/#/privacy')">Privacy</span>
-            <span class="q-ma-none q-pa-none q-mx-xs text-grey-5">|</span>
-            <span class="text-grey q-mx-none cursor-pointer" style="font-size:smaller"
-                  @click.stop="clicked('https://tabsets.web.app/#/tos')">Terms of Service</span>
-            <span class="q-ma-none q-pa-none q-mx-xs text-grey-5">|</span>
-            <span class="text-grey q-mx-none cursor-pointer" style="font-size:smaller"
-                  @click.stop="clicked('https://docs.tabsets.net')">{{ t('documentation') }}</span>
-          </div>
-        </div>
-
-        <br><br>
-
-        <div class="row q-mt-lg q-ml-md">
-          <div class="col-12 text-caption q-mb-sm">
-            {{ t('optionally') }}
-          </div>
-          <div class="col-12 q-mb-md">
-<!--            <q-checkbox size="xs" v-model="activateBookmarks" class="text-grey" :label="t('activate_bookmarks_integration')"/>-->
-<!--            <q-icon class="q-ml-sm cursor-pointer" name="o_help" color="grey">-->
-<!--              <q-tooltip class="tooltip">Allow access to your bookmarks. Can be added later, too</q-tooltip>-->
-<!--            </q-icon>-->
-            <q-checkbox size="xs" v-model="activateNotifications" class="text-grey"
-                        :label="t('activate_browser_notifications')"/>
-            <q-icon class="q-ml-sm cursor-pointer" name="o_help" color="grey">
-              <q-tooltip class="tooltip">Allow browser notifications for better integration. Can be added later, too
-              </q-tooltip>
-            </q-icon>
-
-            <q-checkbox size="xs" v-model="activateFullPageApp" class="text-grey"
-                        :label="t('activate_fullpage_application')"/>
-            <q-icon class="q-ml-sm cursor-pointer" name="o_help" color="grey">
-              <q-tooltip class="tooltip">Tabsets can be additionally run as fullpage app</q-tooltip>
-            </q-icon>
-
-            <template v-if="firebaseActive()">
-              <q-checkbox
-                size="xs" v-model="login" class="text-grey" label="Login or create Account"/>
-              <q-icon class="q-ml-sm cursor-pointer" name="o_help" color="grey">
-                <q-tooltip class="tooltip">With an Account, you can sync your tabsets across browsers and computers</q-tooltip>
-              </q-icon>
-            </template>
-          </div>
-        </div>
+        </template>
 
       </div>
-    </q-page>
-  </q-page-container>
+    </div>
+
+    <!-- place QPageSticky at end of page -->
+    <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
+      <FirstToolbarHelper title="Bibbly">
+
+        <template v-slot:iconsRight>
+          <q-btn icon="more_vert" color="grey" dense class="q-mx-none" flat/>
+          <q-btn icon="account_circle" dense size="lg" class="q-mx-none" flat/>
+        </template>
+
+      </FirstToolbarHelper>
+    </q-page-sticky>
+
+  </q-page>
+
 </template>
 
 <script lang="ts" setup>
 
-import {SidePanelView, useUiStore} from "src/stores/uiStore";
-import {onMounted, ref, UnwrapRef, watchEffect} from "vue";
-import {useRouter} from "vue-router";
-import {useCommandExecutor} from "src/services/CommandExecutor";
-import {STRIP_CHARS_IN_USER_INPUT, TITLE_IDENT} from "boot/constants";
+import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
+import {onMounted, ref, watchEffect} from "vue";
 import Analytics from "src/utils/google-analytics";
-import DialogButton from "components/buttons/DialogButton.vue";
-import {LocalStorage, openURL} from "quasar";
-import {FeatureIdent} from "src/models/AppFeature";
-import {AppFeatures} from "src/models/AppFeatures";
-import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
-import {usePermissionsStore} from "stores/permissionsStore";
-import {useI18n} from 'vue-i18n'
+import {useProjectsStore} from "src/projects/stores/projectsStore";
+import {Project} from "src/projects/models/Project";
+import _ from "lodash"
+import {useRouter} from "vue-router";
+import ProjectForm from "src/projects/forms/ProjectForm.vue";
+import {useCommandExecutor} from "src/services/CommandExecutor";
+import {CreateProjectCommand} from "src/projects/commands/CreateProjectCommand";
+import {ExecutionResult} from "src/domain/ExecutionResult";
 
-const {t} = useI18n()
 const router = useRouter()
 
-const tabsetName = ref('')
-const tabsetNameRef = ref<HTMLElement>(null as unknown as HTMLInputElement)
-const windowLocation = ref('---')
-const activateBookmarks = ref(false)
-const activateNotifications = ref(false)
-const activateFullPageApp = ref(false)
-const login = ref(false)
+const projects = ref<Project[]>([])
+const project = ref('')
+const currentProject = ref<Project | undefined>(undefined)
+const search = ref('')
+const view = ref('welcome')
 
+const projectOptions = ref<object[]>([])
 
 onMounted(() => {
-  Analytics.firePageViewEvent('WelcomePage', document.location.href);
-  windowLocation.value = window.location.href
-  LocalStorage.set(TITLE_IDENT, 'Tabsets' + stageIdentifier())
-})
-
-watchEffect(async () => {
-  const feature = new AppFeatures().getFeature(FeatureIdent.NOTIFICATIONS)
-  if (activateNotifications.value && feature) {
-    const res = await useCommandExecutor().execute(new GrantPermissionCommand('notifications'))
-    if (!res.result) {
-      activateNotifications.value = false
-    }
-  } else if (!activateNotifications.value && feature) {
-    usePermissionsStore().deactivateFeature('notifications')
-  }
-})
-
-function setFeature(featureIdent: FeatureIdent, val: UnwrapRef<boolean>) {
-  const feature = new AppFeatures().getFeature(featureIdent)
-  console.log("feeature", feature)
-  if (val && feature) {
-    console.log("activating", featureIdent)
-    usePermissionsStore().activateFeature(featureIdent.toLowerCase())
-  } else if (!val && feature) {
-    console.log("deactivateing", featureIdent)
-    usePermissionsStore().deactivateFeature(featureIdent.toLowerCase())
-  }
-}
-
-watchEffect(async () => {
-  setFeature(FeatureIdent.STANDALONE_APP, activateFullPageApp.value)
+  Analytics.firePageViewEvent('SidePanelProjectsPage', document.location.href);
 })
 
 watchEffect(() => {
-  useUiStore().showLoginTable = login.value
+  projects.value = useProjectsStore().projects
+  projectOptions.value = []
+  _.forEach(projects.value as Project[], (p: Project) => {
+    projectOptions.value.push({label: p.name, value: p.id})
+  })
+  projectOptions.value = _.sortBy(projectOptions.value, "label")
+  projectOptions.value.push({
+    label: 'Create new Project', value: 'new_project'
+  })
+  if (projects.value.length === 0) {
+    router.push("/sidepanel/welcome")
+  }
 })
 
+const addProject = () => {
+  view.value = 'add-project'
+}
 
-const addFirstTabset = () => {
-  useCommandExecutor()
-    .executeFromUi(new CreateTabsetCommand(tabsetName.value, []))
-    .then((res) => {
-      useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
-      router.push("/sidepanel?first=true")
+const createProject = (e: object) =>
+  useCommandExecutor().executeFromUi(new CreateProjectCommand(e.name, e.description))
+    .then((res: ExecutionResult<any>) => {
+      // view.value = 'projects'
+      // currentProject.value = res.result
+      // project.value = res.result.name
+      router.push("/sidepanel/projects")
     })
-}
-
-const newTabsetNameIsValid = () =>
-  tabsetName.value.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(tabsetName.value)
-
-//https://groups.google.com/a/chromium.org/g/chromium-extensions/c/nb058-YrrWc
-const selected = () => tabsetNameRef.value.focus()
-
-const stageIdentifier = () => process.env.TABSETS_STAGE !== 'PRD' ? ' (' + process.env.TABSETS_STAGE + ')' : ''
-
-const clicked = (url: string) => openURL(url)
-
-const firebaseActive = () => {
-  return process.env.USE_FIREBASE && process.env.USE_FIREBASE == "true"
-}
-
-const openBookmarksView = () => {
-  useUiStore().sidePanelSetActiveView(SidePanelView.BOOKMARKS)
-  router.push("/sidepanel/" + SidePanelView.BOOKMARKS)
-}
 
 </script>
 
 <style scoped>
-:deep(.input-box .q-field__control),
-:deep(.input-box .q-field__marginal) {
-  height: 52px;
-  font-size: 18px;
+.fitpage {
+  height: calc(100vh - 200px);
 }
 </style>
