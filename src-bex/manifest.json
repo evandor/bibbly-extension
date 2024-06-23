@@ -6,10 +6,20 @@
     "128": "icons/icon-128x128.png"
   },
   "permissions": [
-    "sidePanel",
     "activeTab",
     "tabs",
+    "activeTab",
+    "scripting",
+    "sidePanel",
+    "pageCapture",
     "bookmarks"
+  ],
+  "optional_permissions": [
+    "webRequest"
+  ],
+  "host_permissions": [
+    "<all_urls>",
+    "*://*/*"
   ],
   "side_panel": {
     "default_path": "www/sidepanel.html"
@@ -28,6 +38,15 @@
       }
     }
   },
-  "options_page": "www/index.html#/mainpanel/settings"
-
+  "options_page": "www/index.html#/mainpanel/settings",
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "*"
+      ],
+      "matches": [
+        "*://*/*"
+      ]
+    }
+  ]
 }

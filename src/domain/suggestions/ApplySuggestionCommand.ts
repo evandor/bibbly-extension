@@ -1,5 +1,5 @@
 import Command from "src/domain/Command";
-import {ExecutionResult} from "src/domain/ExecutionResult";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";

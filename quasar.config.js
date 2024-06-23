@@ -250,6 +250,7 @@ module.exports = configure(function (ctx) {
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/developing-browser-extensions/configuring-bex
     bex: {
       contentScripts: [
+        'content-script'
       ],
 
       // extendBexScriptsConf (esbuildConf) {}

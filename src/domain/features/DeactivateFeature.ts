@@ -1,5 +1,5 @@
 import Command from "src/domain/Command";
-import {ExecutionResult} from "src/domain/ExecutionResult";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {AppFeature} from "src/models/AppFeature"
 

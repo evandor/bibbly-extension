@@ -16,18 +16,28 @@
       </div>
     </div>
 
+    <div>
+
+      <q-btn
+        @click.stop="saveHtml(source as Source)"
+        flat round color="primary" size="11px" icon="image"
+      >
+        <q-tooltip>Save this tab as HTML</q-tooltip>
+      </q-btn>
+
+    </div>
     <!-- white main box -->
-    <div class="column fitpage q-pa-sm q-mx-sm q-mt-md bg-white">
+    <div class="column q-pa-sm q-mx-sm q-mt-md bg-white">
       <div class="col">
 
         <template>
           <div class="row q-ma-md q-pa-md items-start">
             <div class="col-12">
-
+aaa
             </div>
 
             <div class="col-12">
-
+bbb
               <!-- TODO :disabled="!isOpen(tab as Tab)" -->
               <q-btn
                 @click.stop="saveHtml(source as Source)"
@@ -66,9 +76,9 @@
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import {onMounted, ref, watchEffect} from "vue";
 import Analytics from "src/utils/google-analytics";
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {CreateProjectCommand} from "src/projects/commands/CreateProjectCommand";
-import {ExecutionResult} from "src/domain/ExecutionResult";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {useProjectsStore} from "src/projects/stores/projectsStore";
 import {Project} from "src/projects/models/Project";
 import _ from "lodash"
@@ -76,6 +86,7 @@ import {Source} from "src/projects/models/Source";
 import {uid} from "quasar";
 import {useRoute, useRouter} from "vue-router";
 import {SaveHtmlCommand} from "src/snapshots/domain/SaveHtml";
+import Command from "src/core/domain/Command";
 
 const router = useRouter()
 const route = useRoute()
@@ -131,7 +142,13 @@ watchEffect(() => {
 
 const saveHtml = (source: Source | undefined) => {
   if (source) {
-    useCommandExecutor().execute(new SaveHtmlCommand(tab, "saved by user"))
+    chrome.tabs.query({currentWindow: true})
+      .then((tabs: chrome.tabs.Tab[]) => {
+        if (tabs.length > 0) {
+          const saveHtmlCommand: Command<any> = new SaveHtmlCommand(tabs[0], source.id, "saved by user")
+          useCommandExecutor().execute(saveHtmlCommand)
+        }
+      })
   }
 }
 
@@ -147,31 +164,7 @@ const saveHtml = (source: Source | undefined) => {
 //   }
 // })
 
-const createProject = (e: object) =>
-  useCommandExecutor().executeFromUi(new CreateProjectCommand(e.name, e.description))
-    .then((res: ExecutionResult<any>) => {
-      view.value = 'projects'
-      currentProject.value = res.result
-      project.value = res.result.name
-    })
 
-const addCurrentTab = async () => {
-  let queryOptions = {active: true, lastFocusedWindow: true};
-  if (!currentProject.value) {
-    console.warn("current project not set")
-    return
-  }
-  try {
-    let [currentTab] = await chrome.tabs.query(queryOptions);
-    if (currentTab) {
-      currentProject.value.sources.push(Source.newFrom(currentTab))
-      await useProjectsStore().updateProject(currentProject.value as Project)
-    }
-  } catch (err: any) {
-    currentProject.value.sources.push(new Source(uid(), err.toString(), 'https://example.com'))
-    await useProjectsStore().updateProject(currentProject.value as Project)
-  }
-}
 </script>
 
 <style scoped>

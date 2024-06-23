@@ -73,7 +73,7 @@ import {useRouter} from "vue-router";
 import {QForm, useDialogPluginComponent} from "quasar";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {ref, watchEffect} from "vue";
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {SidePanelView, useUiStore} from "stores/uiStore";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";

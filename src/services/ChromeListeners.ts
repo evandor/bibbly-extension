@@ -17,14 +17,14 @@ class ChromeListeners {
 
   inProgress = false;
 
+  private onUpdatedListener = (number: number, info: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) => this.onUpdated(number, info, tab)
   private onMessageListener = (request: any, sender: chrome.runtime.MessageSender, sendResponse: any) => this.onMessage(request, sender, sendResponse)
 
   async initListeners() {
 
     if (process.env.MODE === 'bex') {
       console.debug(" ...initializing chrome tab listeners")
-      // chrome.runtime.setUninstallURL("https://tabsets.web.app/#/uninstall")
-      //chrome.tabs.onZoomChange.addListener((info) => this.onZoomChange(info))
+      chrome.tabs.onUpdated.addListener(this.onUpdatedListener)
       chrome.runtime.onMessage.addListener(this.onMessageListener)
     }
 
@@ -37,6 +37,7 @@ class ChromeListeners {
 
   async resetListeners() {
     console.log(" ...resetting listeners (after re-initialization)")
+    chrome.tabs.onUpdated.removeListener(this.onUpdatedListener)
     chrome.runtime.onMessage.removeListener(this.onMessageListener)
   }
 
@@ -47,7 +48,60 @@ class ChromeListeners {
     this.inProgress = false
   }
 
-  intervalID = setInterval(() => this.clearWorking(), 5000);
+  async onUpdated(number: number, info: chrome.tabs.TabChangeInfo, chromeTab: chrome.tabs.Tab) {
+
+    if (!info.status || (Object.keys(info).length > 1)) {
+      console.debug(`onUpdated:   tab ${number}: >>> ${JSON.stringify(info)} <<<`)
+
+      // handle pending Tabset
+      //this.handleUpdate(tabsStore.pendingTabset as Tabset, chromeTab)
+      this.handleUpdateInjectScripts(info, chromeTab)
+    }
+  }
+
+
+  private handleUpdateInjectScripts(info: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) {
+    if (info.status !== "loading") {
+      return
+    }
+    if (!tab.id) {
+      return
+    }
+
+    if (tab.url && tab.url.startsWith("https://shared.tabsets.net")) {
+      return
+    }
+
+    const scripts: string[] = []
+
+    scripts.push("content-script.js")
+    //scripts.push("recogito2.js")
+    // scripts.push("tabsets-content-script.js")
+    if (scripts.length > 0 && tab.id !== null) { // && !this.injectedScripts.get(.chromeTabId)) {
+
+      chrome.tabs.get(tab.id, (chromeTab: chrome.tabs.Tab) => {
+        if (chrome.runtime.lastError) {
+          console.warn("got runtime error:" + chrome.runtime.lastError);
+        }
+        if (!tab.url?.startsWith("chrome")) {
+          scripts.forEach((script: string) => {
+            //console.debug("executing scripts", tab.id, script)
+
+
+            // @ts-ignore
+            chrome.scripting.executeScript({
+              target: {tabId: tab.id || 0, allFrames: false},
+              files: [script] //["tabsets-content-script.js","content-script-thumbnails.js"],
+            }, (callback: any) => {
+              if (chrome.runtime.lastError) {
+                console.warn("could not execute script: " + chrome.runtime.lastError.message, info.url);
+              }
+            });
+          })
+        }
+      })
+    }
+  }
 
   onMessage(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
     if (inIgnoredMessages(request)) {

@@ -1,5 +1,5 @@
 import Command from "src/domain/Command";
-import {ExecutionResult} from "src/domain/ExecutionResult";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {useUtils} from "src/services/Utils";
 import {useProjectsStore} from "src/projects/stores/projectsStore";
 import {Project} from "src/projects/models/Project";

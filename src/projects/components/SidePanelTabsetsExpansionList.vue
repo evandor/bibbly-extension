@@ -239,12 +239,12 @@ import {useUiStore} from "stores/uiStore";
 import _ from "lodash";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {openURL, scroll, uid, useQuasar} from "quasar";
 import {useUtils} from "src/services/Utils";
 import getScrollTarget = scroll.getScrollTarget;
 
-import {ExecutionResult} from "src/domain/ExecutionResult";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {Project} from "src/projects/models/Project";

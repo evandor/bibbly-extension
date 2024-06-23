@@ -80,9 +80,9 @@ import {Project} from "src/projects/models/Project";
 import _ from "lodash"
 import {useRouter} from "vue-router";
 import ProjectForm from "src/projects/forms/ProjectForm.vue";
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {CreateProjectCommand} from "src/projects/commands/CreateProjectCommand";
-import {ExecutionResult} from "src/domain/ExecutionResult";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
 
 const router = useRouter()
 

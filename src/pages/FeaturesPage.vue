@@ -129,10 +129,10 @@ import {onMounted, ref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {Notify, useQuasar} from "quasar";
 import {usePermissionsStore} from "src/stores/permissionsStore";
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {AppFeature, FeatureIdent, FeatureType} from "src/models/AppFeature";
 import {AppFeatures} from "src/models/AppFeatures";
-import {ExecutionResult} from "src/domain/ExecutionResult";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {useSettingsStore} from "src/stores/settingsStore"
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";

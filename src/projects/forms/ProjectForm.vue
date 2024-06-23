@@ -26,9 +26,9 @@
 
 <script lang="ts" setup>
 import {ref} from "vue";
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {CreateProjectCommand} from "src/projects/commands/CreateProjectCommand";
-import {ExecutionResult} from "src/domain/ExecutionResult";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
 
 const emits = defineEmits(['projectCreated', 'skip'])
 
