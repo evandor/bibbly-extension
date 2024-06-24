@@ -12,10 +12,8 @@
     "scripting",
     "sidePanel",
     "pageCapture",
-    "bookmarks"
-  ],
-  "optional_permissions": [
-    "webRequest"
+    "bookmarks",
+    "contextMenus"
   ],
   "host_permissions": [
     "<all_urls>",
@@ -38,15 +36,5 @@
       }
     }
   },
-  "options_page": "www/index.html#/mainpanel/settings",
-  "web_accessible_resources": [
-    {
-      "resources": [
-        "*"
-      ],
-      "matches": [
-        "*://*/*"
-      ]
-    }
-  ]
+  "options_page": "www/index.html#/mainpanel/settings"
 }

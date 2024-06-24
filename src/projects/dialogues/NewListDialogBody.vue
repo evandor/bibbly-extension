@@ -78,7 +78,7 @@ import {SidePanelView, useUiStore} from "stores/uiStore";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import DialogButton from "components/buttons/DialogButton.vue";
 import {useTabsStore} from "src/projects/stores/tabsStore";
 import {Project, TabsetStatus} from "src/projects/models/Project";

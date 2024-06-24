@@ -140,7 +140,7 @@ import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue"
 import Analytics from "src/utils/google-analytics";
 import Command from "src/domain/Command";
 import NavigationService from "src/services/NavigationService";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 
 const route = useRoute();
 const router = useRouter();

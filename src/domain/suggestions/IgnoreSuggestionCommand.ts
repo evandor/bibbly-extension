@@ -2,7 +2,7 @@ import Command from "src/domain/Command";
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {Suggestion, SuggestionState} from "src/models/Suggestion";
 import {useSuggestionsStore} from "stores/suggestionsStore";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 
 const {sendMsg} = useUtils()
 

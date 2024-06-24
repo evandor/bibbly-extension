@@ -3,7 +3,7 @@ import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import NavigationService from "src/services/NavigationService";
 import {useTabsStore} from "stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";

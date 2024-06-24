@@ -241,7 +241,7 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {openURL, scroll, uid, useQuasar} from "quasar";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import getScrollTarget = scroll.getScrollTarget;
 
 import {ExecutionResult} from "src/core/domain/ExecutionResult";

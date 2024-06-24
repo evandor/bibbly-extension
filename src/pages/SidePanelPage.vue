@@ -108,7 +108,7 @@
 
 import {onMounted, onUnmounted, ref, watchEffect} from "vue";
 import {useRouter} from "vue-router";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import {LocalStorage, scroll} from "quasar";
 import {useUiStore} from "src/stores/uiStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";

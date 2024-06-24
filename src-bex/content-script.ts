@@ -15,7 +15,7 @@ export default bexContent((bridge: any) => {
   // @ts-ignore
   window.contentScriptAlredyCalled = true
 
-  console.log("tabsets: adding listener...")
+  console.log("tabsets: adding listener...", chrome.runtime)
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     console.log("tabsets: hier", request)
     if (request === 'getContent') {

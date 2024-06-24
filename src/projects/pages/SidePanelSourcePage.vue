@@ -25,31 +25,35 @@
         <q-tooltip>Save this tab as HTML</q-tooltip>
       </q-btn>
 
+      <div class="row q-mx-sm q-mt-xs" v-for="(html,index) in htmls">
+        <PngViewHelper :pngId="html.sourceId" :created="html.created"
+                       :index="index" :tabId="source?.id || 'unknown'"
+                       extension="html"/>
+      </div>
+
     </div>
     <!-- white main box -->
     <div class="column q-pa-sm q-mx-sm q-mt-md bg-white">
       <div class="col">
 
-        <template>
-          <div class="row q-ma-md q-pa-md items-start">
-            <div class="col-12">
-aaa
-            </div>
-
-            <div class="col-12">
-bbb
-              <!-- TODO :disabled="!isOpen(tab as Tab)" -->
-              <q-btn
-                @click.stop="saveHtml(source as Source)"
-                flat round color="primary" size="11px" icon="image"
-              >
-                <q-tooltip>Save this tab as HTML</q-tooltip>
-              </q-btn>
-
-
-            </div>
+        <div class="row q-ma-md q-pa-md items-start">
+          <div class="col-12">
+            aaa
           </div>
-        </template>
+
+          <div class="col-12">
+            bbb
+            <!-- TODO :disabled="!isOpen(tab as Tab)" -->
+            <q-btn
+              @click.stop="saveHtml(source as Source)"
+              flat round color="primary" size="11px" icon="image"
+            >
+              <q-tooltip>Save this tab as HTML</q-tooltip>
+            </q-btn>
+
+
+          </div>
+        </div>
 
 
       </div>
@@ -77,16 +81,17 @@ import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import {onMounted, ref, watchEffect} from "vue";
 import Analytics from "src/utils/google-analytics";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
-import {CreateProjectCommand} from "src/projects/commands/CreateProjectCommand";
-import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {useProjectsStore} from "src/projects/stores/projectsStore";
 import {Project} from "src/projects/models/Project";
 import _ from "lodash"
 import {Source} from "src/projects/models/Source";
-import {uid} from "quasar";
 import {useRoute, useRouter} from "vue-router";
 import {SaveHtmlCommand} from "src/snapshots/domain/SaveHtml";
 import Command from "src/core/domain/Command";
+import PngViewHelper from "pages/sidepanel/helper/PngViewHelper.vue";
+import {useSnapshotsService} from "src/snapshots/services/SnapshotsService";
+import {useSnapshotsStore} from "src/snapshots/stores/SnapshotsStore";
+import {BlobType, BlobMetadata} from "src/snapshots/models/BlobMetadata";
 
 const router = useRouter()
 const route = useRoute()
@@ -94,11 +99,23 @@ const route = useRoute()
 const projects = ref<Project[]>([])
 const sourceId = ref('')
 const source = ref<Source | undefined>(undefined)
-const currentProject = ref<Project | undefined>(undefined)
 const search = ref('')
-const view = ref('projects')
+const htmls = ref<BlobMetadata[]>([])
 
 const projectOptions = ref<object[]>([])
+
+const updateBlobs = () => {
+  console.log("updateBlobs", source.value)
+  if (source.value?.id) {
+    useSnapshotsService().getMetadataFor(source.value.id, BlobType.HTML)
+      .then((md: BlobMetadata[]) => {
+        console.log("got", md)
+        htmls.value = md
+
+      })
+  }
+}
+
 
 onMounted(() => {
   Analytics.firePageViewEvent('SidePanelSourcePage', document.location.href);
@@ -111,7 +128,14 @@ onMounted(() => {
       [...useProjectsStore().projects] as Project[],
       (p: Project) => p.sources),
     (s: Source) => s.id === sourceId.value)
+  updateBlobs()
+})
 
+watchEffect(() => {
+  if (useSnapshotsStore().lastUpdate) {
+    console.log("updating!")
+    updateBlobs()
+  }
 })
 
 watchEffect(() => {
@@ -130,39 +154,19 @@ watchEffect(() => {
   }
 })
 
-// watchEffect(async () => {
-//   console.log("new Project", project.value)
-//   if (project.value && project.value.value) {
-//     currentProject.value = await useProjectsStore().findProject(project.value.value)
-//   }
-//   if (project.value.value === "new_project") {
-//     view.value = 'new_project'
-//   }
-// })
-
 const saveHtml = (source: Source | undefined) => {
   if (source) {
     chrome.tabs.query({currentWindow: true})
       .then((tabs: chrome.tabs.Tab[]) => {
-        if (tabs.length > 0) {
-          const saveHtmlCommand: Command<any> = new SaveHtmlCommand(tabs[0], source.id, "saved by user")
+        const tabCandidates = _.filter(tabs, (t: chrome.tabs.Tab) => t?.url === source.url)
+        if (tabCandidates.length > 0) {
+          const saveHtmlCommand: Command<any> = new SaveHtmlCommand(tabCandidates[0], source.id, "saved by user")
           useCommandExecutor().execute(saveHtmlCommand)
+          updateBlobs()
         }
       })
   }
 }
-
-// chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-//   console.log(" <<< received message", message)
-//   // if (inIgnoredMessages(message)) {
-//   //   return true
-//   // }
-//   if (message.name === 'feature-activated') {
-//     usePermissionsStore().addActivateFeature(message.data.feature)
-//   } else if (message.name === 'feature-deactivated') {
-//     usePermissionsStore().removeActivateFeature(message.data.feature)
-//   }
-// })
 
 
 </script>

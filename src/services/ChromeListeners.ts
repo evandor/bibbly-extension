@@ -1,5 +1,21 @@
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import {SidePanelView, useUiStore} from "stores/uiStore";
+
+async function setCurrentTab() {
+  const tabs = await chrome.tabs.query({active: true, lastFocusedWindow: true})
+
+  //console.debug("setting current tab", tabs)
+  // if (tabs && tabs[0]) {
+  //   useTabsStore2().setCurrentChromeTab(tabs[0] as unknown as chrome.tabs.Tab)
+  // } else {
+  //   // Seems to be necessary when creating a new chrome group
+  //   const tabs2 = await chrome.tabs.query({active: true})
+  //   //console.log("setting current tab II", tabs2)
+  //   if (tabs2 && tabs2[0]) {
+  //     useTabsStore2().setCurrentChromeTab(tabs2[0] as unknown as chrome.tabs.Tab)
+  //   }
+  // }
+}
 
 const {inBexMode} = useUtils()
 
@@ -24,6 +40,9 @@ class ChromeListeners {
 
     if (process.env.MODE === 'bex') {
       console.debug(" ...initializing chrome tab listeners")
+
+      await setCurrentTab()
+
       chrome.tabs.onUpdated.addListener(this.onUpdatedListener)
       chrome.runtime.onMessage.addListener(this.onMessageListener)
     }
@@ -104,6 +123,7 @@ class ChromeListeners {
   }
 
   onMessage(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
+    console.log("tabsets: ===>", request)
     if (inIgnoredMessages(request)) {
       return true
     }

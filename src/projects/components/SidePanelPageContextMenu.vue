@@ -139,7 +139,7 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {useSettingsStore} from "stores/settingsStore";
 import NavigationService from "src/services/NavigationService";
 import {LocalStorage, openURL, useQuasar} from "quasar";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import ContextMenuItem from "pages/sidepanel/helper/ContextMenuItem.vue";
 import {PropType} from "vue";
 import {useRouter} from "vue-router";

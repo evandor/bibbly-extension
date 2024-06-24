@@ -36,6 +36,11 @@ const routes: RouteRecordRaw[] = [
     children: [{path: '', component: () => import('pages/FeaturesPage.vue')}],
   },
   {
+    path: '/mainpanel/html/:tabId/:blobId',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('src/snapshots/pages/MainPanelHtmlPage.vue')}],
+  },
+  {
     path: '/features/:feature',
     component: () => import('layouts/FullPageLayout.vue'),
     children: [{path: '', component: () => import('pages/FeaturesPage.vue')}],

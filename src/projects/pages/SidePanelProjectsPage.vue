@@ -97,6 +97,7 @@ import {Source} from "src/projects/models/Source";
 import {uid} from "quasar";
 import SourceWidget from "src/projects/widget/SourceWidget.vue";
 import {useRouter} from "vue-router";
+import {useAppStore} from "stores/appStore";
 
 const router = useRouter()
 
@@ -112,7 +113,7 @@ onMounted(() => {
   Analytics.firePageViewEvent('SidePanelProjectsPage', document.location.href);
 })
 
-watchEffect(() => {
+watchEffect(async () => {
   projects.value = useProjectsStore().projects
   projectOptions.value = []
   _.forEach(projects.value as Project[], (p: Project) => {
@@ -122,6 +123,12 @@ watchEffect(() => {
   projectOptions.value.push({
     label: 'Create new Project', value: 'new_project'
   })
+  const currentProjectId = useAppStore().currentProject
+  if (currentProject) {
+    //project.value = {label: "p.name", value: currentProject}
+    currentProject.value = await useProjectsStore().findProject(currentProjectId || "")
+    project.value = currentProject.value.name
+  }
   if (projects.value.length === 0) {
     console.log("no projects, redirecting to welcome page")
     router.push("/sidepanel/welcome")
@@ -145,6 +152,8 @@ const projectListWasClicked = async (a:any) => {
   }
   if (project.value.value === "new_project") {
     view.value = 'new_project'
+  } else if (currentProject.value) {
+    useAppStore().setCurrentProject(currentProject.value.id)
   }
 }
 

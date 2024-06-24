@@ -12,6 +12,9 @@ import {useUiStore} from "stores/uiStore";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useProjectsStore} from "src/projects/stores/projectsStore";
+import {useSnapshotsService} from "src/snapshots/services/SnapshotsService";
+import IndexedDbSnapshotPersistence from "src/snapshots/persistence/IndexedDbSnapshotPersistence";
+import {useSnapshotsStore} from "src/snapshots/stores/SnapshotsStore";
 
 class AppService {
 
@@ -38,17 +41,22 @@ class AppService {
     const uiStore = useUiStore()
     this.router = router
 
-    uiStore.appLoading = "loading bookmrkx..."
+    uiStore.appLoading = "loading projects..."
 
     appStore.init()
 
     // init of stores and some listeners
     await usePermissionsStore().initialize(useDB(quasar).localDb)
+
+
     await ChromeListeners.initListeners()
 
     // ChromeBookmarkListeners.initListeners()
 
     settingsStore.initialize(quasar.localStorage);
+
+    await useSnapshotsService().init(IndexedDbSnapshotPersistence)
+    await useSnapshotsStore().initialize(IndexedDbSnapshotPersistence)
 
     // init db
     await IndexedDbPersistenceService.init("db")
@@ -73,9 +81,9 @@ class AppService {
 
     useUiStore().appLoading = undefined
 
-    if (useProjectsStore().projects.length > 0) {
-      router.push("/sidepanel/projects")
-    }
+    // if (useProjectsStore().projects.length > 0) {
+    //   router.push("/sidepanel/projects")
+    // }
   }
 
 }
