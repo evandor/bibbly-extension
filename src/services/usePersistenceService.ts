@@ -2,6 +2,8 @@ import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceServic
 import {QVueGlobals, useQuasar} from "quasar";
 import {LocalStoragePersistenceService} from "src/services/storage/LocalStoragePersistenceService";
 import PersistenceService from "src/services/PersistenceService";
+import IndexedDbProjectsPersistence from "src/projects/persistence/IndexedDbProjectsPersistence";
+import ProjectsPersistence from "src/projects/persistence/ProjectsPersistence";
 
 export function useDB(quasar: QVueGlobals | undefined = undefined) {
 
@@ -10,9 +12,11 @@ export function useDB(quasar: QVueGlobals | undefined = undefined) {
   if (quasar) {
     localDb = new LocalStoragePersistenceService(quasar)
   }
+  const projectsIndexedDB: ProjectsPersistence = IndexedDbProjectsPersistence
 
   return {
-    db, localDb
+    db, localDb,
+    projectsIndexedDB
   }
 
 }

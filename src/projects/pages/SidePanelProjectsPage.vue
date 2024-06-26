@@ -42,7 +42,7 @@
                   class="q-ma-none q-px-sm q-pt-xs q-pb-none q-ml-sm"
                   :key="'source_' + s.id">
 
-                  <SourceWidget :source="s" />
+                  <SourceWidget :source="s" :project="currentProject!"/>
 
                 </q-item>
               </q-list>
@@ -111,6 +111,12 @@ const projectOptions = ref<object[]>([])
 
 onMounted(() => {
   Analytics.firePageViewEvent('SidePanelProjectsPage', document.location.href);
+  setTimeout(() => {
+    if (projects.value.length === 0) {
+      console.log("no projects, redirecting to welcome page")
+      router.push("/sidepanel/welcome")
+    }
+  }, 1000)
 })
 
 watchEffect(async () => {
@@ -126,13 +132,12 @@ watchEffect(async () => {
   const currentProjectId = useAppStore().currentProject
   if (currentProject) {
     //project.value = {label: "p.name", value: currentProject}
-    currentProject.value = await useProjectsStore().findProject(currentProjectId || "")
-    project.value = currentProject.value.name
+    try {
+      currentProject.value = await useProjectsStore().findProject(currentProjectId || "")
+      project.value = currentProject.value.name
+    } catch (err) {}
   }
-  if (projects.value.length === 0) {
-    console.log("no projects, redirecting to welcome page")
-    router.push("/sidepanel/welcome")
-  }
+
 })
 
 // watchEffect(async () => {

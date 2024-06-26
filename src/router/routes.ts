@@ -3,7 +3,7 @@ import {RouteRecordRaw} from 'vue-router';
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    redirect: '/sidepanel/projects'
+    redirect: '/sidepanel/welcome'
   },
   {
     path: '/sidepanel',

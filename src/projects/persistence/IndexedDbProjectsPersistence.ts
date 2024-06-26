@@ -13,13 +13,12 @@ class IndexedDbProjectsPersistence implements ProjectsPersistence {
   }
 
   async init() {
-    console.log(" ...initializing spaces (IndexedDbSpacesStorage)" )
+    console.log(` ...initializing ${this.getServiceName()}` )
     this.db = await this.initDatabase()
     return Promise.resolve()
   }
 
   private async initDatabase(): Promise<IDBPDatabase> {
-    console.debug(" about to initialize indexedDB")
     const ctx = this
     return await openDB("bibbly", 1, {
       // upgrading see https://stackoverflow.com/questions/50193906/create-index-on-already-existing-objectstore
@@ -45,6 +44,7 @@ class IndexedDbProjectsPersistence implements ProjectsPersistence {
   }
 
   saveProject(project: Project) {
+    console.log("putting project", project)
     return this.db.put(this.STORE_IDENT, project, project.id)
   }
 

@@ -1,5 +1,5 @@
 import {openURL, uid} from "quasar";
-import {useNotificationHandler} from "src/services/ErrorHandler";
+import {useNotificationHandler} from "src/core/services/ErrorHandler";
 
 const {handleSuccess} = useNotificationHandler()
 

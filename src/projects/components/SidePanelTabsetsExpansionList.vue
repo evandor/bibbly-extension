@@ -245,7 +245,7 @@ import {useUtils} from "src/core/services/Utils";
 import getScrollTarget = scroll.getScrollTarget;
 
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
-import {useNotificationHandler} from "src/services/ErrorHandler";
+import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {Project} from "src/projects/models/Project";
 import {useTabsStore} from "src/projects/stores/tabsStore";

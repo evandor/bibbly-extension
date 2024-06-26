@@ -29,6 +29,15 @@
         <PngViewHelper :pngId="html.sourceId" :created="html.created"
                        :index="index" :tabId="source?.id || 'unknown'"
                        extension="html"/>
+        <div class="row" v-for="a in html.annotations">
+          <div class="col-9 ellipsis">
+            {{a.text}}
+          </div>
+          <div class="col-3 ellipsis">
+            <q-btn icon="visibility" class="q-ma-none" size="xs" @click="restoreAnnotation(a)"/>
+            <q-btn icon="delete"  class="q-ma-none" size="xs" @click="deleteAnnotation(a, index)"/>
+          </div>
+        </div>
       </div>
 
     </div>

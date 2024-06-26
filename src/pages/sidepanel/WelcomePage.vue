@@ -83,6 +83,7 @@ import ProjectForm from "src/projects/forms/ProjectForm.vue";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {CreateProjectCommand} from "src/projects/commands/CreateProjectCommand";
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
+import {useAppStore} from "stores/appStore";
 
 const router = useRouter()
 
@@ -100,16 +101,8 @@ onMounted(() => {
 
 watchEffect(() => {
   projects.value = useProjectsStore().projects
-  projectOptions.value = []
-  _.forEach(projects.value as Project[], (p: Project) => {
-    projectOptions.value.push({label: p.name, value: p.id})
-  })
-  projectOptions.value = _.sortBy(projectOptions.value, "label")
-  projectOptions.value.push({
-    label: 'Create new Project', value: 'new_project'
-  })
-  if (projects.value.length === 0) {
-    router.push("/sidepanel/welcome")
+  if (projects.value.length > 0) {
+    router.push("/sidepanel/projects")
   }
 })
 
@@ -119,10 +112,11 @@ const addProject = () => {
 
 const createProject = (e: object) =>
   useCommandExecutor().executeFromUi(new CreateProjectCommand(e.name, e.description))
-    .then((res: ExecutionResult<any>) => {
+    .then((res: ExecutionResult<Project>) => {
       // view.value = 'projects'
       // currentProject.value = res.result
       // project.value = res.result.name
+      useAppStore().setCurrentProject(res.result.id)
       router.push("/sidepanel/projects")
     })
 

@@ -39,6 +39,7 @@ class AppService {
     const appStore = useAppStore()
     const settingsStore = useSettingsStore()
     const uiStore = useUiStore()
+
     this.router = router
 
     uiStore.appLoading = "loading projects..."
@@ -48,6 +49,7 @@ class AppService {
     // init of stores and some listeners
     await usePermissionsStore().initialize(useDB(quasar).localDb)
 
+    await useProjectsStore().initialize(useDB().projectsIndexedDB) // no service here
 
     await ChromeListeners.initListeners()
 
@@ -55,7 +57,7 @@ class AppService {
 
     settingsStore.initialize(quasar.localStorage);
 
-    await useSnapshotsService().init(IndexedDbSnapshotPersistence)
+    await useSnapshotsService().init()
     await useSnapshotsStore().initialize(IndexedDbSnapshotPersistence)
 
     // init db
@@ -75,9 +77,6 @@ class AppService {
       await useWindowsStore().initialize()
       useWindowsStore().initListeners()
     }
-
-    await useProjectsStore().initialize()
-
 
     useUiStore().appLoading = undefined
 
