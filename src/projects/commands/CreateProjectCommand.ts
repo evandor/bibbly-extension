@@ -1,4 +1,4 @@
-import Command from "src/domain/Command";
+import Command from "src/core/domain/Command";
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {useUtils} from "src/core/services/Utils";
 import {useProjectsStore} from "src/projects/stores/projectsStore";

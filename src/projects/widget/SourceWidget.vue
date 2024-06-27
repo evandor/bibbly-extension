@@ -42,6 +42,7 @@ import {useRouter} from "vue-router";
 import {useSnapshotsStore} from "src/snapshots/stores/SnapshotsStore";
 import {BlobMetadata} from "src/snapshots/models/BlobMetadata";
 import PanelTabListContextMenu from "src/tabsets/widgets/PanelTabListContextMenu.vue";
+import {Project} from "src/projects/models/Project";
 
 const props = defineProps({
   project: {type: Object as PropType<Project>, required: true},
@@ -56,6 +57,7 @@ const openResearchPage = () => {
 
 const hasResearchData = () => {
   const mds: Map<string, BlobMetadata[]> = useSnapshotsStore().metadata
+  console.log("mds", props.source.id, mds)
   return mds.get(props.source.id)
 }
 </script>
