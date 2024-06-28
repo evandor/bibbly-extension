@@ -51,6 +51,14 @@
 
             </div>
           </div>
+
+          <div>
+            <SidePanelPageTabList
+              :indent="calcFolders(tabset as Tabset)?.length > 0"
+              :tabsCount="useTabsetService().tabsToShow(tabset as Tabset).length"
+              :tabset="tabsetForTabList(tabset as Tabset)"/>
+          </div>
+
         </template>
 
         <!-- Formular for new/edit project -->
@@ -98,6 +106,8 @@ import {uid} from "quasar";
 import SourceWidget from "src/projects/widget/SourceWidget.vue";
 import {useRouter} from "vue-router";
 import {useAppStore} from "stores/appStore";
+import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
+import {Tabset} from "src/tabsets/models/Tabset";
 
 const router = useRouter()
 
