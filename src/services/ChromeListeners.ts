@@ -70,7 +70,7 @@ class ChromeListeners {
   async onUpdated(number: number, info: chrome.tabs.TabChangeInfo, chromeTab: chrome.tabs.Tab) {
 
     if (!info.status || (Object.keys(info).length > 1)) {
-      console.debug(`onUpdated:   tab ${number}: >>> ${JSON.stringify(info)} <<<`)
+      console.debug(`onUpdated:   tab ${number}: >>> ${JSON.stringify(info)}, opened by ${chromeTab.openerTabId} <<<`)
 
       // handle pending Tabset
       //this.handleUpdate(tabsStore.pendingTabset as Tabset, chromeTab)

@@ -1,27 +1,13 @@
 <template>
 
-  <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 34px">
-
-    <!-- search -->
-    <div class="row q-ma-md q-pa-md">
-      <div class="col-12">
-        <q-input rounded standout dense v-model="search" label="Search" bg-color="white">
-          <template v-slot:prepend>
-            <q-icon name="search"/>
-          </template>
-          <template v-slot:append>
-            <q-icon name="close" @click="search = ''" class="cursor-pointer"/>
-          </template>
-        </q-input>
-      </div>
-    </div>
+  <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 54px">
 
     <div>
 
       <q-btn
         @click.stop="saveHtml(source as Source)"
         flat round color="primary" size="11px" icon="image"
-      >
+        label="Start Research session">
         <q-tooltip>Save this tab as HTML</q-tooltip>
       </q-btn>
 
@@ -47,19 +33,9 @@
 
         <div class="row q-ma-md q-pa-md items-start">
           <div class="col-12">
-            aaa
           </div>
 
           <div class="col-12">
-            bbb
-            <!-- TODO :disabled="!isOpen(tab as Tab)" -->
-            <q-btn
-              @click.stop="saveHtml(source as Source)"
-              flat round color="primary" size="11px" icon="image"
-            >
-              <q-tooltip>Save this tab as HTML</q-tooltip>
-            </q-btn>
-
 
           </div>
         </div>

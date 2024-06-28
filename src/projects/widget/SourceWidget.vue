@@ -20,6 +20,11 @@
                   @click.stop="openResearchPage()"
                   caption>Research
     </q-item-label>
+    <q-item-label v-else
+                  class="text-blue-10 cursor-pointer"
+                  @click.stop="startResearch()"
+                  caption>Start Research
+    </q-item-label>
   </q-item-section>
 
   <q-item-section class="q-mb-sm">
@@ -59,5 +64,11 @@ const hasResearchData = () => {
   const mds: Map<string, BlobMetadata[]> = useSnapshotsStore().metadata
   console.log("mds", props.source.id, mds)
   return mds.get(props.source.id)
+}
+
+const startResearch = () => {
+  //window.open(chrome.runtime.getURL(`www/index.html#/mainpanel/html/${props.source.id}/${props.source.id}?i=0`));
+  openURL(props.source.url)
+  router.push('/sidepanel/source/' + props.source.id)
 }
 </script>
