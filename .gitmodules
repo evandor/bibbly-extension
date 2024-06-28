@@ -30,3 +30,11 @@
 	path = src/content
 	url = https://github.com/evandor/submodule-content.git
 	branch = main
+[submodule "src/suggestions"]
+	path = src/suggestions
+	url = https://github.com/evandor/submodule-suggestions.git
+	branch = main
+[submodule "src/thumbnails"]
+	path = src/thumbnails
+	url = https://github.com/evandor/submodule-thumbnails.git
+	branch = main
