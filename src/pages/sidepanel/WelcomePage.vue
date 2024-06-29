@@ -84,6 +84,8 @@ import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {CreateProjectCommand} from "src/projects/commands/CreateProjectCommand";
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {useAppStore} from "stores/appStore";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {Tabset} from "src/tabsets/models/Tabset";
 
 const router = useRouter()
 
@@ -102,7 +104,8 @@ onMounted(() => {
 watchEffect(() => {
   projects.value = useProjectsStore().projects
   if (projects.value.length > 0) {
-    router.push("/sidepanel/projects")
+    // router.push("/sidepanel/projects")
+    router.push("/sidepanel")
   }
 })
 
@@ -112,12 +115,11 @@ const addProject = () => {
 
 const createProject = (e: object) =>
   useCommandExecutor().executeFromUi(new CreateProjectCommand(e.name, e.description))
-    .then((res: ExecutionResult<Project>) => {
-      // view.value = 'projects'
-      // currentProject.value = res.result
-      // project.value = res.result.name
+    .then((res: ExecutionResult<Tabset>) => {
       useAppStore().setCurrentProject(res.result.id)
-      router.push("/sidepanel/projects")
+      useTabsetsStore().selectCurrentTabset(res.result.id)
+      // router.push("/sidepanel/projects")
+      router.push("/sidepanel")
     })
 
 </script>

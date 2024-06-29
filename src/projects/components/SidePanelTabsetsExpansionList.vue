@@ -110,17 +110,17 @@
             <q-tooltip class="tooltip-small" v-else-if="tsBadges.length > 0">
               {{ tooltipAlreadyInOtherTabsets(tabset.name) }}
             </q-tooltip>
-            <q-tooltip v-else-if="useTabsStore().allTabsCount === 0"
-                       transition-show="flip-right"
-                       transition-hide="flip-left"
-                       v-model="showAddCurrentTabTooltip"
-                       class="tooltip-tour"
-                       anchor="bottom right" self="top middle" :offset="[-26, 3 ]">
-              Click here
-              <q-icon name="keyboard_arrow_up"/>
-              to<br> add the current<br>tab to this tabset
-            </q-tooltip>
-            <q-tooltip class="tooltip-small" v-else>
+<!--            <q-tooltip v-else-if="useTabsStore().allTabsCount === 0"-->
+<!--                       transition-show="flip-right"-->
+<!--                       transition-hide="flip-left"-->
+<!--                       v-model="showAddCurrentTabTooltip"-->
+<!--                       class="tooltip-tour"-->
+<!--                       anchor="bottom right" self="top middle" :offset="[-26, 3 ]">-->
+<!--              Click here-->
+<!--              <q-icon name="keyboard_arrow_up"/>-->
+<!--              to<br> add the current<br>tab to this tabset-->
+<!--            </q-tooltip>-->
+            <q-tooltip class="tooltip-small">
               Add current Tab to '{{ tabsetNameOrChain(tabset as Project) }}'
             </q-tooltip>
 
@@ -235,7 +235,7 @@ import SidePanelPageContextMenu from "src/projects/components/SidePanelPageConte
 import SidePanelSubfolderContextMenu from "pages/sidepanel/SidePanelSubfolderContextMenu.vue";
 import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
 import {onMounted, PropType, ref, watchEffect} from "vue";
-import {useUiStore} from "stores/uiStore";
+import {useUiStore} from "src/ui/stores/uiStore";
 import _ from "lodash";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";

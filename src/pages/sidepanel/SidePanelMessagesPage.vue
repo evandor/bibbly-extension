@@ -33,7 +33,7 @@
 <script lang="ts" setup>
 
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
-import {SidePanelView, useUiStore} from "stores/uiStore";
+import {SidePanelView, useUiStore} from "src/ui/stores/uiStore";
 import {onMounted, ref, watchEffect} from "vue";
 import Analytics from "src/utils/google-analytics";
 import SidePanelToolbarButton from "src/core/components/SidePanelToolbarButton.vue";

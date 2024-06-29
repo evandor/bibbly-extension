@@ -10,7 +10,7 @@
       <div class="col q-ma-sm text-grey items-center cursor-pointer" @click="openURL('https://tabsets.web.app/#/tos')">
         Terms of Use
       </div>
-      <div class="col text-right q-ma-sm text-grey">
+      <div class="col text-right q-ma-sm text-grey" @click="toggleViews()">
         Contact
       </div>
     </div>
@@ -20,10 +20,19 @@
 <script setup lang="ts">
 import {onMounted, ref, watch, watchEffect} from "vue";
 import {openURL} from "quasar";
+import {useRoute, useRouter} from "vue-router";
 
-onMounted(() => {
+const toggle = ref(false)
 
-})
+const router = useRouter()
+const route = useRoute()
 
-
+const toggleViews = () => {
+  console.log(route.path)
+  if (route.path === '/sidepanel') {
+    router.push('/sidepanel/projects')
+  } else {
+    router.push('/sidepanel')
+  }
+}
 </script>

@@ -3,7 +3,7 @@ import {RouteRecordRaw} from 'vue-router';
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    redirect: '/sidepanel/welcome'
+    redirect: '/sidepanel/welcome' // redirects to /sidepanel if there is at least one project (i.e. tabset)
   },
   {
     path: '/sidepanel',

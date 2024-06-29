@@ -32,18 +32,14 @@
 <script lang="ts" setup>
 
 import {computed, ref, watchEffect} from "vue";
-import TabsetService from "src/services/TabsetService";
 import {uid, useQuasar} from "quasar";
 import {useRouter} from "vue-router";
-import {useTabsStore} from "src/stores/tabsStore";
 
 import {useDialogPluginComponent} from 'quasar'
 import normalizeUrl from 'normalize-url';
-import {Tab} from "src/models/Tab";
 import ChromeApi from "src/services/ChromeApi";
 import {useUtils} from "src/core/services/Utils";
-import {useUiStore} from "src/stores/uiStore";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useUiStore} from "src/ui/stores/uiStore";
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -70,7 +66,6 @@ const $q = useQuasar()
 
 const newTabsetName = ref('')
 const newTabsetNameExists = ref(false)
-const hideWarning = ref(false)
 
 watchEffect(() => {
   newTabsetNameExists.value = !!tabsStore.nameExistsInContextTabset(newTabsetName.value);

@@ -1,104 +1,92 @@
 <template>
 
-  <q-page style="padding-top: 50px">
+  <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 34px">
 
-    <div class="wrap" v-if="useUiStore().appLoading">
-      <div class="loading">
-        <div class="bounceball q-mr-lg"></div>
-        <div class="text">{{ useUiStore().appLoading }}</div>
+    <!-- search -->
+    <div class="row q-ma-md q-pa-md">
+      <div class="col-12">
+        <q-input rounded standout dense v-model="search" label="Search" bg-color="white">
+          <template v-slot:prepend>
+            <q-icon name="search"/>
+          </template>
+          <template v-slot:append>
+            <q-icon name="close" @click="search = ''" class="cursor-pointer"/>
+          </template>
+        </q-input>
       </div>
     </div>
 
-    <transition
-      appear
-      enter-active-class="animated fadeIn slower delay-5s"
-      leave-active-class="animated fadeOut">
-      <div class="wrap2"
-           v-if="!useUiStore().appLoading">
-        <div class="row items-center text-grey-5">how to start?</div>
-        <div style="min-width:300px;border:1px solid #efefef;border-radius:5px">
-          <q-list>
-            <q-item clickable @click="useUiStore().startButtonAnimation('newTabset')">
-              <q-item-section avatar>
-                <q-btn outline label="..." color="primary" size="sm"/>
-              </q-item-section>
+    <!--    <div class="wrap" v-if="useUiStore().appLoading">-->
+    <!--      <div class="loading">-->
+    <!--        <div class="bounceball q-mr-lg"></div>-->
+    <!--        <div class="text">{{ useUiStore().appLoading }}</div>-->
+    <!--      </div>-->
+    <!--    </div>-->
 
-              <q-item-section>
-                <q-item-label>New Tabset</q-item-label>
-                <q-item-label caption>Click to create a new tabset</q-item-label>
-              </q-item-section>
-            </q-item>
+    <!-- white main box -->
+    <div class="column fitpage q-pa-sm q-mx-sm q-mt-md bg-white">
+      <div class="col" style="max-width:100%">
 
-            <q-item clickable @click="useUiStore().startButtonAnimation('settings')">
-              <q-item-section avatar>
-                <SidePanelToolbarButton
-                  icon="o_settings"/>
-              </q-item-section>
-
-              <q-item-section>
-                <q-item-label>Settings</q-item-label>
-                <q-item-label caption>Click here to activate more features</q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item clickable @click="useUiStore().startButtonAnimation('bookmarks')">
-              <q-item-section avatar>
-                <SidePanelToolbarButton
-                  icon="bookmark"
-                  color="primary"/>
-              </q-item-section>
-
-              <q-item-section>
-                <q-item-label>Bookmarks Manager</q-item-label>
-                <q-item-label caption>Click to open the Bookmarks Manager</q-item-label>
-              </q-item-section>
-            </q-item>
-
-          </q-list>
-        </div>
-      </div>
-    </Transition>
-
-    <!-- list of tabs, assuming here we have at least one tabset -->
-    <div class="q-ma-none q-pa-none">
-
-      <div class="q-mx-md q-mx-sm text-primary text-caption"></div>
-
-      <div class="q-pa-md q-gutter-sm" v-if="showSwitchedToLocalInfo()">
-        <q-banner inline-actions rounded class="text-primary" style="border: 1px solid grey">
-          <div class="row q-pa-xs">
-            <div class="2">
-              <q-icon name="o_lightbulb" color="warning" size="1.3em"/>
+        <template v-if="view === 'projects'">
+          <div class="row q-ma-md q-pa-md items-start">
+            <div class="col-12">
+              <q-select filled v-model="project" :options="projectOptions" label="Project"
+                        style="border: 2px solid #21B6A8"
+                        @update:modelValue="a => projectListWasClicked(a)"
+              />
             </div>
-            <div class="col text-right cursor-pointer" @click="ackSwitchToLocal()">x
-              <q-tooltip>close this info message</q-tooltip>
+            <div class="col-12 q-my-lg text-center">
+              <q-btn unelevated rounded class="q-mx-md q-px-lg" color="primary" label="+ add current webpage"
+                     @click="addCurrentTab()"
+              />
+            </div>
+            <div class="col-12">
+
+<!--              <q-list class="q-ma-none">-->
+<!--                <q-item v-for="s in currentProject?.sources as Source[] || []"-->
+<!--                        clickable-->
+<!--                        v-ripple-->
+<!--                        class="q-ma-none q-px-sm q-pt-xs q-pb-none q-ml-sm"-->
+<!--                        :key="'source_' + s.id">-->
+
+<!--                  <SourceWidget :source="s" :project="currentProject!"/>-->
+
+<!--                </q-item>-->
+<!--              </q-list>-->
+
+
+
             </div>
           </div>
-          <div class="row q-pa-xs">
-            <div class="2"></div>
-            <div class="col text-caption">
-              Showing local tabsets
-              <slot></slot>
-            </div>
-          </div>
-        </q-banner>
-      </div>
 
+          <div>
+            <!--            <SidePanelPageTabList-->
+            <!--              :indent="calcFolders(tabset as Tabset)?.length > 0"-->
+            <!--              :tabsCount="useTabsetService().tabsToShow(tabset as Tabset).length"-->
+            <!--              :tabset="tabsetForTabList(tabset as Tabset)"/>-->
+          </div>
+
+        </template>
+
+
+        <!-- list of tabs, assuming here we have at least one tabset -->
+        <SidePanelPageTabList v-if="currentProject" style="max-width:100%"
+          :indent="calcFolders(currentProject as Tabset)?.length > 0"
+          :tabsCount="useTabsetService().tabsToShow(currentProject as Tabset).length"
+          :tabset="tabsetForTabList(currentProject as Tabset)"/>
+      </div>
     </div>
 
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
+      <FirstToolbarHelper title="Bibbly">
 
-      <FirstToolbarHelper
-        :showSearchBox="showSearchBox">
-
-
-        <div class="text-subtitle1">
-         xxx
-        </div>
+        <template v-slot:iconsRight>
+          <q-btn icon="more_vert" color="grey" dense class="q-mx-none" flat/>
+          <q-btn icon="account_circle" dense size="lg" class="q-mx-none" flat/>
+        </template>
 
       </FirstToolbarHelper>
-
     </q-page-sticky>
   </q-page>
 
@@ -107,29 +95,43 @@
 <script lang="ts" setup>
 
 import {onMounted, onUnmounted, ref, watchEffect} from "vue";
-import {useRouter} from "vue-router";
 import {useUtils} from "src/core/services/Utils";
-import {LocalStorage, scroll} from "quasar";
-import {useUiStore} from "src/stores/uiStore";
+import {LocalStorage, uid} from "quasar";
+import {useUiStore} from "src/ui/stores/uiStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import Analytics from "src/utils/google-analytics";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import {TITLE_IDENT} from "boot/constants";
 import AppService from "src/services/AppService";
-import SidePanelToolbarButton from "src/core/components/SidePanelToolbarButton.vue";
 import {useI18n} from 'vue-i18n'
+import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
+import _ from "lodash"
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useSpacesStore} from "src/spaces/stores/spacesStore";
+import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
+import {AddTabToTabsetCommand} from "src/tabsets/commands/AddTabToTabsetCommand";
+import {Tab} from "src/tabsets/models/Tab";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
+import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
 
 const {t} = useI18n({locale: navigator.language, useScope: "global"})
 
 const {inBexMode} = useUtils()
 
-const router = useRouter()
-const permissionsStore = usePermissionsStore()
 const uiStore = useUiStore()
 
+const search = ref('')
 const showSearchBox = ref(false)
-const user = ref<any>()
+const view = ref('projects')
+const tabsets = ref<Tabset[]>([])
+
+const projects = ref<Tabset[]>([])
+const project = ref('')
+const currentProject = ref<Tabset | undefined>(undefined)
+const projectOptions = ref<object[]>([])
 
 function updateOnlineStatus(e: any) {
   const {type} = e
@@ -149,6 +151,18 @@ onUnmounted(() => {
   window.removeEventListener('keypress', checkKeystroke);
 })
 
+watchEffect(async () => {
+  projects.value = [...useTabsetsStore().tabsets.values()]
+  projectOptions.value = []
+  _.forEach(projects.value as Tabset[], (p: Tabset) => {
+    projectOptions.value.push({label: p.name, value: p.id})
+  })
+  projectOptions.value = _.sortBy(projectOptions.value, "label")
+  projectOptions.value.push({
+    label: 'Create new Project', value: 'new_project'
+  })
+})
+
 //
 // watchEffect(() => {
 //   if (useUiStore().tabsFilter) {
@@ -156,16 +170,90 @@ onUnmounted(() => {
 //   }
 // })
 //
-// const getTabsetOrder =
-//   [
-//     function (o: Tabset) {
-//       return o.status === TabsetStatus.FAVORITE ? 0 : 1
-//     },
-//     function (o: Tabset) {
-//       return o.name?.toLowerCase()
-//     }
-//   ]
 
+const tabsetForTabList = (tabset: Tabset) => {
+  if (tabset.folderActive) {
+    const af = useTabsetService().findFolder(tabset.folders, tabset.folderActive)
+    if (af) {
+      return af
+    }
+  }
+  return tabset
+}
+
+const calcFolders = (tabset: Tabset): Tabset[] => {
+  //console.log("calcFolders", tabset)
+  if (tabset.folderActive) {
+    const af = useTabsetService().findFolder(tabset.folders, tabset.folderActive)
+    if (af && af.folderParent) {
+      return [new Tabset(af.folderParent, "..", [])].concat(af.folders)
+    }
+  }
+  return tabset.folders
+}
+
+
+const getTabsetOrder =
+  [
+    function (o: Tabset) {
+      return o.status === TabsetStatus.FAVORITE ? 0 : 1
+    },
+    function (o: Tabset) {
+      return o.name?.toLowerCase()
+    }
+  ]
+
+function determineTabsets() {
+  return _.sortBy(
+    _.filter([...useTabsetsStore().tabsets.values()] as Tabset[],
+      (ts: Tabset) => ts.status !== TabsetStatus.DELETED
+        && ts.status !== TabsetStatus.HIDDEN &&
+        ts.status !== TabsetStatus.ARCHIVED),
+    getTabsetOrder, ["asc"]);
+}
+
+watchEffect(() => {
+  tabsets.value = determineTabsets()
+})
+
+const projectListWasClicked = async (a:any) => {
+  // console.log("Hier", project.value)
+  // console.log("Hier", a)
+
+  useCommandExecutor().execute(new SelectTabsetCommand(a.value, useSpacesStore().space?.id))
+    .then((res: ExecutionResult<Tabset | undefined>) => {
+      if (res.result) {
+        currentProject.value = res.result
+      }
+    })
+
+  // if (project.value && project.value.value) {
+  //   currentProject.value = await useProjectsStore().findProject(project.value.value)
+  // }
+  // if (project.value.value === "new_project") {
+  //   view.value = 'new_project'
+  // } else if (currentProject.value) {
+  //   useAppStore().setCurrentProject(currentProject.value.id)
+  // }
+}
+
+const addCurrentTab = async () => {
+  let queryOptions = {active: true, lastFocusedWindow: true};
+  // if (!currentProject.value) {
+  //   console.warn("current project not set")
+  //   return
+  // }
+  try {
+    let [currentTab] = await chrome.tabs.query(queryOptions);
+    if (currentTab) {
+      await useCommandExecutor().executeFromUi(new AddTabToTabsetCommand(new Tab(uid(), currentTab)))
+      // currentProject.value.sources.push(Source.newFrom(currentTab))
+      // await useProjectsStore().updateProject(currentProject.value as Project)
+    }
+  } catch (err:any) {
+    console.warn(err)
+  }
+}
 
 function inIgnoredMessages(message: any) {
   return message.msg === "html2text" ||
@@ -288,6 +376,10 @@ const ackSwitchToLocal = () => useUiStore().showSwitchedToLocalInfo = false
 </script>
 
 <style lang="scss">
+
+.fitpage {
+  height: calc(100vh - 200px);
+}
 
 .v-enter-active,
 .v-leave-active {

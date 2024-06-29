@@ -135,7 +135,7 @@ import {AppFeatures} from "src/models/AppFeatures";
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {useSettingsStore} from "src/stores/settingsStore"
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
-import {DrawerTabs, useUiStore} from "src/stores/uiStore";
+import {DrawerTabs, useUiStore} from "src/ui/stores/uiStore";
 import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue";
 import Analytics from "src/utils/google-analytics";
 import Command from "src/domain/Command";

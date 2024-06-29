@@ -53,10 +53,10 @@
           </div>
 
           <div>
-            <SidePanelPageTabList
-              :indent="calcFolders(tabset as Tabset)?.length > 0"
-              :tabsCount="useTabsetService().tabsToShow(tabset as Tabset).length"
-              :tabset="tabsetForTabList(tabset as Tabset)"/>
+<!--            <SidePanelPageTabList-->
+<!--              :indent="calcFolders(tabset as Tabset)?.length > 0"-->
+<!--              :tabsCount="useTabsetService().tabsToShow(tabset as Tabset).length"-->
+<!--              :tabset="tabsetForTabList(tabset as Tabset)"/>-->
           </div>
 
         </template>
@@ -108,12 +108,13 @@ import {useRouter} from "vue-router";
 import {useAppStore} from "stores/appStore";
 import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
 import {Tabset} from "src/tabsets/models/Tabset";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const router = useRouter()
 
-const projects = ref<Project[]>([])
+const projects = ref<Tabset[]>([])
 const project = ref('')
-const currentProject = ref<Project | undefined>(undefined)
+const currentProject = ref<Tabset | undefined>(undefined)
 const search = ref('')
 const view = ref('projects')
 
@@ -130,59 +131,35 @@ onMounted(() => {
 })
 
 watchEffect(async () => {
-  projects.value = useProjectsStore().projects
+  projects.value = [...useTabsetsStore().tabsets.values()]
   projectOptions.value = []
-  _.forEach(projects.value as Project[], (p: Project) => {
+  _.forEach(projects.value as Tabset[], (p: Tabset) => {
     projectOptions.value.push({label: p.name, value: p.id})
   })
   projectOptions.value = _.sortBy(projectOptions.value, "label")
   projectOptions.value.push({
     label: 'Create new Project', value: 'new_project'
   })
-  const currentProjectId = useAppStore().currentProject
-  if (currentProject) {
-    //project.value = {label: "p.name", value: currentProject}
-    try {
-      currentProject.value = await useProjectsStore().findProject(currentProjectId || "")
-      project.value = currentProject.value.name
-    } catch (err) {}
-  }
-
 })
 
-// watchEffect(async () => {
-//   console.log("new Project", project.value)
-//   if (project.value && project.value.value) {
-//     currentProject.value = await useProjectsStore().findProject(project.value.value)
-//   }
-//   if (project.value.value === "new_project") {
-//     view.value = 'new_project'
-//   }
-// })
+watchEffect(() => {
+  const currentProjectId = useTabsetsStore().currentTabsetId
+  if (currentProjectId) {
+    currentProject.value = useTabsetsStore().getCurrentTabset
+  }
+})
 
 const projectListWasClicked = async (a:any) => {
   console.log("Hier", project.value, a)
-  if (project.value && project.value.value) {
-    currentProject.value = await useProjectsStore().findProject(project.value.value)
-  }
-  if (project.value.value === "new_project") {
-    view.value = 'new_project'
-  } else if (currentProject.value) {
-    useAppStore().setCurrentProject(currentProject.value.id)
-  }
+  // if (project.value && project.value.value) {
+  //   currentProject.value = await useProjectsStore().findProject(project.value.value)
+  // }
+  // if (project.value.value === "new_project") {
+  //   view.value = 'new_project'
+  // } else if (currentProject.value) {
+  //   useAppStore().setCurrentProject(currentProject.value.id)
+  // }
 }
-
-// chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-//   console.log(" <<< received message", message)
-//   // if (inIgnoredMessages(message)) {
-//   //   return true
-//   // }
-//   if (message.name === 'feature-activated') {
-//     usePermissionsStore().addActivateFeature(message.data.feature)
-//   } else if (message.name === 'feature-deactivated') {
-//     usePermissionsStore().removeActivateFeature(message.data.feature)
-//   }
-// })
 
 const createProject = (e: object) =>
   useCommandExecutor().executeFromUi(new CreateProjectCommand(e.name, e.description))

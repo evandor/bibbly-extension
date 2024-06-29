@@ -8,13 +8,22 @@ import {useSettingsStore} from "stores/settingsStore";
 import {Router} from "vue-router";
 import {useAppStore} from "stores/appStore";
 import PersistenceService from "src/services/PersistenceService";
-import {useUiStore} from "stores/uiStore";
+import {useUiStore} from "src/ui/stores/uiStore";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useProjectsStore} from "src/projects/stores/projectsStore";
 import {useSnapshotsService} from "src/snapshots/services/SnapshotsService";
 import IndexedDbSnapshotPersistence from "src/snapshots/persistence/IndexedDbSnapshotPersistence";
 import {useSnapshotsStore} from "src/snapshots/stores/SnapshotsStore";
+import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
+import IndexedDbThumbnailsPersistence from "src/thumbnails/persistence/IndexedDbThumbnailsPersistence";
+import {useContentService} from "src/content/services/ContentService";
+import IndexedDbContentPersistence from "src/content/persistence/IndexedDbContentPersistence";
+import tabsetService from "src/tabsets/services/TabsetService";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import {useSpacesStore} from "src/spaces/stores/spacesStore";
 
 class AppService {
 
@@ -60,23 +69,48 @@ class AppService {
     await useSnapshotsService().init()
     await useSnapshotsStore().initialize(IndexedDbSnapshotPersistence)
 
+    // should be initialized before search submodule
+    await useThumbnailsService().init(IndexedDbThumbnailsPersistence)
+    await useContentService().init(IndexedDbContentPersistence)
+
+    //await searchStore.init().catch((err) => console.error(err))
+
     // init db
     await IndexedDbPersistenceService.init("db")
 
     // init services
     useSuggestionsStore().init(useDB(undefined).db)
 
+    tabsetService.setLocalStorage(localStorage)
+
     await this.initCoreSerivces(quasar, useDB(undefined).db, this.router)
 
   }
 
   private async initCoreSerivces(quasar: any, store: PersistenceService, router: Router) {
-    ChromeApi.init(router)
 
     if (usePermissionsStore().hasFeature(FeatureIdent.WINDOWS_MANAGEMENT)) {
       await useWindowsStore().initialize()
       useWindowsStore().initListeners()
     }
+
+    await useSpacesStore().initialize(useDB().spacesIndexedDb)
+
+    const tabsetsPersistence = useDB().tabsetsIndexedDb
+    await useTabsetsStore().initialize(tabsetsPersistence)
+    await useTabsetService().init(tabsetsPersistence, false)
+
+    await useTabsStore2().initialize()
+
+
+
+    //await useGroupsStore().initialize(useDB().groupsIndexedDb)
+
+    const existingUrls = useTabsetsStore().getAllUrls()
+    await useContentService().populateSearch(existingUrls)
+    await useTabsetService().populateSearch()
+
+    ChromeApi.init(router)
 
     useUiStore().appLoading = undefined
 

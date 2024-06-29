@@ -1,5 +1,6 @@
 import {useUtils} from "src/core/services/Utils";
-import {SidePanelView, useUiStore} from "stores/uiStore";
+import {useUiStore} from "src/ui/stores/uiStore";
+import {SidePanelViews} from "src/models/SidePanelViews";
 
 async function setCurrentTab() {
   const tabs = await chrome.tabs.query({active: true, lastFocusedWindow: true})
@@ -131,7 +132,7 @@ class ChromeListeners {
     if (request.msg === 'captureThumbnail') {
     } else if (request.msg === 'html2text') {
     } else if (request.name === 'sidepanel-switch-view') {
-      useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
+      useUiStore().sidePanelSetActiveView(SidePanelViews.MAIN)
     } else {
       console.log("got unknown message", request)
     }
