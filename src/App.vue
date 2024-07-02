@@ -6,14 +6,59 @@
 
 import {setCssVar, useQuasar} from "quasar";
 import AppService from "src/services/AppService";
+import {EventEmitter} from "events";
+import {onAuthStateChanged} from "firebase/auth";
 import {useRouter} from "vue-router";
+import FirebaseServices from "src/services/firebase/FirebaseServices";
+import {useNotificationHandler} from "src/core/services/ErrorHandler";
+import {useUtils} from "src/core/services/Utils";
+import {CURRENT_USER_ID} from "boot/constants";
 
 const $q = useQuasar()
 const router = useRouter()
+const {inBexMode} = useUtils()
+
+const {handleError} = useNotificationHandler()
 
 // https://stackoverflow.com/questions/9768444/possible-eventemitter-memory-leak-detected
 // const emitter = new EventEmitter()
 // emitter.setMaxListeners(12)
+
+FirebaseServices.init()
+
+const auth = FirebaseServices.getAuth()
+
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    console.log("%conAuthStateChanged: about to log in", "border:1px solid green")
+
+    try {
+      await AppService.init($q, router, true, user)
+      if (inBexMode()) {
+        $q.bex.send('auth.user.login', {userId: user.uid})
+      }
+      //FirebaseServices.startRealtimeDbListeners(user.uid)
+    } catch (error: any) {
+      console.log("%ccould not initialize appService due to " + error, "background-color:orangered")
+      console.error("error", error, typeof error, error.code, error.message)
+      handleError(error.code)
+      return Promise.resolve()
+    }
+
+  } else {
+    // User is signed out
+    console.log("%conAuthStateChanged: logged out", "border:1px solid green")
+    // await AppService.init($q, router, true, undefined)
+    // if (inBexMode()) {
+    //   $q.bex.send('auth.user.logout', {})
+    // }
+    router.push("/sidepanel/login")
+    // if (!router.currentRoute.value.path.startsWith("/mainpanel")) {
+    //   console.log("NOT redirecting to '/'")
+    //   //await router.push("/")
+    // }
+  }
+});
 
 let useDarkMode: string = $q.localStorage.getItem('darkMode') || "auto" as string
 
@@ -42,6 +87,25 @@ if (useDarkMode === "true") {
   // setCssVar('warning', 'green');
 }
 
-AppService.init($q, router, false)
+const currentUser = $q.localStorage.getItem(CURRENT_USER_ID)
+if (currentUser) {
+  console.log("current user id found, waiting for auto-login")
+  // we should be logged in any second
+} else {
+  setTimeout(() => {
+    // triggers, but app should already have been started, no restart enforced
+    console.debug("app start fallback after 2000ms")
+    AppService.init($q, router, false)
+  }, 2000)
+}
+
+
+// info(`tabsets started: mode=${process.env.MODE}, version=${import.meta.env.PACKAGE_VERSION}`)
+
+// Notification.requestPermission().then((permission) => {
+//   if (permission === 'granted') {
+//     console.log('Notification permission granted.')
+//   }
+// })
 
 </script>

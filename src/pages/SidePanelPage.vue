@@ -59,18 +59,20 @@
             </div>
           </div>
 
-          <div>
-            <!--            <SidePanelPageTabList-->
-            <!--              :indent="calcFolders(tabset as Tabset)?.length > 0"-->
-            <!--              :tabsCount="useTabsetService().tabsToShow(tabset as Tabset).length"-->
-            <!--              :tabset="tabsetForTabList(tabset as Tabset)"/>-->
-          </div>
+        </template>
 
+        <!-- Formular for new/edit project -->
+        <template v-if="view === 'new_project'">
+          <div class="row q-ma-md q-pa-md">
+            <div class="col-12">
+              <ProjectForm @project-created="e => createProject(e)" @skip="view = 'projects'"/>
+            </div>
+          </div>
         </template>
 
 
         <!-- list of tabs, assuming here we have at least one tabset -->
-        <SidePanelPageTabList v-if="currentProject" style="max-width:100%"
+        <SidePanelPageTabList v-if="currentProject"
           :indent="calcFolders(currentProject as Tabset)?.length > 0"
           :tabsCount="useTabsetService().tabsToShow(currentProject as Tabset).length"
           :tabset="tabsetForTabList(currentProject as Tabset)"/>
@@ -83,7 +85,9 @@
 
         <template v-slot:iconsRight>
           <q-btn icon="more_vert" color="grey" dense class="q-mx-none" flat/>
-          <q-btn icon="account_circle" dense size="lg" class="q-mx-none" flat/>
+          <q-btn @click="useAuthStore().logout()"
+            icon="account_circle"
+                 dense size="lg" class="q-mx-none" flat/>
         </template>
 
       </FirstToolbarHelper>
@@ -116,6 +120,10 @@ import {Tab} from "src/tabsets/models/Tab";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
+import {useAuthStore} from "stores/authStore";
+import ProjectForm from "src/projects/forms/ProjectForm.vue";
+import {CreateProjectCommand} from "src/projects/commands/CreateProjectCommand";
+import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
 
 const {t} = useI18n({locale: navigator.language, useScope: "global"})
 
@@ -144,7 +152,7 @@ onMounted(() => {
   window.addEventListener("offline", (e) => updateOnlineStatus(e));
   window.addEventListener("online", (e) => updateOnlineStatus(e));
 
-  Analytics.firePageViewEvent('SidePanelPage', document.location.href);
+  Analytics.firePageViewEvent('SidePanelPage', document.location.href)
 })
 
 onUnmounted(() => {
@@ -161,6 +169,11 @@ watchEffect(async () => {
   projectOptions.value.push({
     label: 'Create new Project', value: 'new_project'
   })
+  if (useTabsetsStore().currentTabsetName) {
+    project.value = useTabsetsStore().currentTabsetName!
+    console.log("project.value", project.value)
+    currentProject.value = useTabsetsStore().getCurrentTabset
+  }
 })
 
 //
@@ -170,6 +183,14 @@ watchEffect(async () => {
 //   }
 // })
 //
+const createProject = (e: object) =>
+  useCommandExecutor().executeFromUi(new CreateTabsetCommand(e['name' as keyof object], []))
+    .then((res: ExecutionResult<any>) => {
+      view.value = 'projects'
+      currentProject.value = res.result
+      project.value = res.result.name
+    })
+
 
 const tabsetForTabList = (tabset: Tabset) => {
   if (tabset.folderActive) {
@@ -220,6 +241,13 @@ const projectListWasClicked = async (a:any) => {
   // console.log("Hier", project.value)
   // console.log("Hier", a)
 
+  if (a.value === "new_project") {
+    view.value = 'new_project'
+    return
+  } else if (currentProject.value) {
+    //useAppStore().setCurrentProject(currentProject.value.id)
+  }
+
   useCommandExecutor().execute(new SelectTabsetCommand(a.value, useSpacesStore().space?.id))
     .then((res: ExecutionResult<Tabset | undefined>) => {
       if (res.result) {
@@ -230,11 +258,7 @@ const projectListWasClicked = async (a:any) => {
   // if (project.value && project.value.value) {
   //   currentProject.value = await useProjectsStore().findProject(project.value.value)
   // }
-  // if (project.value.value === "new_project") {
-  //   view.value = 'new_project'
-  // } else if (currentProject.value) {
-  //   useAppStore().setCurrentProject(currentProject.value.id)
-  // }
+
 }
 
 const addCurrentTab = async () => {
@@ -287,6 +311,8 @@ if (inBexMode()) {
             // useBookmarksStore().loadBookmarks()
           })
       }
+    // } else if (message.name === "snapshot-captured") {
+    //   console.log("message", message)
     } else if (message.name === "feature-deactivated") {
       usePermissionsStore().removeActivateFeature(message.data.feature)
     } else if (message.name === "tabsets-imported") {
@@ -297,12 +323,12 @@ if (inBexMode()) {
       if (message.data.noteId) {
         console.log("updating note", message.data.noteId)
         //.then((res: TabAndTabsetId | undefined) => {
-        if (res) {
-          const note = res.tab
-          note.title = message.data.tab.title
-          note.description = message.data.tab.description
-          note.longDescription = message.data.tab.longDescription
-        }
+        // if (res) {
+        //   const note = res.tab
+        //   note.title = message.data.tab.title
+        //   note.description = message.data.tab.description
+        //   note.longDescription = message.data.tab.longDescription
+        // }
         //    })
       } else {
         console.log("adding tab", message.data.tab)

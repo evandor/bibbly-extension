@@ -9,6 +9,7 @@ import {Router} from "vue-router";
 import {useAppStore} from "stores/appStore";
 import PersistenceService from "src/services/PersistenceService";
 import {useUiStore} from "src/ui/stores/uiStore";
+import {User} from "firebase/auth";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useProjectsStore} from "src/projects/stores/projectsStore";
@@ -24,13 +25,14 @@ import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
+import {useAuthStore} from "stores/authStore";
 
 class AppService {
 
   router: Router = null as unknown as Router
   initialized = false
 
-  async init(quasar: any, router: Router, forceRestart = false) {
+  async init(quasar: any, router: Router, forceRestart = false, user: User | undefined = undefined) {
 
     console.log(`%cinitializing AppService: first start=${!this.initialized}, forceRestart=${forceRestart}, quasar set=${quasar !== undefined}, router set=${router !== undefined}`, forceRestart ? "font-weight:bold" : "")
 
@@ -67,7 +69,7 @@ class AppService {
     settingsStore.initialize(quasar.localStorage);
 
     await useSnapshotsService().init()
-    await useSnapshotsStore().initialize(IndexedDbSnapshotPersistence)
+    await useSnapshotsStore().initialize(useDB().snapshotsDb)
 
     // should be initialized before search submodule
     await useThumbnailsService().init(IndexedDbThumbnailsPersistence)
@@ -76,27 +78,46 @@ class AppService {
     //await searchStore.init().catch((err) => console.error(err))
 
     // init db
-    await IndexedDbPersistenceService.init("db")
+    // await IndexedDbPersistenceService.init("db")
 
     // init services
+    await useAuthStore().setUser(user)
+
     useSuggestionsStore().init(useDB(undefined).db)
 
     tabsetService.setLocalStorage(localStorage)
 
-    await this.initCoreSerivces(quasar, useDB(undefined).db, this.router)
+    //await this.initCoreSerivces(quasar, useDB(undefined).db, this.router)
 
+    if (useAuthStore().isAuthenticated()) {
+
+      // await useFeaturesStore().initialize(useDB(quasar).featuresLocalStorage)
+
+
+      if (router.currentRoute.value.query.token === "failed") {
+        console.log("failed login, falling back to indexedDB")
+      }
+
+      // console.debug(`%cchecking sync config: persistenceStore=${persistenceStore.getServiceName()}`, "font-weight:bold")
+
+      // await FsPersistenceService.init()
+
+      await this.initCoreSerivces(quasar,  this.router)
+    } else {
+      await this.initCoreSerivces(quasar,  this.router)
+    }
   }
 
-  private async initCoreSerivces(quasar: any, store: PersistenceService, router: Router) {
+  private async initCoreSerivces(quasar: any,  router: Router) {
 
     if (usePermissionsStore().hasFeature(FeatureIdent.WINDOWS_MANAGEMENT)) {
       await useWindowsStore().initialize()
       useWindowsStore().initListeners()
     }
 
-    await useSpacesStore().initialize(useDB().spacesIndexedDb)
+    await useSpacesStore().initialize(useDB().spacesDb)
 
-    const tabsetsPersistence = useDB().tabsetsIndexedDb
+    const tabsetsPersistence = useDB().tabsetsDb
     await useTabsetsStore().initialize(tabsetsPersistence)
     await useTabsetService().init(tabsetsPersistence, false)
 

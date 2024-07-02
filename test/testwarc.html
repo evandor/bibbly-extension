@@ -1,0 +1,36 @@
+<html>
+<body>
+
+<script type="module">
+  import { WARCParser } from "https://cdn.jsdelivr.net/npm/warcio/dist/index.all.js";
+
+
+  async function readWARC(url) {
+    const response = await fetch(url);
+
+    const parser = new WARCParser(response.body);
+
+    for await (const record of parser) {
+      // ways to access warc data
+      console.log(record.warcType);
+      console.log(record.warcTargetURI);
+      console.log(record.warcHeader("WARC-Target-URI"));
+      console.log(record.warcHeaders.headers.get("WARC-Record-ID"));
+
+      // iterator over WARC content one chunk at a time (as Uint8Array)
+      for await (const chunk of record) {
+
+      }
+
+      // access content as text
+      const text = await record.contentText();
+      console.log(text)
+    }
+  }
+
+  readWARC("https://console.firebase.google.com/project/bibbly-dev/storage/bibbly-dev.appspot.com/files/~2Fusers~2Fx701JPs6dye8p8sLMxxXF8ONr9B2~2FsnapshotBlobs?hl=de");
+</script>
+
+</body>
+</html>
+

@@ -4,8 +4,10 @@ import {LocalStoragePersistenceService} from "src/services/storage/LocalStorageP
 import PersistenceService from "src/services/PersistenceService";
 import IndexedDbProjectsPersistence from "src/projects/persistence/IndexedDbProjectsPersistence";
 import ProjectsPersistence from "src/projects/persistence/ProjectsPersistence";
-import IndexedDbSpacesPersistence from "src/spaces/persistence/IndexedDbSpacesPersistence";
-import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";
+import FirestoreTabsetsPersistence from "src/tabsets/persistence/FirestoreTabsetsPersistence";
+import FirestoreSpacesPersistence from "src/spaces/persistence/FirestoreSpacesPersistence";
+import FirestoreSnapshotsPersistence from "src/snapshots/persistence/FirestoreSnapshotsPersistence";
+import IndexedDbSnapshotPersistence from "src/snapshots/persistence/IndexedDbSnapshotPersistence";
 
 export function useDB(quasar: QVueGlobals | undefined = undefined) {
 
@@ -15,13 +17,17 @@ export function useDB(quasar: QVueGlobals | undefined = undefined) {
     localDb = new LocalStoragePersistenceService(quasar)
   }
   const projectsIndexedDB: ProjectsPersistence = IndexedDbProjectsPersistence
-  const spacesIndexedDb = IndexedDbSpacesPersistence
-  const tabsetsIndexedDb = IndexedDbTabsetsPersistence
+
+  const spacesDb = FirestoreSpacesPersistence
+  const tabsetsDb = FirestoreTabsetsPersistence
+  const snapshotsDb = IndexedDbSnapshotPersistence
+
   return {
     db, localDb,
     projectsIndexedDB,
-    spacesIndexedDb,
-    tabsetsIndexedDb
+    spacesDb,
+    tabsetsDb,
+    snapshotsDb
   }
 
 }

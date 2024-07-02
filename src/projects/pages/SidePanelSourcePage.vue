@@ -4,11 +4,22 @@
 
     <div>
 
+      <div class="ellipsis">
+        {{ source?.url }}
+      </div>
+
       <q-btn
-        @click.stop="saveHtml(source as Source)"
+        @click.stop="saveHtml(source as Tab)"
         flat round color="primary" size="11px" icon="image"
         label="Start Research session">
-        <q-tooltip>Save this tab as HTML</q-tooltip>
+        <q-tooltip>Save this tab as HTML...</q-tooltip>
+      </q-btn>
+
+      <q-btn
+        @click.stop="saveMHtml(source as Tab)"
+        flat round color="primary" size="11px" icon="image"
+        label="MHTML Snapshot">
+        <q-tooltip>Save this tab as MHTML...</q-tooltip>
       </q-btn>
 
       <div class="row q-mx-sm q-mt-xs" v-for="(html,index) in htmls">
@@ -17,11 +28,11 @@
                        extension="html"/>
         <div class="row" v-for="a in html.annotations">
           <div class="col-9 ellipsis">
-            {{a.text}}
+            {{ a.text }}
           </div>
           <div class="col-3 ellipsis">
             <q-btn icon="visibility" class="q-ma-none" size="xs" @click="restoreAnnotation(a)"/>
-            <q-btn icon="delete"  class="q-ma-none" size="xs" @click="deleteAnnotation(a, index)"/>
+            <q-btn icon="delete" class="q-ma-none" size="xs" @click="deleteAnnotation(a, index)"/>
           </div>
         </div>
       </div>
@@ -69,21 +80,24 @@ import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {useProjectsStore} from "src/projects/stores/projectsStore";
 import {Project} from "src/projects/models/Project";
 import _ from "lodash"
-import {Source} from "src/projects/models/Source";
 import {useRoute, useRouter} from "vue-router";
 import {SaveHtmlCommand} from "src/snapshots/domain/SaveHtml";
 import Command from "src/core/domain/Command";
 import PngViewHelper from "pages/sidepanel/helper/PngViewHelper.vue";
 import {useSnapshotsService} from "src/snapshots/services/SnapshotsService";
 import {useSnapshotsStore} from "src/snapshots/stores/SnapshotsStore";
-import {BlobType, BlobMetadata} from "src/snapshots/models/BlobMetadata";
+import {BlobMetadata, BlobType} from "src/snapshots/models/BlobMetadata";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {Tabset} from "src/tabsets/models/Tabset";
+import {Tab} from "src/tabsets/models/Tab";
+import {SaveMHtmlCommand} from "src/snapshots/commands/SaveMHtmlCommand";
 
 const router = useRouter()
 const route = useRoute()
 
 const projects = ref<Project[]>([])
 const sourceId = ref('')
-const source = ref<Source | undefined>(undefined)
+const source = ref<Tab | undefined>(undefined)
 const search = ref('')
 const htmls = ref<BlobMetadata[]>([])
 
@@ -110,9 +124,9 @@ onMounted(() => {
   // TODO
   source.value = _.find(
     _.flatMap(
-      [...useProjectsStore().projects] as Project[],
-      (p: Project) => p.sources),
-    (s: Source) => s.id === sourceId.value)
+      [...useTabsetsStore().tabsets.values()] as Tabset[],
+      (ts: Tabset) => ts.tabs),
+    (s: Tab) => s.id === sourceId.value)
   updateBlobs()
 })
 
@@ -139,7 +153,8 @@ watchEffect(() => {
   }
 })
 
-const saveHtml = (source: Source | undefined) => {
+const saveHtml = (source: Tab | undefined) => {
+  console.log("saving html for", source)
   if (source) {
     chrome.tabs.query({currentWindow: true})
       .then((tabs: chrome.tabs.Tab[]) => {
@@ -150,6 +165,13 @@ const saveHtml = (source: Source | undefined) => {
           updateBlobs()
         }
       })
+  }
+}
+
+const saveMHtml = (source: Tab | undefined) => {
+  console.log("saving mhtml for", source)
+  if (source && source.url) {
+    useCommandExecutor().executeFromUi(new SaveMHtmlCommand(source.id, source.url))
   }
 }
 

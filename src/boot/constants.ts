@@ -25,6 +25,7 @@ const SHARING_AVATAR_IDENT = 'sharing.avatar';
 
 const EMAIL_LINK_REDIRECT_DOMAIN = "https://tabsets.web.app"
 
+const CURRENT_USER_ID = "current.user.id"
 const CURRENT_USER_EMAIL = "current.user.email"
 
 const UI_WINDOWS_ITEMS_PER_PAGE = 'ui.windows.itemsPerPage'
@@ -43,6 +44,7 @@ export {
   TITLE_IDENT,
   EMAIL_LINK_REDIRECT_DOMAIN,
   CURRENT_USER_EMAIL,
+  CURRENT_USER_ID,
   UI_WINDOWS_ITEMS_PER_PAGE
 }
 
