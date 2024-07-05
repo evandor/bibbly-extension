@@ -1,21 +1,22 @@
 import {useUtils} from "src/core/services/Utils";
 import {useUiStore} from "src/ui/stores/uiStore";
 import {SidePanelViews} from "src/models/SidePanelViews";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 
 async function setCurrentTab() {
   const tabs = await chrome.tabs.query({active: true, lastFocusedWindow: true})
 
   //console.debug("setting current tab", tabs)
-  // if (tabs && tabs[0]) {
-  //   useTabsStore2().setCurrentChromeTab(tabs[0] as unknown as chrome.tabs.Tab)
-  // } else {
-  //   // Seems to be necessary when creating a new chrome group
-  //   const tabs2 = await chrome.tabs.query({active: true})
-  //   //console.log("setting current tab II", tabs2)
-  //   if (tabs2 && tabs2[0]) {
-  //     useTabsStore2().setCurrentChromeTab(tabs2[0] as unknown as chrome.tabs.Tab)
-  //   }
-  // }
+  if (tabs && tabs[0]) {
+    useTabsStore2().setCurrentChromeTab(tabs[0] as unknown as chrome.tabs.Tab)
+  } else {
+    // Seems to be necessary when creating a new chrome group
+    const tabs2 = await chrome.tabs.query({active: true})
+    //console.log("setting current tab II", tabs2)
+    if (tabs2 && tabs2[0]) {
+      useTabsStore2().setCurrentChromeTab(tabs2[0] as unknown as chrome.tabs.Tab)
+    }
+  }
 }
 
 const {inBexMode} = useUtils()
@@ -25,6 +26,7 @@ function inIgnoredMessages(request: any) {
   return request.name === 'progress-indicator' ||
     request.name === 'feature-activated' ||
     request.name === 'feature-deactivated' ||
+    request.name === 'restore-selection' ||
     request.action === 'highlight-annotation'
 
 }
@@ -70,6 +72,9 @@ class ChromeListeners {
 
   async onUpdated(number: number, info: chrome.tabs.TabChangeInfo, chromeTab: chrome.tabs.Tab) {
 
+    // set current chrome tab in tabsStore
+    await setCurrentTab()
+
     if (!info.status || (Object.keys(info).length > 1)) {
       console.debug(`onUpdated:   tab ${number}: >>> ${JSON.stringify(info)}, opened by ${chromeTab.openerTabId} <<<`)
 
@@ -94,8 +99,9 @@ class ChromeListeners {
 
     const scripts: string[] = []
 
+    scripts.push("content-script-thumbnails.js")
     scripts.push("content-script.js")
-    //scripts.push("recogito2.js")
+
     // scripts.push("tabsets-content-script.js")
     if (scripts.length > 0 && tab.id !== null) { // && !this.injectedScripts.get(.chromeTabId)) {
 
@@ -121,6 +127,23 @@ class ChromeListeners {
         }
       })
     }
+  }
+
+  async onActivated(info: chrome.tabs.TabActiveInfo) {
+    //this.eventTriggered()
+    console.debug(`onActivated: tab ${info.tabId} activated: >>> ${JSON.stringify(info)}`)
+
+    await setCurrentTab()
+
+    chrome.tabs.get(info.tabId, tab => {
+      if (chrome.runtime.lastError) {
+        console.warn("got runtime error:" + chrome.runtime.lastError);
+      }
+      const url = tab.url
+      if (url) {
+       // useTabsetService().urlWasActivated(url)
+      }
+    })
   }
 
   onMessage(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {

@@ -311,8 +311,8 @@ if (inBexMode()) {
             // useBookmarksStore().loadBookmarks()
           })
       }
-    // } else if (message.name === "snapshot-captured") {
-    //   console.log("message", message)
+    } else if (message.name === "text-selection") {
+      console.log("message", message)
     } else if (message.name === "feature-deactivated") {
       usePermissionsStore().removeActivateFeature(message.data.feature)
     } else if (message.name === "tabsets-imported") {

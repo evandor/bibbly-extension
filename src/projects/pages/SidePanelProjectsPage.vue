@@ -78,7 +78,9 @@
 
         <template v-slot:iconsRight>
           <q-btn icon="more_vert" color="grey" dense class="q-mx-none" flat/>
-          <q-btn icon="account_circle" dense size="lg" class="q-mx-none" flat/>
+          <q-btn @click="useAuthStore().logout()"
+                 icon="account_circle"
+                 dense size="lg" class="q-mx-none" flat/>
         </template>
 
       </FirstToolbarHelper>
@@ -109,6 +111,7 @@ import {useAppStore} from "stores/appStore";
 import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
 import {Tabset} from "src/tabsets/models/Tabset";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useAuthStore} from "stores/authStore";
 
 const router = useRouter()
 

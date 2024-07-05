@@ -2,57 +2,99 @@
 
   <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 54px">
 
-    <div>
+    <div class="q-ma-none">
 
-      <div class="ellipsis">
+      <div class=" q-ma-xs">
+        <div class="row q-ma-none q-pa-none">
+          <div class="col-7 text-subtitle-1 text-bold">
+            Active Project
+          </div>
+          <div class="col-5 text-blue-10 text-underline cursor-pointer text-right" @click="router.push('/sidepanel')">
+            Back to Project&nbsp;
+          </div>
+        </div>
+      </div>
+      <div class="ellipsis text-caption q-ml-md q-ma-xs">
+        {{ useTabsetsStore().currentTabsetName }}
+      </div>
+
+      <div class="text-subtitle-1 q-ma-xs text-bold">
+        Source:
+      </div>
+      <div class="ellipsis text-caption cursor-pointer q-ml-md q-ma-xs" @click="openURL(source?.url || '')">
         {{ source?.url }}
       </div>
 
-      <q-btn
-        @click.stop="saveHtml(source as Tab)"
-        flat round color="primary" size="11px" icon="image"
-        label="Start Research session">
-        <q-tooltip>Save this tab as HTML...</q-tooltip>
-      </q-btn>
+      <template v-for="(md,index) in metadatas">
 
-      <q-btn
-        @click.stop="saveMHtml(source as Tab)"
-        flat round color="primary" size="11px" icon="image"
-        label="MHTML Snapshot">
-        <q-tooltip>Save this tab as MHTML...</q-tooltip>
-      </q-btn>
-
-      <div class="row q-mx-sm q-mt-xs" v-for="(html,index) in htmls">
-        <PngViewHelper :pngId="html.sourceId" :created="html.created"
+        <PngViewHelper :pngId="md.sourceId" :created="md.created"
                        :index="index" :tabId="source?.id || 'unknown'"
-                       extension="html"/>
-        <div class="row" v-for="a in html.annotations">
-          <div class="col-9 ellipsis">
-            {{ a.text }}
+                       :extension="md.type"/>
+
+        <template v-if="currentSelectionText">
+          <div class="column">
+            <div class="col text-subtitle2">
+              Add Annotation
+            </div>
+            <div class="col ellipsis-2">
+              {{ currentSelectionText }}
+            </div>
+            <div class="col ellipsis-2">
+              <q-input type="text" v-model="currentSelectionTitle"/>
+            </div>
+            <div class="col ellipsis-2">
+              <q-input type="textarea" v-model="currentSelectionRemark"/>
+            </div>
+            <div class="col ellipsis-2">
+              <q-btn label="save Selection" @click="createAnnotation()"/>
+            </div>
+          </div>
+        </template>
+
+        <div class="row q-ma-sm q-ml-lg" v-for="a in md.annotations">
+          <div class="col-9 ellipsis text-caption">
+            {{ a.title }}
           </div>
           <div class="col-3 ellipsis">
-            <q-btn icon="visibility" class="q-ma-none" size="xs" @click="restoreAnnotation(a)"/>
-            <q-btn icon="delete" class="q-ma-none" size="xs" @click="deleteAnnotation(a, index)"/>
+            <template
+              v-if="showAnnotationMenu()">
+              <q-btn icon="visibility" class="q-ma-none" size="xs" @click="restoreAnnotation(a)"/>
+              <q-btn icon="delete" class="q-ma-none" size="xs" @click="deleteAnnotation(a, index)"/>
+            </template>
           </div>
         </div>
-      </div>
+      </template>
 
-    </div>
-    <!-- white main box -->
-    <div class="column q-pa-sm q-mx-sm q-mt-md bg-white">
-      <div class="col">
+      <br><br>
 
-        <div class="row q-ma-md q-pa-md items-start">
-          <div class="col-12">
-          </div>
+      <q-btn unelevated rounded class="q-mx-md q-px-lg" color="primary" label="+ Start Research session"
+             @click="view = 'start_research'"/>
 
-          <div class="col-12">
+      <template v-if="view === 'start_research'">
+        <q-btn
+          @click.stop="saveMHtml(source as Tab)"
+          flat color="primary" size="11px" icon="play_arrow"
+          :label="metadatas?.length > 0 ? 'Add Snapshot':'Start Research session'">
+          <q-tooltip>Save this tab as HTML...</q-tooltip>
+        </q-btn>
+        <br>
+        <q-checkbox size="xs" dense v-model="mhtml" label="save HTML" :disable="true"/>
+        <br>
+        <q-checkbox size="xs" dense v-model="png" label="save Screenshot"/>
+        <br>
+        <q-checkbox size="xs" dense v-model="pdf" label="save Pdf"/>
+        <br>
+      </template>
 
-          </div>
-        </div>
+
+      <!--      <q-btn-->
+      <!--        @click.stop="saveMHtml(source as Tab)"-->
+      <!--        flat round color="primary" size="11px" icon="image"-->
+      <!--        label="MHTML Snapshot">-->
+      <!--        <q-tooltip>Save this tab as MHTML...</q-tooltip>-->
+      <!--      </q-btn>-->
 
 
-      </div>
     </div>
 
     <!-- place QPageSticky at end of page -->
@@ -91,17 +133,77 @@ import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {Tabset} from "src/tabsets/models/Tabset";
 import {Tab} from "src/tabsets/models/Tab";
 import {SaveMHtmlCommand} from "src/snapshots/commands/SaveMHtmlCommand";
+import {openURL} from "quasar";
+import {Annotation} from "src/snapshots/models/Annotation";
+import {useUtils} from "src/core/services/Utils";
+import {useTabsStore2} from "../../tabsets/stores/tabsStore2";
 
 const router = useRouter()
 const route = useRoute()
 
+const {sendMsg} = useUtils()
+
 const projects = ref<Project[]>([])
 const sourceId = ref('')
+const mhtml = ref(true)
+const png = ref(false)
+const pdf = ref(false)
 const source = ref<Tab | undefined>(undefined)
-const search = ref('')
-const htmls = ref<BlobMetadata[]>([])
+const metadatas = ref<BlobMetadata[]>([])
+const currentSelectionText = ref<string | undefined>(undefined)
+const currentSelectionViewPort = ref<object | undefined>(undefined)
+const currentSelectionRect = ref<object | undefined>(undefined)
+const currentSelection = ref<object | undefined>(undefined)
+const currentSelectionRemark = ref<string | undefined>(undefined)
+const currentSelectionTitle = ref<string | undefined>(undefined)
+const view = ref('default')
 
 const projectOptions = ref<object[]>([])
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  console.log(" <<< received message", message)
+  // if (inIgnoredMessages(message)) {
+  //   return true
+  // }
+  if (message.name === "text-selection") {
+    console.log("message", message)
+    currentSelectionText.value = message.data.text
+    currentSelection.value = message.data.selection
+    currentSelectionViewPort.value = message.data.viewPort
+    currentSelectionRect.value = message.data.rect
+  }
+})
+
+const setAnnotations = (as: Annotation[]) => {
+  as.forEach((a: Annotation) => {
+    console.log("found annotation", a)
+    // restoreSelection(a.selection)
+    // restoreSelection(JSON.parse(JSON.stringify(a.selection)))
+  })
+  //annotations.value = as
+}
+
+const createAnnotation = async () => {
+  const as = await useSnapshotsService().createAnnotation(
+    sourceId.value || '',
+    0,
+    currentSelection.value,
+    currentSelectionText.value,
+    {},
+    currentSelectionViewPort.value || {},
+    currentSelectionTitle.value || '???',
+    currentSelectionRemark.value)
+  setAnnotations(as)
+  // overlayView.value = 'menu'
+  // restore()
+}
+
+const restoreAnnotation = (a: Annotation) => {
+  console.log("restoring selection", a.selection)
+  // restoreSelection(a.selection)
+  sendMsg('restore-selection', {selection: a.selection})
+}
+
 
 const updateBlobs = () => {
   console.log("updateBlobs", source.value)
@@ -109,15 +211,18 @@ const updateBlobs = () => {
     useSnapshotsService().getMetadataFor(source.value.id, BlobType.HTML)
       .then((md: BlobMetadata[]) => {
         console.log("got", md)
-        htmls.value = md
+        metadatas.value = md
 
       })
   }
 }
 
 
-onMounted(() => {
+onMounted(async () => {
   Analytics.firePageViewEvent('SidePanelSourcePage', document.location.href);
+})
+
+watchEffect(async () => {
   sourceId.value = route.params.sourceId as string
   console.log("sourceId", sourceId.value)
 
@@ -128,6 +233,14 @@ onMounted(() => {
       (ts: Tabset) => ts.tabs),
     (s: Tab) => s.id === sourceId.value)
   updateBlobs()
+  if (source.value) {
+    const mds = await useSnapshotsStore().metadataFor(source.value.id, BlobType.MHTML)
+    if (mds) {
+      mds.forEach((md: BlobMetadata) => {
+        setAnnotations(md.annotations)
+      })
+    }
+  }
 })
 
 watchEffect(() => {
@@ -147,10 +260,10 @@ watchEffect(() => {
   projectOptions.value.push({
     label: 'Create new Project', value: 'new_project'
   })
-  if (projects.value.length === 0) {
-    console.log("no projects, redirecting to welcome page")
-    router.push("/sidepanel/welcome")
-  }
+  // if (projects.value.length === 0) {
+  //   console.log("no projects, redirecting to welcome page")
+  //   router.push("/sidepanel/welcome")
+  // }
 })
 
 const saveHtml = (source: Tab | undefined) => {
@@ -175,6 +288,9 @@ const saveMHtml = (source: Tab | undefined) => {
   }
 }
 
+const showAnnotationMenu = () => {
+  return useTabsStore2().currentChromeTab?.url === chrome.runtime.getURL(`www/index.html#/mainpanel/${props.extension}/${props.tabId}/${props.index}`)
+}
 
 </script>
 

@@ -1,9 +1,11 @@
 import _ from "lodash"
-import {AppFeature, FeatureIdent, FeatureType} from "src/models/AppFeature"
+import {FeatureIdent, FeatureType} from "src/models/FeatureIdent";
+import {Feature} from "src/features/models/Feature";
 
 export class AppFeatures {
-  features: AppFeature[] = [
-    new AppFeature(FeatureIdent.WINDOWS_MANAGEMENT, FeatureType.RECOMMENDED, 'Windows Management', 'grid_view', ['bex']),
+  features: Feature[] = [
+
+    new Feature(FeatureIdent.WINDOWS_MANAGEMENT, FeatureType.RECOMMENDED, 'Windows Management', 'grid_view', "","", ['bex']),
     // new AppFeature(FeatureIdent.OPEN_TABS, FeatureType.RECOMMENDED, 'Open Tabs', 'o_playlist_add', ['bex']),
     //
     // new AppFeature(FeatureIdent.OPENTABS_THRESHOLD, FeatureType.OPTIONAL, 'Open Tabs Warnings', 'o_tab', ['bex']),
@@ -16,15 +18,15 @@ export class AppFeatures {
 
   ]
 
-  getFeature(f: FeatureIdent): AppFeature | undefined {
-    const found = _.filter(this.features, (feature: AppFeature) => feature.ident === f)
+  getFeature(f: FeatureIdent): Feature | undefined {
+    const found = _.filter(this.features, (feature: Feature) => feature.ident === f)
     if (found && found.length > 0) {
       return found[0]
     }
     return undefined
   }
 
-  getFeatures(): AppFeature[] {
+  getFeatures(): Feature[] {
     return this.features
   }
 }

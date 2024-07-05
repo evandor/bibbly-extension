@@ -59,14 +59,14 @@
   <div class="row greyBorderTop"></div>
 
 <!--  <UnassignedAndOpenTabs v-if="tab === DrawerTabs.UNASSIGNED_TABS"/>-->
-  <BookmarksTree v-if="tab === DrawerTabs.BOOKMARKS"
-    :nodes="showOnlyFolders ? useBookmarksStore().nonLeafNodes : useBookmarksStore().bookmarksNodes2"
-    :show-only-folders="showOnlyFolders"
-    @toggle-show-only-folders="toggleShowOnlyFolders()"
-    :in-side-panel="true"/>
+<!--  <BookmarksTree v-if="tab === DrawerTabs.BOOKMARKS"-->
+<!--    :nodes="showOnlyFolders ? useBookmarksStore().nonLeafNodes : useBookmarksStore().bookmarksNodes2"-->
+<!--    :show-only-folders="showOnlyFolders"-->
+<!--    @toggle-show-only-folders="toggleShowOnlyFolders()"-->
+<!--    :in-side-panel="true"/>-->
 
 
-  <Features v-else-if="tab ===  DrawerTabs.FEATURES"/>
+  <Features v-if="tab ===  DrawerTabs.FEATURES"/>
 
   <TabsetHelp v-else-if="tab ===  DrawerTabs.HELP"/>
 
@@ -78,7 +78,6 @@
 import {ref, watchEffect} from "vue";
 import {useRoute} from "vue-router";
 import {DrawerTabs, useUiStore} from "src/ui/stores/uiStore";
-import Features from "components/Features.vue";
 import TabsetHelp from "components/TabsetHelp.vue";
 
 const route = useRoute()

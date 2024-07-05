@@ -8,6 +8,8 @@ import FirestoreTabsetsPersistence from "src/tabsets/persistence/FirestoreTabset
 import FirestoreSpacesPersistence from "src/spaces/persistence/FirestoreSpacesPersistence";
 import FirestoreSnapshotsPersistence from "src/snapshots/persistence/FirestoreSnapshotsPersistence";
 import IndexedDbSnapshotPersistence from "src/snapshots/persistence/IndexedDbSnapshotPersistence";
+import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";
+import IndexedDbSpacesPersistence from "src/spaces/persistence/IndexedDbSpacesPersistence";
 
 export function useDB(quasar: QVueGlobals | undefined = undefined) {
 
@@ -18,8 +20,8 @@ export function useDB(quasar: QVueGlobals | undefined = undefined) {
   }
   const projectsIndexedDB: ProjectsPersistence = IndexedDbProjectsPersistence
 
-  const spacesDb = FirestoreSpacesPersistence
-  const tabsetsDb = FirestoreTabsetsPersistence
+  const spacesDb = IndexedDbSpacesPersistence
+  const tabsetsDb = IndexedDbTabsetsPersistence
   const snapshotsDb = IndexedDbSnapshotPersistence
 
   return {

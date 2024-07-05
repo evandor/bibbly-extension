@@ -1,20 +1,16 @@
 import {usePermissionsStore} from "stores/permissionsStore";
 import ChromeListeners from "src/services/ChromeListeners";
-import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {useDB} from "src/services/usePersistenceService";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import ChromeApi from "src/services/ChromeApi";
 import {useSettingsStore} from "stores/settingsStore";
 import {Router} from "vue-router";
 import {useAppStore} from "stores/appStore";
-import PersistenceService from "src/services/PersistenceService";
 import {useUiStore} from "src/ui/stores/uiStore";
 import {User} from "firebase/auth";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
-import {FeatureIdent} from "src/models/AppFeature";
 import {useProjectsStore} from "src/projects/stores/projectsStore";
 import {useSnapshotsService} from "src/snapshots/services/SnapshotsService";
-import IndexedDbSnapshotPersistence from "src/snapshots/persistence/IndexedDbSnapshotPersistence";
 import {useSnapshotsStore} from "src/snapshots/stores/SnapshotsStore";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import IndexedDbThumbnailsPersistence from "src/thumbnails/persistence/IndexedDbThumbnailsPersistence";
@@ -26,6 +22,7 @@ import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useAuthStore} from "stores/authStore";
+import {FeatureIdent} from "src/models/FeatureIdent";
 
 class AppService {
 
