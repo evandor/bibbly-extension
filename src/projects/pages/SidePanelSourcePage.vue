@@ -58,6 +58,7 @@
 
             <SourcePageAnnotation
               v-if="currentSelectionText && currentSelectionId === a.id"
+              :key="randomKey"
               :metadata="metadatas[currentSelectionIndex]"
               :source-id="sourceId"
               :selectionId="currentSelectionId"
@@ -67,13 +68,16 @@
               :selectionRect="currentSelectionRect"
               :selectionTitle="currentSelectionTitle || ''"
               :selectionRemark="currentSelectionRemark"
-              @set-annotations="(as: Annotation[]) => setAnnotations(as)"/>
+              @set-annotations="(as: Annotation[]) => setAnnotations(as)"
+              @close-view="currentSelectionText = undefined"
+            />
           </div>
 
         </div>
 
         <div class="q-ma-sm">
           <SourcePageAnnotation v-if="currentSelectionText && !currentSelectionId"
+                                :key="randomKey"
                                 :metadata="metadatas[currentSelectionIndex]"
                                 :source-id="sourceId"
                                 :selectionText="currentSelectionText"
@@ -82,7 +86,9 @@
                                 :selectionViewPort="currentSelectionViewPort"
                                 :selectionRect="currentSelectionRect"
                                 :selectionRemark="currentSelectionRemark"
-                                @set-annotations="(as: Annotation[]) => setAnnotations(as)"/>
+                                @set-annotations="(as: Annotation[]) => setAnnotations(as)"
+                                @close-view="currentSelectionText = undefined"
+          />
         </div>
       </template>
 
@@ -128,7 +134,7 @@ import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {Tabset} from "src/tabsets/models/Tabset";
 import {Tab} from "src/tabsets/models/Tab";
 import {SaveMHtmlCommand} from "src/snapshots/commands/SaveMHtmlCommand";
-import {openURL} from "quasar";
+import {openURL, uid} from "quasar";
 import {Annotation} from "src/snapshots/models/Annotation";
 import {useUtils} from "src/core/services/Utils";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
@@ -153,21 +159,17 @@ const currentSelectionColor = ref<string | undefined>('grey')
 const currentSelectionId = ref<string | undefined>(undefined)
 const currentSelectionIndex = ref<number>(0)
 const view = ref('default')
-
 const projectOptions = ref<object[]>([])
+const randomKey = ref<string>(uid())
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log(" <<< received message", message)
-  // if (inIgnoredMessages(message)) {
-  //   return true
+  //console.log(" <<< received message", message)
   function getTitleSuggestion(input: string) {
     return input.length > 20 ? input.substring(0, 17) + "..." : input;
   }
 
-// }
   if (message.name === "text-selection") {
-    console.log("message", message)
-
+    console.log(" <<< received message", message)
     const split: string[] = message.data.text ? (message.data.text as string).split(" ") : []
     let titleSuggestion = undefined
     switch (split.length) {
@@ -192,6 +194,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     currentSelectionViewPort.value = message.data.viewPort
     currentSelectionRect.value = message.data.rect
     currentSelectionRemark.value = undefined
+    randomKey.value = uid()
   }
 })
 
@@ -218,6 +221,7 @@ const restoreAnnotation = (a: Annotation) => {
 const toggleEditAnnotation = (a: Annotation, i: number) => {
   if (currentSelectionId.value) {
     currentSelectionId.value = undefined
+    currentSelectionText.value = undefined
   } else {
     console.log("edit annotation", a, i)
     currentSelectionId.value = a.id

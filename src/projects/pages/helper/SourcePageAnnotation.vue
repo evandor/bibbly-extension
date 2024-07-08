@@ -1,24 +1,31 @@
 <template>
 
-  <div class="column q-ma-none q-pa-sm bg-white" style="border: 0px solid #bfbfbf;border-radius:5px">
-    <div class="col text-subtitle2">
+  <div class="row q-ma-none q-pa-sm bg-white" style="border: 0px solid #bfbfbf;border-radius:5px">
+
+
+    <div class="col-10 text-subtitle2">
       {{currentSelectionId ? 'Update Annotation' : 'Add Annotation'}}
     </div>
-    <div class="col ellipsis-2 q-my-sm">
+    <div class="col text-right">
+      <q-icon name="close" @click="emits('closeView')" />
+    </div>
+
+    <div class="col-12 ellipsis-2 q-my-sm">
       <q-input dense outlined type="text" v-model="currentSelectionTitle" label="Title" autofocus required autocomplete />
     </div>
-    <div class="col q-my-sm">
+
+    <div class="col-12 q-my-sm">
       <q-input dense type="textarea" outlined v-model="currentSelectionRemark" label="Remark" placeholder="add a remark for this selection" rows="3"/>
 <!--      <q-btn label="clear" size="xs" @click="currentSelectionRemark = undefined"/>-->
     </div>
-    <div class="col q-my-sm">
+    <div class="col-12 q-my-sm">
       <q-radio keep-color v-model="currentSelectionColor" val="grey" color="grey"/>
       <q-radio keep-color v-model="currentSelectionColor" val="#FFFF7B" color="yellow"/>
       <q-radio keep-color v-model="currentSelectionColor" val="#F44336" color="red"/>
       <q-radio keep-color v-model="currentSelectionColor" val="#8BC34A" color="green"/>
       <q-radio keep-color v-model="currentSelectionColor" val="#29B6F6" color="blue"/>
     </div>
-    <div class="col ellipsis-2 text-right">
+    <div class="col-12 ellipsis-2 text-right">
       <q-btn size="sm" :label="props.selectionId ? 'update':'create Selection'"
              :disable="currentSelectionTitle ? currentSelectionTitle.trim().length === 0 : true"
              color="primary" @click="createOrUpdateAnnotation()"/>
@@ -49,7 +56,7 @@ const props = defineProps({
   metadata: {type: Object as PropType<BlobMetadata>, required: true}
 })
 
-const emits = defineEmits(['setAnnotations'])
+const emits = defineEmits(['setAnnotations','closeView'])
 
 const currentSelectionRemark = ref<string | undefined>(props.selectionRemark)
 const currentSelectionTitle = ref<string | undefined>(props.selectionTitle)

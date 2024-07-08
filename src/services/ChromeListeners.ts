@@ -117,7 +117,7 @@ class ChromeListeners {
 
             // @ts-ignore
             chrome.scripting.executeScript({
-              target: {tabId: tab.id, allFrames: false},
+              target: {tabId: tab.id || 0, allFrames: false},
               files: [script] //["tabsets-content-script.js","content-script-thumbnails.js"],
             }, (callback: any) => {
               if (chrome.runtime.lastError) {
@@ -148,7 +148,7 @@ class ChromeListeners {
   }
 
   onMessage(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
-    console.log("tabsets: ===>", request)
+    //console.log("tabsets: ===>", request)
     if (inIgnoredMessages(request)) {
       return true
     }
