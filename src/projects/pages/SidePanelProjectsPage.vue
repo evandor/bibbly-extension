@@ -77,7 +77,7 @@
       <FirstToolbarHelper title="Bibbly">
 
         <template v-slot:iconsRight>
-          <q-btn icon="more_vert" color="grey" dense class="q-mx-none" flat/>
+          <q-btn icon="more_vert" color="blue" dense class="q-mx-none" flat  @click="location.reload()"/>
           <q-btn @click="useAuthStore().logout()"
                  icon="account_circle"
                  dense size="lg" class="q-mx-none" flat/>

@@ -4,9 +4,6 @@ import {LocalStoragePersistenceService} from "src/services/storage/LocalStorageP
 import PersistenceService from "src/services/PersistenceService";
 import IndexedDbProjectsPersistence from "src/projects/persistence/IndexedDbProjectsPersistence";
 import ProjectsPersistence from "src/projects/persistence/ProjectsPersistence";
-import FirestoreTabsetsPersistence from "src/tabsets/persistence/FirestoreTabsetsPersistence";
-import FirestoreSpacesPersistence from "src/spaces/persistence/FirestoreSpacesPersistence";
-import FirestoreSnapshotsPersistence from "src/snapshots/persistence/FirestoreSnapshotsPersistence";
 import IndexedDbSnapshotPersistence from "src/snapshots/persistence/IndexedDbSnapshotPersistence";
 import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";
 import IndexedDbSpacesPersistence from "src/spaces/persistence/IndexedDbSpacesPersistence";

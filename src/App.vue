@@ -6,7 +6,6 @@
 
 import {setCssVar, useQuasar} from "quasar";
 import AppService from "src/services/AppService";
-import {EventEmitter} from "events";
 import {onAuthStateChanged} from "firebase/auth";
 import {useRouter} from "vue-router";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
@@ -48,15 +47,8 @@ onAuthStateChanged(auth, async (user) => {
   } else {
     // User is signed out
     console.log("%conAuthStateChanged: logged out", "border:1px solid green")
-    // await AppService.init($q, router, true, undefined)
-    // if (inBexMode()) {
-    //   $q.bex.send('auth.user.logout', {})
-    // }
-    router.push("/sidepanel/login")
-    // if (!router.currentRoute.value.path.startsWith("/mainpanel")) {
-    //   console.log("NOT redirecting to '/'")
-    //   //await router.push("/")
-    // }
+    // TODO
+    //await router.push("/sidepanel/login")
   }
 });
 

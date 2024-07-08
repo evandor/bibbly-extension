@@ -16,13 +16,10 @@
 
           <slot name="iconsRight">
 
-            <template v-if="showSearchIcon()">
-              <SidePanelToolbarButton icon="search"
-                                      id="toggleSearchBtn"
-                                      size="11px"
-                                      @click="toggleSearch"/>
-              <span class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>
-            </template>
+            <q-btn icon="more_vert" color="green" dense class="q-mx-none" flat  @click="router.go()"/>
+            <q-btn @click="useAuthStore().logout()"
+                   icon="account_circle"
+                   dense size="lg" class="q-mx-none" flat/>
 
           </slot>
         </div>
@@ -38,6 +35,7 @@ import {ref, watchEffect} from "vue";
 import {useUiStore} from "src/ui/stores/uiStore";
 import {useQuasar} from "quasar";
 import SidePanelToolbarButton from "src/core/components/SidePanelToolbarButton.vue";
+import {useAuthStore} from "stores/authStore";
 
 const props = defineProps({
   title: {type: String, default: "My Tabsets"},

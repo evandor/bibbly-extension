@@ -21,7 +21,6 @@
 <script lang="ts" setup>
 
 import {onMounted, ref, watchEffect} from "vue";
-import _ from "lodash";
 import {Tab} from "src/tabsets/models/Tab";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
@@ -39,10 +38,4 @@ onMounted(() => {
   }
 })
 
-watchEffect(() => {
-  console.log("tabid", props.tabId)
-
-
-
-})
 </script>

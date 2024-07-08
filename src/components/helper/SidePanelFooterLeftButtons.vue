@@ -11,41 +11,40 @@
   </q-btn>
 
   <SidePanelFooterLeftButton
-    :side-panel-view="SidePanelView.TABS_LIST"
+    :side-panel-view="SidePanelViews.TABS_LIST"
     :size="props.size"
     icon="o_playlist_add"
     tooltip="All your browser's open tabs"/>
 
   <SidePanelFooterLeftButton v-if="unreadMessagesCount > 0"
-                             :side-panel-view="SidePanelView.MESSAGES"
+                             :side-panel-view="SidePanelViews.MESSAGES"
                              icon="o_chat"
                              :size="props.size"
                              tooltip="Your messages">
     <q-badge color="red" floating v-if="unreadMessagesCount > 0">{{ unreadMessagesCount }}</q-badge>
   </SidePanelFooterLeftButton>
 
-  <SidePanelFooterLeftButton :side-panel-view="SidePanelView.BOOKMARKS"
+  <SidePanelFooterLeftButton :side-panel-view="SidePanelViews.BOOKMARKS"
                              icon="o_bookmark"
                              :class="{ shake: animateBookmarksButton }"
                              :size="props.size"
                              tooltip="Show the Bookmarks Browser"/>
 
-  <SidePanelFooterLeftButton :side-panel-view="SidePanelView.RSS_LIST"
+  <SidePanelFooterLeftButton :side-panel-view="SidePanelViews.RSS_LIST"
                              icon="o_rss_feed"
                              :size="props.size"
                              tooltip="List all your RSS feeds"/>
 
 </template>
 <script setup lang="ts">
-import {SidePanel, SidePanelView, useUiStore} from "src/ui/stores/uiStore";
-import {FeatureIdent} from "src/models/AppFeature";
 import SidePanelFooterLeftButton from "components/helper/SidePanelFooterLeftButton.vue";
 import OpenTabsThresholdWidget from "components/widgets/OpenTabsThresholdWidget.vue";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import {ref, watchEffect} from "vue";
 import {SuggestionState} from "src/models/Suggestion";
-import {useMessagesStore} from "stores/messagesStore";
+import {SidePanelViews} from "src/models/SidePanelViews";
+import {useUiStore} from "src/ui/stores/uiStore";
 
 const props = defineProps({
   showSuggestionIcon: {type: Boolean, required: true},
@@ -65,7 +64,7 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  useMessagesStore().getMessages().then((msgs) => unreadMessagesCount.value = msgs.length)
+  //useMessagesStore().getMessages().then((msgs) => unreadMessagesCount.value = msgs.length)
 })
 
 watchEffect(() => {

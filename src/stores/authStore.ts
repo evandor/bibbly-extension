@@ -47,7 +47,7 @@ export const useAuthStore = defineStore('auth', () => {
   // --- getters ---
   const isAuthenticated = computed(() => {
     return (): boolean => {
-      return authenticated.value
+      return true//authenticated.value
     }
   })
 

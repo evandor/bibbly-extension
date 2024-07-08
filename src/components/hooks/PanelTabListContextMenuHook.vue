@@ -2,7 +2,7 @@
   <q-item v-if="hasResearchData()"
           clickable v-close-popup @click.stop="openResearchPage()">
     <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">
-      <q-icon size="xs" name="o_edit" color="info"/>
+      <q-icon size="xs" name="o_science" color="info"/>
     </q-item-section>
     <q-item-section>
       Research
@@ -12,7 +12,7 @@
   <q-item clickable v-if="!hasResearchData()"
           v-close-popup @click="startResearch()">
     <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">
-      <q-icon size="xs" name="o_edit" color="primary"/>
+      <q-icon size="xs" name="o_science" color="primary"/>
     </q-item-section>
     <q-item-section>
       Start Research

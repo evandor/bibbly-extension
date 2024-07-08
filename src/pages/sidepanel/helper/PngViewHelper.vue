@@ -6,6 +6,9 @@
       <q-icon name="o_open_in_new" class="q-ml-md cursor-pointer" @click="openMhtml">
         <q-tooltip class="tooltip-small">Open</q-tooltip>
       </q-icon>
+      <q-icon name="o_add" class="q-ml-md cursor-pointer" @click="emits('newSnapshotWasClicked')">
+        <q-tooltip class="tooltip-small">New Snapshot</q-tooltip>
+      </q-icon>
       <q-icon name="o_delete" class="q-ml-md cursor-pointer" @click="deleteSnapshot()">
         <q-tooltip class="tooltip-small">Delete</q-tooltip>
       </q-icon>
@@ -25,6 +28,8 @@ const props = defineProps({
   index: {type: Number, required: true},
   tabId: {type: String, required: true}
 })
+
+const emits = defineEmits(['newSnapshotWasClicked'])
 
 const openMhtml = () => window.open(chrome.runtime.getURL(`www/index.html#/mainpanel/${props.extension}/${props.tabId}/${props.index}`));
 // const openMhtml = () => window.open(chrome.runtime.getURL(`www/mirror.html#/mainpanel/${props.extension}/${props.tabId}/${props.index}`));

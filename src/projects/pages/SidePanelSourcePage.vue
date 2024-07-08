@@ -27,86 +27,81 @@
 
       <template v-for="(md,index) in metadatas">
 
-        <PngViewHelper :pngId="md.sourceId" :created="md.created"
+        <PngViewHelper :pngId="md.sourceId"
+                       :created="md.created"
                        :index="index" :tabId="source?.id || 'unknown'"
-                       :extension="md.type"/>
-
-        <template v-if="currentSelectionText">
-          <div class="column">
-            <div class="col text-subtitle2">
-              Add Annotation
-            </div>
-            <div class="col ellipsis-2">
-              {{ currentSelectionText }}
-            </div>
-            <div class="col ellipsis-2">
-              <q-input type="text" v-model="currentSelectionTitle"/>
-            </div>
-            <div class="col ellipsis-2">
-              <q-input type="textarea" v-model="currentSelectionRemark"/>
-            </div>
-            <div class="col ellipsis-2">
-              <q-btn label="save Selection" @click="createAnnotation()"/>
-            </div>
-          </div>
-        </template>
+                       :extension="md.type"
+                       @new-snapshot-was-clicked="view = 'start_research'"
+        />
 
         <div class="row q-ma-sm q-ml-lg" v-for="a in md.annotations">
-          <div class="col-9 ellipsis text-caption">
+          <div class="col-9 ellipsis text-caption text-blue-10 cursor-pointer" @click="toggleEditAnnotation(a,index)">
             {{ a.title }}
+            <q-tooltip v-if="a.comment" class="tooltip-small">{{ a.comment }}</q-tooltip>
           </div>
           <div class="col-3 ellipsis">
             <template
               v-if="showAnnotationMenu()">
-              <q-btn icon="visibility" class="q-ma-none" size="xs" @click="restoreAnnotation(a)"/>
-              <q-btn icon="delete" class="q-ma-none" size="xs" @click="deleteAnnotation(a, index)"/>
+              <q-icon name="o_visibility" class="cursor-pointer" @click="restoreAnnotation(a)">
+                <q-tooltip class="tooltip-small">Show Annotation in Page</q-tooltip>
+              </q-icon>
+              <q-icon name="o_edit" class="cursor-pointer" @click="toggleEditAnnotation(a,index)">
+                <q-tooltip class="tooltip-small">Edit Annotation</q-tooltip>
+              </q-icon>
+              <q-icon name="o_delete" class="q-ma-none cursor-pointer" size="xs" @click="deleteAnnotation(a, index)">
+                <q-tooltip class="tooltip-small">Delete Annotation from Page</q-tooltip>
+              </q-icon>
             </template>
           </div>
+
+          <div class="col-12">
+
+            <SourcePageAnnotation
+              v-if="currentSelectionText && currentSelectionId === a.id"
+              :metadata="metadatas[currentSelectionIndex]"
+              :source-id="sourceId"
+              :selectionId="currentSelectionId"
+              :selectionText="currentSelectionText"
+              :selection="currentSelection"
+              :selectionViewPort="currentSelectionViewPort"
+              :selectionRect="currentSelectionRect"
+              :selectionTitle="currentSelectionTitle || ''"
+              :selectionRemark="currentSelectionRemark"
+              @set-annotations="(as: Annotation[]) => setAnnotations(as)"/>
+          </div>
+
+        </div>
+
+        <div class="q-ma-sm">
+          <SourcePageAnnotation v-if="currentSelectionText && !currentSelectionId"
+                                :metadata="metadatas[currentSelectionIndex]"
+                                :source-id="sourceId"
+                                :selectionText="currentSelectionText"
+                                :selectionTitle="currentSelectionTitle"
+                                :selection="currentSelection"
+                                :selectionViewPort="currentSelectionViewPort"
+                                :selectionRect="currentSelectionRect"
+                                :selectionRemark="currentSelectionRemark"
+                                @set-annotations="(as: Annotation[]) => setAnnotations(as)"/>
         </div>
       </template>
 
-      <br><br>
-
-      <q-btn unelevated rounded class="q-mx-md q-px-lg" color="primary" label="+ Start Research session"
-             @click="view = 'start_research'"/>
-
-      <template v-if="view === 'start_research'">
+      <template v-if="!metadatas || metadatas.length === 0">
+        <div class="q-ma-md text-body2">
+          A research session will save a snapshot of the current page where you can start
+          annotating text selections.
+        </div>
         <q-btn
-          @click.stop="saveMHtml(source as Tab)"
-          flat color="primary" size="11px" icon="play_arrow"
-          :label="metadatas?.length > 0 ? 'Add Snapshot':'Start Research session'">
-          <q-tooltip>Save this tab as HTML...</q-tooltip>
-        </q-btn>
-        <br>
-        <q-checkbox size="xs" dense v-model="mhtml" label="save HTML" :disable="true"/>
-        <br>
-        <q-checkbox size="xs" dense v-model="png" label="save Screenshot"/>
-        <br>
-        <q-checkbox size="xs" dense v-model="pdf" label="save Pdf"/>
-        <br>
+          unelevated rounded class="q-mx-md q-px-lg" color="primary" label="+ Start Research session"
+          @click="saveMHtml(source as Tab)"/>
+
       </template>
-
-
-      <!--      <q-btn-->
-      <!--        @click.stop="saveMHtml(source as Tab)"-->
-      <!--        flat round color="primary" size="11px" icon="image"-->
-      <!--        label="MHTML Snapshot">-->
-      <!--        <q-tooltip>Save this tab as MHTML...</q-tooltip>-->
-      <!--      </q-btn>-->
-
 
     </div>
 
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
-      <FirstToolbarHelper title="Bibbly">
-
-        <template v-slot:iconsRight>
-          <q-btn icon="more_vert" color="grey" dense class="q-mx-none" flat/>
-          <q-btn icon="account_circle" dense size="lg" class="q-mx-none" flat/>
-        </template>
-
-      </FirstToolbarHelper>
+      <FirstToolbarHelper title="Bibbly"/>
     </q-page-sticky>
 
   </q-page>
@@ -136,7 +131,8 @@ import {SaveMHtmlCommand} from "src/snapshots/commands/SaveMHtmlCommand";
 import {openURL} from "quasar";
 import {Annotation} from "src/snapshots/models/Annotation";
 import {useUtils} from "src/core/services/Utils";
-import {useTabsStore2} from "../../tabsets/stores/tabsStore2";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import SourcePageAnnotation from "src/projects/pages/helper/SourcePageAnnotation.vue";
 
 const router = useRouter()
 const route = useRoute()
@@ -145,9 +141,6 @@ const {sendMsg} = useUtils()
 
 const projects = ref<Project[]>([])
 const sourceId = ref('')
-const mhtml = ref(true)
-const png = ref(false)
-const pdf = ref(false)
 const source = ref<Tab | undefined>(undefined)
 const metadatas = ref<BlobMetadata[]>([])
 const currentSelectionText = ref<string | undefined>(undefined)
@@ -156,6 +149,9 @@ const currentSelectionRect = ref<object | undefined>(undefined)
 const currentSelection = ref<object | undefined>(undefined)
 const currentSelectionRemark = ref<string | undefined>(undefined)
 const currentSelectionTitle = ref<string | undefined>(undefined)
+const currentSelectionColor = ref<string | undefined>('grey')
+const currentSelectionId = ref<string | undefined>(undefined)
+const currentSelectionIndex = ref<number>(0)
 const view = ref('default')
 
 const projectOptions = ref<object[]>([])
@@ -164,13 +160,38 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log(" <<< received message", message)
   // if (inIgnoredMessages(message)) {
   //   return true
-  // }
+  function getTitleSuggestion(input: string) {
+    return input.length > 20 ? input.substring(0, 17) + "..." : input;
+  }
+
+// }
   if (message.name === "text-selection") {
     console.log("message", message)
+
+    const split: string[] = message.data.text ? (message.data.text as string).split(" ") : []
+    let titleSuggestion = undefined
+    switch (split.length) {
+      case 1:
+        titleSuggestion = getTitleSuggestion(split[0])
+        break
+      case 2:
+        titleSuggestion = getTitleSuggestion(split[0] + " " + split[1])
+        break
+      case 3:
+        titleSuggestion = getTitleSuggestion(split[0] + " " + split[1] + " " + split[2])
+        break
+      default:
+        titleSuggestion = message.data.text.length > 40 ? message.data.text.substring(0, 37) + "..." : message.data.text
+        break
+    }
+
+    currentSelectionId.value = undefined
+    currentSelectionTitle.value = titleSuggestion
     currentSelectionText.value = message.data.text
     currentSelection.value = message.data.selection
     currentSelectionViewPort.value = message.data.viewPort
     currentSelectionRect.value = message.data.rect
+    currentSelectionRemark.value = undefined
   }
 })
 
@@ -180,39 +201,49 @@ const setAnnotations = (as: Annotation[]) => {
     // restoreSelection(a.selection)
     // restoreSelection(JSON.parse(JSON.stringify(a.selection)))
   })
-  //annotations.value = as
-}
-
-const createAnnotation = async () => {
-  const as = await useSnapshotsService().createAnnotation(
-    sourceId.value || '',
-    0,
-    currentSelection.value,
-    currentSelectionText.value,
-    {},
-    currentSelectionViewPort.value || {},
-    currentSelectionTitle.value || '???',
-    currentSelectionRemark.value)
-  setAnnotations(as)
-  // overlayView.value = 'menu'
-  // restore()
+  currentSelectionText.value = undefined
+  currentSelectionId.value = undefined
+  //annotations.value =
+  if (metadatas.value[0]) {
+    metadatas.value[0].annotations = as
+  }
 }
 
 const restoreAnnotation = (a: Annotation) => {
   console.log("restoring selection", a.selection)
   // restoreSelection(a.selection)
-  sendMsg('restore-selection', {selection: a.selection})
+  sendMsg('restore-selection', {selection: a.selection, color: a.color, rect: a.rect, viewport: a.viewport})
 }
 
+const toggleEditAnnotation = (a: Annotation, i: number) => {
+  if (currentSelectionId.value) {
+    currentSelectionId.value = undefined
+  } else {
+    console.log("edit annotation", a, i)
+    currentSelectionId.value = a.id
+    currentSelectionIndex.value = i
+    currentSelectionText.value = a.text
+    currentSelectionTitle.value = a.title
+    currentSelectionRemark.value = a.comment
+    currentSelectionColor.value = a.color
+    currentSelection.value = a.selection
+    restoreAnnotation(a)
+  }
+
+}
+
+const deleteAnnotation = async (a: Annotation, i: number) => {
+  if (source.value) {
+    const as = await useSnapshotsStore().deleteAnnotation(source.value.id, a, i)
+    setAnnotations(as)
+  }
+}
 
 const updateBlobs = () => {
-  console.log("updateBlobs", source.value)
   if (source.value?.id) {
     useSnapshotsService().getMetadataFor(source.value.id, BlobType.HTML)
       .then((md: BlobMetadata[]) => {
-        console.log("got", md)
         metadatas.value = md
-
       })
   }
 }
@@ -285,12 +316,21 @@ const saveMHtml = (source: Tab | undefined) => {
   console.log("saving mhtml for", source)
   if (source && source.url) {
     useCommandExecutor().executeFromUi(new SaveMHtmlCommand(source.id, source.url))
+      .then(() => {
+        //view.value = 'default'
+        openMhtml()
+      })
+
   }
 }
 
 const showAnnotationMenu = () => {
-  return useTabsStore2().currentChromeTab?.url === chrome.runtime.getURL(`www/index.html#/mainpanel/${props.extension}/${props.tabId}/${props.index}`)
+  const sessionUrl = chrome.runtime.getURL(`www/index.html#/mainpanel/${BlobType.MHTML}/${source.value?.id}/0`)
+  const currentUrl = useTabsStore2().currentChromeTab?.url
+  return currentUrl?.toLowerCase() === sessionUrl.toLowerCase()
 }
+
+const openMhtml = () => window.open(chrome.runtime.getURL(`www/index.html#/mainpanel/${BlobType.MHTML}/${source.value?.id}/0`));
 
 </script>
 

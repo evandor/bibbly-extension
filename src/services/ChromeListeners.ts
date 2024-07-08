@@ -27,6 +27,7 @@ function inIgnoredMessages(request: any) {
     request.name === 'feature-activated' ||
     request.name === 'feature-deactivated' ||
     request.name === 'restore-selection' ||
+    request.name === 'text-selection' ||
     request.action === 'highlight-annotation'
 
 }
@@ -109,14 +110,14 @@ class ChromeListeners {
         if (chrome.runtime.lastError) {
           console.warn("got runtime error:" + chrome.runtime.lastError);
         }
-        if (!tab.url?.startsWith("chrome")) {
+        if (tab.id && !tab.url?.startsWith("chrome")) {
           scripts.forEach((script: string) => {
             //console.debug("executing scripts", tab.id, script)
 
 
             // @ts-ignore
             chrome.scripting.executeScript({
-              target: {tabId: tab.id || 0, allFrames: false},
+              target: {tabId: tab.id, allFrames: false},
               files: [script] //["tabsets-content-script.js","content-script-thumbnails.js"],
             }, (callback: any) => {
               if (chrome.runtime.lastError) {
