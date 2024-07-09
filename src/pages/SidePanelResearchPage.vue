@@ -32,7 +32,6 @@
                        :index="index" :tabId="source?.id || 'unknown'"
                        :extension="md.type"
                        @new-snapshot-was-clicked="view = 'start_research'"
-                       @new-clip-was-clicked="ChromeApi."
         />
 
         <div class="row q-ma-sm q-ml-lg" v-for="a in md.annotations">
@@ -139,6 +138,7 @@ import {useUtils} from "src/core/services/Utils";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import SourcePageAnnotation from "src/pages/helper/SourcePageAnnotation.vue";
 import ChromeApi from "src/services/ChromeApi";
+import {SavePngCommand} from "src/snapshots/commands/SavePngCommand";
 
 const router = useRouter()
 const route = useRoute()
@@ -317,11 +317,14 @@ const saveHtml = (source: Tab | undefined) => {
 const saveMHtml = (source: Tab | undefined) => {
   console.log("saving mhtml for", source)
   if (source && source.url) {
+    console.log("1")
     useCommandExecutor().executeFromUi(new SaveMHtmlCommand(source.id, source.url))
       .then(() => {
         //view.value = 'default'
         openMhtml()
       })
+    console.log("2")
+    //useCommandExecutor().execute(new SavePngCommand(source.id, source.url))
 
   }
 }
