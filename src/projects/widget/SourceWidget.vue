@@ -69,6 +69,6 @@ const hasResearchData = () => {
 const startResearch = () => {
   //window.open(chrome.runtime.getURL(`www/index.html#/mainpanel/html/${props.source.id}/${props.source.id}?i=0`));
   openURL(props.source.url)
-  router.push('/sidepanel/source/' + props.source.id)
+  router.push('/sidepanel/research/' + props.source.id)
 }
 </script>

@@ -48,7 +48,7 @@
 <!--        </q-item>-->
 <!--      </template>-->
 
-      <q-item clickable v-close-popup @click="router.push('/sidepanel/source/' + props.source.id)">
+      <q-item clickable v-close-popup @click="router.push('/sidepanel/research/' + props.source.id)">
         <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">
           <q-icon size="xs" name="o_edit" color="primary"/>
         </q-item-section>

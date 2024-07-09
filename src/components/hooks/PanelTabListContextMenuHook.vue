@@ -40,7 +40,7 @@ const router = useRouter()
 
 const openResearchPage = () => {
   window.open(chrome.runtime.getURL(`www/index.html#/mainpanel/mhtml/${props.tab.id}/0`));
-  router.push('/sidepanel/source/' + props.tab.id)
+  router.push('/sidepanel/research/' + props.tab.id)
 }
 
 const hasResearchData = () => {
@@ -50,7 +50,7 @@ const hasResearchData = () => {
 
 const startResearch = () => {
   openURL(props.tab.url!)
-  router.push('/sidepanel/source/' + props.tab.id)
+  router.push('/sidepanel/research/' + props.tab.id)
 }
 
 </script>
