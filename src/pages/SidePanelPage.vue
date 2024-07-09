@@ -96,7 +96,7 @@ import {LocalStorage, uid} from "quasar";
 import {useUiStore} from "src/ui/stores/uiStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
-import Analytics from "src/utils/google-analytics";
+import Analytics from "src/core/utils/google-analytics";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import {TITLE_IDENT} from "boot/constants";
 import AppService from "src/services/AppService";

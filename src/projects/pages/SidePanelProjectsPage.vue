@@ -94,7 +94,7 @@
 
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import {onMounted, ref, watchEffect} from "vue";
-import Analytics from "src/utils/google-analytics";
+import Analytics from "src/core/utils/google-analytics";
 import {usePermissionsStore} from "stores/permissionsStore";
 import ProjectForm from "src/projects/forms/ProjectForm.vue";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";

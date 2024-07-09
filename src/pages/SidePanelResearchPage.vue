@@ -118,7 +118,7 @@
 
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import {onMounted, ref, watchEffect} from "vue";
-import Analytics from "src/utils/google-analytics";
+import Analytics from "src/core/utils/google-analytics";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {useProjectsStore} from "src/projects/stores/projectsStore";
 import {Project} from "src/projects/models/Project";
