@@ -32,6 +32,7 @@
                        :index="index" :tabId="source?.id || 'unknown'"
                        :extension="md.type"
                        @new-snapshot-was-clicked="view = 'start_research'"
+                       @new-clip-was-clicked="ChromeApi."
         />
 
         <div class="row q-ma-sm q-ml-lg" v-for="a in md.annotations">
@@ -120,8 +121,6 @@ import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import {onMounted, ref, watchEffect} from "vue";
 import Analytics from "src/core/utils/google-analytics";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
-import {useProjectsStore} from "src/projects/stores/projectsStore";
-import {Project} from "src/projects/models/Project";
 import _ from "lodash"
 import {useRoute, useRouter} from "vue-router";
 import {SaveHtmlCommand} from "src/snapshots/domain/SaveHtml";
@@ -138,14 +137,14 @@ import {openURL, uid} from "quasar";
 import {Annotation} from "src/snapshots/models/Annotation";
 import {useUtils} from "src/core/services/Utils";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
-import SourcePageAnnotation from "src/projects/pages/helper/SourcePageAnnotation.vue";
+import SourcePageAnnotation from "src/pages/helper/SourcePageAnnotation.vue";
+import ChromeApi from "src/services/ChromeApi";
 
 const router = useRouter()
 const route = useRoute()
 
 const {sendMsg} = useUtils()
 
-const projects = ref<Project[]>([])
 const sourceId = ref('')
 const source = ref<Tab | undefined>(undefined)
 const metadatas = ref<BlobMetadata[]>([])
@@ -159,7 +158,6 @@ const currentSelectionColor = ref<string | undefined>('grey')
 const currentSelectionId = ref<string | undefined>(undefined)
 const currentSelectionIndex = ref<number>(0)
 const view = ref('default')
-const projectOptions = ref<object[]>([])
 const randomKey = ref<string>(uid())
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -285,21 +283,21 @@ watchEffect(() => {
   }
 })
 
-watchEffect(() => {
-  projects.value = useProjectsStore().projects
-  projectOptions.value = []
-  _.forEach(projects.value as Project[], (p: Project) => {
-    projectOptions.value.push({label: p.name, value: p.id})
-  })
-  projectOptions.value = _.sortBy(projectOptions.value, "label")
-  projectOptions.value.push({
-    label: 'Create new Project', value: 'new_project'
-  })
-  // if (projects.value.length === 0) {
-  //   console.log("no projects, redirecting to welcome page")
-  //   router.push("/sidepanel/welcome")
-  // }
-})
+// watchEffect(() => {
+//   projects.value = useProjectsStore().projects
+//   projectOptions.value = []
+//   _.forEach(projects.value as Project[], (p: Project) => {
+//     projectOptions.value.push({label: p.name, value: p.id})
+//   })
+//   projectOptions.value = _.sortBy(projectOptions.value, "label")
+//   projectOptions.value.push({
+//     label: 'Create new Project', value: 'new_project'
+//   })
+//   // if (projects.value.length === 0) {
+//   //   console.log("no projects, redirecting to welcome page")
+//   //   router.push("/sidepanel/welcome")
+//   // }
+// })
 
 const saveHtml = (source: Tab | undefined) => {
   console.log("saving html for", source)
