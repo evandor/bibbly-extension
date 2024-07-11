@@ -6,8 +6,8 @@
         <div class="col q-ma-none q-pa-none">
 
 
-          <div class="col-12 text-h6">
-            <img src="icons/favicon-32x32.png" class="q-mr-sm" /><slot name="title">{{ props.title }}</slot>
+          <div class="col-12 text-h6 cursor-pointer items-baseline" @click="router.push('/sidepanel')">
+            <img v-if="showIcon" src="icons/favicon-32x32.png" class="q-mr-sm" /><slot name="title">{{ props.title }}</slot>
           </div>
 
         </div>
@@ -41,6 +41,7 @@ const props = defineProps({
   title: {type: String, default: "My Tabsets"},
   forceTitle: {type: Boolean, default: false},
   showSearchBox: {type: Boolean, default: false},
+  showIcon: {type: Boolean, default: true},
   searchTerm: {type: String, default: ''},
   searchHits: {type: Number, required: false}
 })

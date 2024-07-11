@@ -4,34 +4,50 @@
 
     <div class="q-ma-none">
 
-      <div class=" q-ma-xs">
-        <div class="row q-ma-none q-pa-none">
-          <div class="col-7 text-subtitle-1 text-bold">
-            Active Project
-          </div>
-          <div class="col-5 text-blue-10 text-underline cursor-pointer text-right" @click="router.push('/sidepanel')">
-            Back to Project&nbsp;
-          </div>
-        </div>
-      </div>
-      <div class="ellipsis text-caption q-ml-md q-ma-xs">
-        {{ useTabsetsStore().currentTabsetName }}
-      </div>
+<!--      <div class=" q-ma-xs">-->
+<!--        <div class="row q-ma-none q-pa-none">-->
+<!--          <div class="col-7 text-subtitle-1 text-bold">-->
+<!--            Active Project-->
+<!--          </div>-->
+<!--          <div class="col-5 text-blue-10 text-underline cursor-pointer text-right" @click="router.push('/sidepanel')">-->
+<!--            Back to Project&nbsp;-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--      <div class="ellipsis text-caption q-ml-md q-ma-xs">-->
+<!--        {{ useTabsetsStore().currentTabsetName || '&nbsp;' }}-->
+<!--      </div>-->
 
       <div class="text-subtitle-1 q-ma-xs text-bold">
         Source:
       </div>
       <div class="ellipsis text-caption cursor-pointer q-ml-md q-ma-xs" @click="openURL(source?.url || '')">
-        {{ source?.url }}
+        {{ source?.url || '...' }}
+      </div>
+      <div class="text-subtitle-1 q-ma-xs text-bold">
+        Tab:
+      </div>
+      <div class="ellipsis text-caption cursor-pointer q-ml-md q-ma-xs">
+        {{ useTabsStore2().currentChromeTab?.url || '...'}}
+      </div>
+
+      <div class="text-subtitle-1 q-ma-xs text-bold q-mt-lg">
+        Create new Research Snapshot:
+      </div>
+      <div class="cursor-pointer q-ml-md q-ma-xs q-mb-lg">
+        <q-btn :disable="wrongTabOpen" label="as Image" class="bg-white q-mr-md" size="xs" @click="savePng(source as Tab)"/>
+        <q-btn :disable="wrongTabOpen" label="as PDF" class="bg-white q-mr-md" size="xs" @click="savePdf(source as Tab)"/>
+        <q-btn :disable="wrongTabOpen" label="as MHTML" class="bg-white q-mr-md" size="xs" @click="saveMHtml(source as Tab)"/>
+        <q-btn v-if="wrongTabOpen" label="open Page" class="bg-white q-mr-md" size="xs" @click="openURL(source?.url || '')"/>
       </div>
 
       <template v-for="(md,index) in metadatas">
 
-        <PngViewHelper :pngId="md.sourceId"
-                       :created="md.created"
-                       :index="index" :tabId="source?.id || 'unknown'"
-                       :extension="md.type"
-                       @new-snapshot-was-clicked="view = 'start_research'"
+        <SnapshotViewHelper
+          :snapshotId="md.id"
+          :created="md.created"
+          :extension="md.type"
+          @new-snapshot-was-clicked="view = 'start_research'"
         />
 
         <div class="row q-ma-sm q-ml-lg" v-for="a in md.annotations">
@@ -41,14 +57,11 @@
           </div>
           <div class="col-3 ellipsis">
             <template
-              v-if="showAnnotationMenu()">
-              <q-icon name="o_visibility" class="cursor-pointer" @click="restoreAnnotation(a)">
+              v-if="showAnnotationMenu(md.id)">
+              <q-icon name="o_visibility" class="q-mr-md cursor-pointer" @click="restoreAnnotation(a)">
                 <q-tooltip class="tooltip-small">Show Annotation in Page</q-tooltip>
               </q-icon>
-              <q-icon name="o_edit" class="cursor-pointer" @click="toggleEditAnnotation(a,index)">
-                <q-tooltip class="tooltip-small">Edit Annotation</q-tooltip>
-              </q-icon>
-              <q-icon name="o_delete" class="q-ma-none cursor-pointer" size="xs" @click="deleteAnnotation(a, index)">
+              <q-icon name="o_delete" class="q-mr-md cursor-pointer" size="11px" @click="deleteAnnotation(a, index)">
                 <q-tooltip class="tooltip-small">Delete Annotation from Page</q-tooltip>
               </q-icon>
             </template>
@@ -61,6 +74,7 @@
               :key="randomKey"
               :metadata="metadatas[currentSelectionIndex]"
               :source-id="sourceId"
+              :snapshotId="currentSnapshotId"
               :selectionId="currentSelectionId"
               :selectionText="currentSelectionText"
               :selection="currentSelection"
@@ -80,6 +94,7 @@
                                 :key="randomKey"
                                 :metadata="metadatas[currentSelectionIndex]"
                                 :source-id="sourceId"
+                                :snapshotId="currentSnapshotId"
                                 :selectionText="currentSelectionText"
                                 :selectionTitle="currentSelectionTitle"
                                 :selection="currentSelection"
@@ -93,21 +108,20 @@
       </template>
 
       <template v-if="!metadatas || metadatas.length === 0">
-        <div class="q-ma-md text-body2">
-          A research session will save a snapshot of the current page where you can start
-          annotating text selections.
-        </div>
-        <q-btn
-          unelevated rounded class="q-mx-md q-px-lg" color="primary" label="+ Start Research session"
-          @click="saveMHtml(source as Tab)"/>
-
+<!--        <div class="q-ma-md text-body2">-->
+<!--          A research session will save a snapshot of the current page where you can start-->
+<!--          annotating text selections.-->
+<!--        </div>-->
+<!--        <q-btn-->
+<!--          unelevated rounded class="q-mx-md q-px-lg" color="primary" label="+ Start Research session"-->
+<!--          @click="saveMHtml(source as Tab)"/>-->
       </template>
 
     </div>
 
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
-      <FirstToolbarHelper title="Bibbly"/>
+      <FirstToolbarHelper :showIcon="false" :title="'Project ' + useTabsetsStore().currentTabsetName || 'Bibbly'"/>
     </q-page-sticky>
 
   </q-page>
@@ -122,9 +136,6 @@ import Analytics from "src/core/utils/google-analytics";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import _ from "lodash"
 import {useRoute, useRouter} from "vue-router";
-import {SaveHtmlCommand} from "src/snapshots/domain/SaveHtml";
-import Command from "src/core/domain/Command";
-import PngViewHelper from "pages/sidepanel/helper/PngViewHelper.vue";
 import {useSnapshotsService} from "src/snapshots/services/SnapshotsService";
 import {useSnapshotsStore} from "src/snapshots/stores/SnapshotsStore";
 import {BlobMetadata, BlobType} from "src/snapshots/models/BlobMetadata";
@@ -137,8 +148,10 @@ import {Annotation} from "src/snapshots/models/Annotation";
 import {useUtils} from "src/core/services/Utils";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import SourcePageAnnotation from "src/pages/helper/SourcePageAnnotation.vue";
-import ChromeApi from "src/services/ChromeApi";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {SavePngCommand} from "src/snapshots/commands/SavePngCommand";
+import SnapshotViewHelper from "pages/sidepanel/helper/SnapshotViewHelper.vue";
+import {SavePdfCommand} from "src/snapshots/commands/SavePdfCommand";
 
 const router = useRouter()
 const route = useRoute()
@@ -148,6 +161,9 @@ const {sendMsg} = useUtils()
 const sourceId = ref('')
 const source = ref<Tab | undefined>(undefined)
 const metadatas = ref<BlobMetadata[]>([])
+
+const currentSnapshotId = ref<string | undefined>(undefined)
+
 const currentSelectionText = ref<string | undefined>(undefined)
 const currentSelectionViewPort = ref<object | undefined>(undefined)
 const currentSelectionRect = ref<object | undefined>(undefined)
@@ -159,6 +175,8 @@ const currentSelectionId = ref<string | undefined>(undefined)
 const currentSelectionIndex = ref<number>(0)
 const view = ref('default')
 const randomKey = ref<string>(uid())
+const openTabMatch = ref<Map<string, boolean>>(new Map())
+const wrongTabOpen = ref(true)
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   //console.log(" <<< received message", message)
@@ -185,6 +203,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         break
     }
 
+    currentSnapshotId.value = message.data.snapshotId
     currentSelectionId.value = undefined
     currentSelectionTitle.value = titleSuggestion
     currentSelectionText.value = message.data.text
@@ -195,6 +214,66 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     randomKey.value = uid()
   }
 })
+
+onMounted(async () => {
+  Analytics.firePageViewEvent('SidePanelSourcePage', document.location.href);
+})
+
+watchEffect(() => {
+  const currentUrl = useTabsStore2().currentChromeTab?.url
+  wrongTabOpen.value = currentUrl !== source.value?.url
+  // console.log("currentUrl", currentUrl)
+  for (const md of metadatas.value) {
+    openTabMatch.value.set(md.id, false)
+    const sessionUrl = chrome.runtime.getURL(`www/index.html#/mainpanel/${BlobType.MHTML}/${md.id}`)
+    if (currentUrl?.toLowerCase() === sessionUrl.toLowerCase()) {
+      openTabMatch.value.set(md.id, true)
+    }
+  }
+  // console.log("1", sessionUrl)
+  // console.log("2", currentUrl, currentUrl?.toLowerCase() === sessionUrl.toLowerCase())
+  //return
+})
+
+const updateBlobs = () => {
+  if (source.value?.id) {
+    useSnapshotsService().getMetadataFor(source.value.id, BlobType.HTML)
+      .then((mds: BlobMetadata[]) => {
+        metadatas.value = _.sortBy(mds, "created")
+      })
+  }
+}
+
+watchEffect(async () => {
+  sourceId.value = route.params.sourceId as string
+  console.log("sourceId", sourceId.value)
+
+  // TODO
+  source.value = _.find(
+    _.flatMap(
+      [...useTabsetsStore().tabsets.values()] as Tabset[],
+      (ts: Tabset) => ts.tabs),
+    (s: Tab) => s.id === sourceId.value)
+  updateBlobs()
+  if (source.value) {
+    const mds = await useSnapshotsStore().metadataFor(source.value.id, BlobType.MHTML)
+    console.log("got", mds)
+    if (mds) {
+      mds.forEach((md: BlobMetadata) => {
+        setAnnotations(md.annotations)
+      })
+    }
+  }
+})
+
+
+watchEffect(() => {
+  if (useSnapshotsStore().lastUpdate) {
+    console.log("updating!")
+    updateBlobs()
+  }
+})
+
 
 const setAnnotations = (as: Annotation[]) => {
   as.forEach((a: Annotation) => {
@@ -241,101 +320,36 @@ const deleteAnnotation = async (a: Annotation, i: number) => {
   }
 }
 
-const updateBlobs = () => {
-  if (source.value?.id) {
-    useSnapshotsService().getMetadataFor(source.value.id, BlobType.HTML)
-      .then((md: BlobMetadata[]) => {
-        metadatas.value = md
-      })
-  }
-}
-
-
-onMounted(async () => {
-  Analytics.firePageViewEvent('SidePanelSourcePage', document.location.href);
-})
-
-watchEffect(async () => {
-  sourceId.value = route.params.sourceId as string
-  console.log("sourceId", sourceId.value)
-
-  // TODO
-  source.value = _.find(
-    _.flatMap(
-      [...useTabsetsStore().tabsets.values()] as Tabset[],
-      (ts: Tabset) => ts.tabs),
-    (s: Tab) => s.id === sourceId.value)
-  updateBlobs()
-  if (source.value) {
-    const mds = await useSnapshotsStore().metadataFor(source.value.id, BlobType.MHTML)
-    if (mds) {
-      mds.forEach((md: BlobMetadata) => {
-        setAnnotations(md.annotations)
-      })
-    }
-  }
-})
-
-watchEffect(() => {
-  if (useSnapshotsStore().lastUpdate) {
-    console.log("updating!")
-    updateBlobs()
-  }
-})
-
-// watchEffect(() => {
-//   projects.value = useProjectsStore().projects
-//   projectOptions.value = []
-//   _.forEach(projects.value as Project[], (p: Project) => {
-//     projectOptions.value.push({label: p.name, value: p.id})
-//   })
-//   projectOptions.value = _.sortBy(projectOptions.value, "label")
-//   projectOptions.value.push({
-//     label: 'Create new Project', value: 'new_project'
-//   })
-//   // if (projects.value.length === 0) {
-//   //   console.log("no projects, redirecting to welcome page")
-//   //   router.push("/sidepanel/welcome")
-//   // }
-// })
-
-const saveHtml = (source: Tab | undefined) => {
-  console.log("saving html for", source)
-  if (source) {
-    chrome.tabs.query({currentWindow: true})
-      .then((tabs: chrome.tabs.Tab[]) => {
-        const tabCandidates = _.filter(tabs, (t: chrome.tabs.Tab) => t?.url === source.url)
-        if (tabCandidates.length > 0) {
-          const saveHtmlCommand: Command<any> = new SaveHtmlCommand(tabCandidates[0], source.id, "saved by user")
-          useCommandExecutor().execute(saveHtmlCommand)
-          updateBlobs()
-        }
-      })
-  }
-}
-
 const saveMHtml = (source: Tab | undefined) => {
   console.log("saving mhtml for", source)
   if (source && source.url) {
-    console.log("1")
     useCommandExecutor().executeFromUi(new SaveMHtmlCommand(source.id, source.url))
-      .then(() => {
+      .then((result: ExecutionResult<string>) => {
         //view.value = 'default'
-        openMhtml()
+       // openMhtml("")
       })
-    console.log("2")
-    //useCommandExecutor().execute(new SavePngCommand(source.id, source.url))
-
   }
 }
 
-const showAnnotationMenu = () => {
-  const sessionUrl = chrome.runtime.getURL(`www/index.html#/mainpanel/${BlobType.MHTML}/${source.value?.id}/0`)
-  const currentUrl = useTabsStore2().currentChromeTab?.url
-  return currentUrl?.toLowerCase() === sessionUrl.toLowerCase()
+const savePng = (source: Tab | undefined) => {
+  console.log("saving png for", source)
+  if (source && source.url) {
+    useCommandExecutor().executeFromUi(new SavePngCommand(source.id, source.url))
+  }
 }
 
-const openMhtml = () => window.open(chrome.runtime.getURL(`www/index.html#/mainpanel/${BlobType.MHTML}/${source.value?.id}/0`));
+const savePdf = (source: Tab | undefined) => {
+  console.log("saving PDF for", source)
+  if (source && source.url) {
+    useCommandExecutor().executeFromUi(new SavePdfCommand(source.id, source.url))
+  }
+}
+
+const showAnnotationMenu = (mdId: string) => {
+  return openTabMatch.value.get(mdId)
+}
+
+const openMhtml = (id: string) => window.open(chrome.runtime.getURL(`www/index.html#/mainpanel/${BlobType.MHTML}/${id}`));
 
 </script>
 

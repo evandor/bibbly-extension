@@ -9,7 +9,6 @@ import {useAppStore} from "stores/appStore";
 import {useUiStore} from "src/ui/stores/uiStore";
 import {User} from "firebase/auth";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
-import {useProjectsStore} from "src/projects/stores/projectsStore";
 import {useSnapshotsService} from "src/snapshots/services/SnapshotsService";
 import {useSnapshotsStore} from "src/snapshots/stores/SnapshotsStore";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
@@ -57,7 +56,7 @@ class AppService {
     // init of stores and some listeners
     await usePermissionsStore().initialize(useDB(quasar).localDb)
 
-    await useProjectsStore().initialize(useDB().projectsIndexedDB) // no service here
+    // await useProjectsStore().initialize(useDB().projectsIndexedDB) // no service here
 
     await ChromeListeners.initListeners()
 

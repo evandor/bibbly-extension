@@ -38,6 +38,8 @@ class ChromeListeners {
   inProgress = false;
 
   private onUpdatedListener = (number: number, info: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) => this.onUpdated(number, info, tab)
+  private onRemovedListener = (number: number, info: chrome.tabs.TabRemoveInfo) => this.onRemoved(number, info)
+  private onActivatedListener = (info: chrome.tabs.TabActiveInfo) => this.onActivated(info)
   private onMessageListener = (request: any, sender: chrome.runtime.MessageSender, sendResponse: any) => this.onMessage(request, sender, sendResponse)
 
   async initListeners() {
@@ -48,6 +50,8 @@ class ChromeListeners {
       await setCurrentTab()
 
       chrome.tabs.onUpdated.addListener(this.onUpdatedListener)
+      chrome.tabs.onRemoved.addListener(this.onRemovedListener)
+      chrome.tabs.onActivated.addListener(this.onActivatedListener)
       chrome.runtime.onMessage.addListener(this.onMessageListener)
     }
 
@@ -61,6 +65,8 @@ class ChromeListeners {
   async resetListeners() {
     console.log(" ...resetting listeners (after re-initialization)")
     chrome.tabs.onUpdated.removeListener(this.onUpdatedListener)
+    chrome.tabs.onRemoved.removeListener(this.onRemovedListener)
+    chrome.tabs.onActivated.removeListener(this.onActivatedListener)
     chrome.runtime.onMessage.removeListener(this.onMessageListener)
   }
 
@@ -128,6 +134,14 @@ class ChromeListeners {
         }
       })
     }
+  }
+
+  onRemoved(number: number, info: chrome.tabs.TabRemoveInfo) {
+    // this.eventTriggered()
+    console.debug("onRemoved tab event: ", number, info)
+    //useWindowsStore().refreshCurrentWindows()
+    // useWindowsStore().refreshTabsetWindow(info.windowId)
+    //sendMsg('window-updated', {initiated: "ChromeListeners#onRemoved"})
   }
 
   async onActivated(info: chrome.tabs.TabActiveInfo) {

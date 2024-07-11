@@ -1,8 +1,6 @@
 import Command from "src/core/domain/Command";
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {useUtils} from "src/core/services/Utils";
-import {useProjectsStore} from "src/projects/stores/projectsStore";
-import {Project} from "src/projects/models/Project";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {Tabset} from "src/tabsets/models/Tabset";
 
@@ -18,7 +16,6 @@ export class CreateProjectCommand implements Command<Tabset> {
   async execute(): Promise<ExecutionResult<Tabset>> {
     try {
       //const trustedWindowName = this.windowToOpen.replace(STRIP_CHARS_IN_USER_INPUT, '')
-      await useProjectsStore().createProject(this.name, this.description)
 
       const result = await useTabsetsStore().createTabset(this.name, [])
 

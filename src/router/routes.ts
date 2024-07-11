@@ -46,9 +46,19 @@ const routes: RouteRecordRaw[] = [
     children: [{path: '', component: () => import('src/snapshots/pages/MainPanelHtmlPage.vue')}],
   },
   {
-    path: '/mainpanel/mhtml/:tabId/:blobIndex',
+    path: '/mainpanel/mhtml/:snapshotId',
     component: () => import('layouts/PlainLayout.vue'),
     children: [{path: '', component: () => import('src/snapshots/pages/MainPanelMHtmlPage.vue')}],
+  },
+  {
+    path: '/mainpanel/png/:snapshotId',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('src/snapshots/pages/MainPanelPngPage.vue')}],
+  },
+  {
+    path: '/mainpanel/pdf/:snapshotId',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('src/snapshots/pages/MainPanelPdfPage.vue')}],
   },
   {
     path: '/features/:feature',

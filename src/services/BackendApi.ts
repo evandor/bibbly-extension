@@ -7,6 +7,7 @@ export class BackendApi {
   createPdf(html: string) {
     //return FirebaseCall.post("/pdf", {"html": html}, "blob")
     // return FirebaseCall.post("http://carsten.evandor.de:5000/pdf", {"html": html}, "blob", true)
+    return FirebaseCall.post("http://carsten.evandor.de:5000/pdf", {"html": html}, "blob", true)
   }
 
   createPng(html: string) {
