@@ -38,6 +38,7 @@
         <q-btn :disable="wrongTabOpen" label="as Image" class="bg-white q-mr-md" size="xs" @click="savePng(source as Tab)"/>
         <q-btn :disable="wrongTabOpen" label="as PDF" class="bg-white q-mr-md" size="xs" @click="savePdf(source as Tab)"/>
         <q-btn :disable="wrongTabOpen" label="as MHTML" class="bg-white q-mr-md" size="xs" @click="saveMHtml(source as Tab)"/>
+        <q-btn :disable="wrongTabOpen" label="as WArc" class="bg-white q-mr-md" size="xs" @click="saveWArch(source as Tab)"/>
         <q-btn v-if="wrongTabOpen" label="open Page" class="bg-white q-mr-md" size="xs" @click="openURL(source?.url || '')"/>
       </div>
 
@@ -152,6 +153,7 @@ import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {SavePngCommand} from "src/snapshots/commands/SavePngCommand";
 import SnapshotViewHelper from "pages/sidepanel/helper/SnapshotViewHelper.vue";
 import {SavePdfCommand} from "src/snapshots/commands/SavePdfCommand";
+import {SaveWarcCommand} from "src/snapshots/commands/SaveWarcCommand";
 
 const router = useRouter()
 const route = useRoute()
@@ -329,6 +331,13 @@ const saveMHtml = (source: Tab | undefined) => {
         //view.value = 'default'
        // openMhtml("")
       })
+  }
+}
+
+const saveWArch = (source: Tab | undefined) => {
+  console.log("saving Warc for", source)
+  if (source && source.url) {
+    useCommandExecutor().executeFromUi(new SaveWarcCommand(source.id, source.url))
   }
 }
 

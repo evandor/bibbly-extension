@@ -79,11 +79,9 @@
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import {onMounted, ref, watchEffect} from "vue";
 import Analytics from "src/core/utils/google-analytics";
-import {Project} from "src/projects/models/Project";
 import {useRouter} from "vue-router";
 import ProjectForm from "src/projects/forms/ProjectForm.vue";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
-import {CreateProjectCommand} from "src/projects/commands/CreateProjectCommand";
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {useAppStore} from "stores/appStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
@@ -93,10 +91,7 @@ import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
 
 const router = useRouter()
 
-const projects = ref<Project[]>([])
-const project = ref('')
-const currentProject = ref<Project | undefined>(undefined)
-const search = ref('')
+const tabsets = ref<Tabset[]>([])
 const view = ref('welcome')
 
 const projectOptions = ref<object[]>([])
@@ -105,13 +100,12 @@ onMounted(() => {
   Analytics.firePageViewEvent('SidePanelProjectsPage', document.location.href);
 })
 
-// watchEffect(() => {
-//   projects.value = useProjectsStore().projects
-//   if (projects.value.length > 0) {
-//     // router.push("/sidepanel/projects")
-//     router.push("/sidepanel")
-//   }
-// })
+watchEffect(() => {
+  tabsets.value = [...useTabsetsStore().tabsets.values()]
+  if (tabsets.value.length > 0) {
+    router.push("/sidepanel")
+  }
+})
 
 const addProject = () => {
   view.value = 'add-project'

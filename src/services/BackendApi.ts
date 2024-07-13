@@ -15,6 +15,12 @@ export class BackendApi {
     return FirebaseCall.post("http://carsten.evandor.de:5000/screenshot", {"html": html}, "blob", true)
     //return Promise.reject("not implemented in bibbly")
   }
+
+  createWarc(html: string) {
+    return FirebaseCall.post("http://carsten.evandor.de:5000/warc", {"html": html}, "blob", true)
+  }
+
+
 }
 
 export default new BackendApi();
