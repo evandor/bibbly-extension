@@ -19,7 +19,9 @@
             <q-btn icon="more_vert" color="green" dense class="q-mx-none" flat  @click="router.go()"/>
             <q-btn @click="useAuthStore().logout()"
                    icon="account_circle"
-                   dense size="lg" class="q-mx-none" flat/>
+                   dense size="lg" class="q-mx-none" flat>
+              <q-tooltip class="tooltip-small">Logged in as {{useAuthStore().getUsername}}</q-tooltip>
+            </q-btn>
 
           </slot>
         </div>

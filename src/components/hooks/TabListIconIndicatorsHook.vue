@@ -17,7 +17,6 @@ const props = defineProps({
 const showResearchIndicator = ref(false)
 
 watchEffect(async () => {
-  console.log("checking", props.tabId)
   showResearchIndicator.value = (await useSnapshotsStore().metadataFor(props.tabId)).length > 0
 })
 

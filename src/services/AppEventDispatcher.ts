@@ -11,7 +11,7 @@
 class AppEventDispatcher {
 
   dispatchEvent(name: string, params: object) {
-    console.debug(" >>> dispatching event", name, params)
+    //console.debug(" >>> dispatching event", name, params)
     try {
 
       switch (name) {

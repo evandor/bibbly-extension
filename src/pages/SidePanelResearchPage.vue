@@ -61,7 +61,7 @@
               <q-icon name="o_visibility" class="q-mr-md cursor-pointer" @click="restoreAnnotation(a)">
                 <q-tooltip class="tooltip-small">Show Annotation in Page</q-tooltip>
               </q-icon>
-              <q-icon name="o_delete" class="q-mr-md cursor-pointer" size="11px" @click="deleteAnnotation(a, index)">
+              <q-icon name="o_delete" class="q-mr-md cursor-pointer" size="11px" @click="deleteAnnotation(md, a)">
                 <q-tooltip class="tooltip-small">Delete Annotation from Page</q-tooltip>
               </q-icon>
             </template>
@@ -239,6 +239,7 @@ const updateBlobs = () => {
   if (source.value?.id) {
     useSnapshotsService().getMetadataFor(source.value.id, BlobType.HTML)
       .then((mds: BlobMetadata[]) => {
+        console.log("setting metatdatas", mds.length)
         metadatas.value = _.sortBy(mds, "created")
       })
   }
@@ -313,9 +314,9 @@ const toggleEditAnnotation = (a: Annotation, i: number) => {
 
 }
 
-const deleteAnnotation = async (a: Annotation, i: number) => {
+const deleteAnnotation = async (md: BlobMetadata, a: Annotation) => {
   if (source.value) {
-    const as = await useSnapshotsStore().deleteAnnotation(source.value.id, a, i)
+    const as = await useSnapshotsStore().deleteAnnotation(md.id, a)
     setAnnotations(as)
   }
 }

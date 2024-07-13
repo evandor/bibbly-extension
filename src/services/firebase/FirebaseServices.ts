@@ -32,7 +32,6 @@ class FirebaseServices {
       messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID
     })
     this.auth = getAuth(this.firebaseApp)
-    //console.log("got auth", this.auth)
 
     // https://firebase.google.com/docs/firestore/manage-data/enable-offline#web-modular-api
     initializeFirestore(this.firebaseApp, {
@@ -40,15 +39,8 @@ class FirebaseServices {
         persistentLocalCache({tabManager: persistentMultipleTabManager()})
     })
     this.firestore = getFirestore(this.firebaseApp)
-    //console.log("got firestore", this.firestore)
-
-    // this.messaging = getMessaging(this.firebaseApp)
-    // //console.log("got messaging", this.messaging)
-    //
     this.storage = getStorage(this.firebaseApp)
-    //
-    // this.realtimeDb = getDatabase(this.firebaseApp)
-
+    console.log("initializing FirebaseServices -- done")
   }
 
   getAuth() {

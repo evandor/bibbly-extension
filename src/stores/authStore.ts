@@ -47,14 +47,14 @@ export const useAuthStore = defineStore('auth', () => {
   // --- getters ---
   const isAuthenticated = computed(() => {
     return (): boolean => {
-      return true//authenticated.value
+      return authenticated.value
     }
   })
 
   const getUsername = computed(() => {
     if (authenticated.value) {
       // @ts-ignore
-      return user.value?.displayName || "undefined";
+      return user.value?.email || "undefined";
     }
     return "anonymous"
   })
@@ -103,11 +103,11 @@ export const useAuthStore = defineStore('auth', () => {
 
   // --- actions ---
   async function setUser(u: User | undefined) {
-    console.log("setting user id to ", u?.uid)
     if (u) {
+      console.log("setting user id to", u.uid)
       LocalStorage.set(CURRENT_USER_ID, u.uid)
       authenticated.value = true;
-      user.value = u;
+      user.value = JSON.parse(JSON.stringify(u))
 
       const userDoc = await getDoc(doc(FirebaseServices.getFirestore(), "users", u.uid))
       const userData = userDoc.data() as UserData
@@ -129,6 +129,7 @@ export const useAuthStore = defineStore('auth', () => {
       LocalStorage.remove(CURRENT_USER_ID)
       authenticated.value = false;
       user.value = null as unknown as User;
+      console.log(`setting user id to <null>`)
       products.value = []
     }
   }

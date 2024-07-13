@@ -33,9 +33,9 @@ onAuthStateChanged(auth, async (user) => {
 
     try {
       await AppService.init($q, router, true, user)
-      if (inBexMode()) {
-        $q.bex.send('auth.user.login', {userId: user.uid})
-      }
+      // if (inBexMode()) {
+      //   $q.bex.send('auth.user.login', {userId: user.uid})
+      // }
       //FirebaseServices.startRealtimeDbListeners(user.uid)
     } catch (error: any) {
       console.log("%ccould not initialize appService due to " + error, "background-color:orangered")
@@ -47,8 +47,7 @@ onAuthStateChanged(auth, async (user) => {
   } else {
     // User is signed out
     console.log("%conAuthStateChanged: logged out", "border:1px solid green")
-    // TODO
-    //await router.push("/sidepanel/login")
+    await router.push("/sidepanel/login")
   }
 });
 
@@ -90,14 +89,5 @@ if (currentUser) {
     AppService.init($q, router, false)
   }, 2000)
 }
-
-
-// info(`tabsets started: mode=${process.env.MODE}, version=${import.meta.env.PACKAGE_VERSION}`)
-
-// Notification.requestPermission().then((permission) => {
-//   if (permission === 'granted') {
-//     console.log('Notification permission granted.')
-//   }
-// })
 
 </script>

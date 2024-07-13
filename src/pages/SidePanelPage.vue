@@ -30,13 +30,13 @@
         <template v-if="view === 'projects'">
           <div class="row q-ma-md q-pa-md items-start">
             <div class="col-12">
-              <q-select filled v-model="project" :options="projectOptions" label="Project"
+              <q-select filled v-model="project" :options="projectOptions" :label="t('collection')"
                         style="border: 2px solid #21B6A8"
                         @update:modelValue="a => projectListWasClicked(a)"
               />
             </div>
             <div class="col-12 q-my-lg text-center">
-              <q-btn unelevated rounded class="q-mx-md q-px-lg" color="primary" label="+ add current webpage"
+              <q-btn unelevated rounded class="q-mx-md q-px-lg" color="primary" :label="t('add_link')"
                      @click="addCurrentTab()"
               />
             </div>
@@ -112,9 +112,7 @@ import {Tab} from "src/tabsets/models/Tab";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
-import {useAuthStore} from "stores/authStore";
 import ProjectForm from "src/projects/forms/ProjectForm.vue";
-import {CreateProjectCommand} from "src/projects/commands/CreateProjectCommand";
 import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
 
 const {t} = useI18n({locale: navigator.language, useScope: "global"})

@@ -56,11 +56,7 @@ class AppService {
     // init of stores and some listeners
     await usePermissionsStore().initialize(useDB(quasar).localDb)
 
-    // await useProjectsStore().initialize(useDB().projectsIndexedDB) // no service here
-
     await ChromeListeners.initListeners()
-
-    // ChromeBookmarkListeners.initListeners()
 
     settingsStore.initialize(quasar.localStorage);
 
@@ -73,10 +69,6 @@ class AppService {
 
     //await searchStore.init().catch((err) => console.error(err))
 
-    // init db
-    // await IndexedDbPersistenceService.init("db")
-
-    // init services
     await useAuthStore().setUser(user)
 
     useSuggestionsStore().init(useDB(undefined).db)
@@ -97,14 +89,14 @@ class AppService {
       // console.debug(`%cchecking sync config: persistenceStore=${persistenceStore.getServiceName()}`, "font-weight:bold")
 
       // await FsPersistenceService.init()
-
-      await this.initCoreSerivces(quasar,  this.router)
+      console.log(`%cinitializing AppService: first start=${!this.initialized}, forceRestart=${forceRestart} -- done`, "font-weight:bold")
+      await this.initCoreSerivces(this.router)
     } else {
-      await this.initCoreSerivces(quasar,  this.router)
+      //await this.initCoreSerivces(quasar,  this.router)
     }
   }
 
-  private async initCoreSerivces(quasar: any,  router: Router) {
+  private async initCoreSerivces(router: Router) {
 
     if (usePermissionsStore().hasFeature(FeatureIdent.WINDOWS_MANAGEMENT)) {
       await useWindowsStore().initialize()

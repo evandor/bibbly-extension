@@ -95,23 +95,22 @@
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import {onMounted, ref, watchEffect} from "vue";
 import Analytics from "src/core/utils/google-analytics";
-import {usePermissionsStore} from "stores/permissionsStore";
 import ProjectForm from "src/projects/forms/ProjectForm.vue";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {CreateProjectCommand} from "src/projects/commands/CreateProjectCommand";
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
-import {useProjectsStore} from "src/projects/stores/projectsStore";
 import {Project} from "src/projects/models/Project";
 import _ from "lodash"
 import {Source} from "src/projects/models/Source";
 import {uid} from "quasar";
 import SourceWidget from "src/projects/widget/SourceWidget.vue";
 import {useRouter} from "vue-router";
-import {useAppStore} from "stores/appStore";
-import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
 import {Tabset} from "src/tabsets/models/Tabset";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useAuthStore} from "stores/authStore";
+import {useI18n} from "vue-i18n";
+
+const { t } = useI18n()
 
 const router = useRouter()
 
