@@ -32,14 +32,15 @@
       </div>
 
       <div class="text-subtitle-1 q-ma-xs text-bold q-mt-lg">
-        Create new Research Snapshot:
+        Create new Research Snapshot as:
       </div>
       <div class="cursor-pointer q-ml-md q-ma-xs q-mb-lg">
-        <q-btn :disable="wrongTabOpen" label="as Image" class="bg-white q-mr-md" size="xs" @click="savePng(source as Tab)"/>
-        <q-btn :disable="wrongTabOpen" label="as PDF" class="bg-white q-mr-md" size="xs" @click="savePdf(source as Tab)"/>
-        <q-btn :disable="wrongTabOpen" label="as MHTML" class="bg-white q-mr-md" size="xs" @click="saveMHtml(source as Tab)"/>
-        <q-btn :disable="wrongTabOpen" label="as WArc" class="bg-white q-mr-md" size="xs" @click="saveWArch(source as Tab)"/>
-        <q-btn v-if="wrongTabOpen" label="open Page" class="bg-white q-mr-md" size="xs" @click="openURL(source?.url || '')"/>
+        <q-btn :disable="wrongTabOpen" label="Image" class="bg-white q-mr-xs" size="xs" @click="savePng(source as Tab)"/>
+        <q-btn :disable="wrongTabOpen" label="PDF" class="bg-white q-mr-xs" size="xs" @click="savePdf(source as Tab)"/>
+        <q-btn :disable="wrongTabOpen" label="HTML" class="bg-white q-mr-xs" size="xs" @click="saveHtml(source as Tab)"/>
+        <q-btn :disable="wrongTabOpen" label="MHTML" class="bg-white q-mr-xs" size="xs" @click="saveMHtml(source as Tab)"/>
+        <q-btn :disable="wrongTabOpen" label="WArc" class="bg-white q-mr-xs" size="xs" @click="saveWArch(source as Tab)"/>
+        <q-btn v-if="wrongTabOpen" label="open Page" class="bg-white q-mr-xs" size="xs" @click="openURL(source?.url || '')"/>
       </div>
 
       <template v-for="(md,index) in metadatas">
@@ -149,11 +150,11 @@ import {Annotation} from "src/snapshots/models/Annotation";
 import {useUtils} from "src/core/services/Utils";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import SourcePageAnnotation from "src/pages/helper/SourcePageAnnotation.vue";
-import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {SavePngCommand} from "src/snapshots/commands/SavePngCommand";
 import SnapshotViewHelper from "pages/sidepanel/helper/SnapshotViewHelper.vue";
 import {SavePdfCommand} from "src/snapshots/commands/SavePdfCommand";
 import {SaveWarcCommand} from "src/snapshots/commands/SaveWarcCommand";
+import {SaveHtmlCommand} from "src/snapshots/commands/SaveHtmlCommand";
 
 const router = useRouter()
 const route = useRoute()
@@ -239,7 +240,7 @@ watchEffect(() => {
 
 const updateBlobs = () => {
   if (source.value?.id) {
-    useSnapshotsService().getMetadataFor(source.value.id, BlobType.HTML)
+    useSnapshotsService().getMetadataFor(source.value.id)
       .then((mds: BlobMetadata[]) => {
         console.log("setting metatdatas", mds.length)
         metadatas.value = _.sortBy(mds, "created")
@@ -259,7 +260,7 @@ watchEffect(async () => {
     (s: Tab) => s.id === sourceId.value)
   updateBlobs()
   if (source.value) {
-    const mds = await useSnapshotsStore().metadataFor(source.value.id, BlobType.MHTML)
+    const mds = await useSnapshotsStore().metadataFor(source.value.id)
     console.log("got", mds)
     if (mds) {
       mds.forEach((md: BlobMetadata) => {
@@ -323,14 +324,17 @@ const deleteAnnotation = async (md: BlobMetadata, a: Annotation) => {
   }
 }
 
+const saveHtml = (source: Tab | undefined) => {
+  console.log("saving html for", source)
+  if (source && source.url) {
+    useCommandExecutor().executeFromUi(new SaveHtmlCommand(source.id, source.url))
+  }
+}
+
 const saveMHtml = (source: Tab | undefined) => {
   console.log("saving mhtml for", source)
   if (source && source.url) {
     useCommandExecutor().executeFromUi(new SaveMHtmlCommand(source.id, source.url))
-      .then((result: ExecutionResult<string>) => {
-        //view.value = 'default'
-       // openMhtml("")
-      })
   }
 }
 

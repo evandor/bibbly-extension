@@ -5,7 +5,7 @@
     <div class="row fit">
       <q-toolbar-title>
         <div class="row justify-start items-baseline">
-          <div class="col-10">Bookmrkx Extension Settings</div>
+          <div class="col-10">Bibbly Extension Settings</div>
           <div class="col-2 text-right">
             <OpenRightDrawerWidget/>
           </div>
@@ -125,7 +125,6 @@ import {onMounted, ref, watch, watchEffect} from "vue";
 import {LocalStorage, useQuasar} from "quasar";
 import NavigationService from "src/services/NavigationService";
 import {DrawerTabs, ListDetailLevel, useUiStore} from "src/ui/stores/uiStore";
-import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useSettingsStore} from "src/stores/settingsStore"
 import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue";
 import Analytics from "src/core/utils/google-analytics";
@@ -179,7 +178,7 @@ onMounted(() => {
 
 let suggestionsCounter = 0
 
-watchEffect(() => permissionsList.value = usePermissionsStore().permissions?.permissions || [])
+watchEffect(() => permissionsList.value = /*usePermissionsStore().permissions?.permissions ||*/ [])
 
 
 watchEffect(() => {
@@ -212,7 +211,9 @@ watchEffect(() => {
   LocalStorage.set("ui.tabSwitcher", autoSwitcherOption.value)
 })
 
-const simulateNewVersion = (version: string) => NavigationService.updateAvailable({version: version})
+const simulateNewVersion = (version: string) => {
+  //NavigationService.updateAvailable({version: version})
+}
 
 const simulateStaticSuggestion = () => {
   const suggestions: [Suggestion] = [

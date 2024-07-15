@@ -114,6 +114,7 @@ const addProject = () => {
 const createProject = (e: object) =>
   useCommandExecutor().executeFromUi(new CreateTabsetCommand(e['name' as keyof object], []))
     .then((res: ExecutionResult<Tabset>) => {
+      console.log("got res", res)
       useAppStore().setCurrentProject(res.result.id)
       useTabsetsStore().selectCurrentTabset(res.result.id)
       // router.push("/sidepanel/projects")

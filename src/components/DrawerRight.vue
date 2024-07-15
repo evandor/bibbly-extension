@@ -79,6 +79,7 @@ import {ref, watchEffect} from "vue";
 import {useRoute} from "vue-router";
 import {DrawerTabs, useUiStore} from "src/ui/stores/uiStore";
 import TabsetHelp from "components/TabsetHelp.vue";
+import Features from "src/features/components/Features.vue";
 
 const route = useRoute()
 

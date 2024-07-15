@@ -17,7 +17,8 @@ export class BackendApi {
   }
 
   createWarc(html: string) {
-    return FirebaseCall.post("http://carsten.evandor.de:5000/warc", {"html": html}, "blob", true)
+    // return FirebaseCall.post("http://carsten.evandor.de:5000/warc", {"html": html}, "blob", true)
+    return FirebaseCall.post("http://127.0.0.1:8123/warc", {"html": html}, "blob", true)
   }
 
 

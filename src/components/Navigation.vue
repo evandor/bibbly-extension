@@ -24,7 +24,7 @@
                 class="tooltip"
                 :delay="200"
                 anchor="center left" self="center right">
-                {{ usePermissionsStore().hasFeature(FeatureIdent.SPACES) ?
+                {{ useFeaturesStore().hasFeature(FeatureIdent.SPACES) ?
                   'Click here to add a new tabset to the current Space':
                   'Click here to add a new tabset'}}
               </q-tooltip>
@@ -45,8 +45,8 @@
 <script setup lang="ts">
 
 import {useQuasar} from "quasar";
-import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
+import {useFeaturesStore} from "../features/stores/featuresStore";
 
 const $q = useQuasar();
 

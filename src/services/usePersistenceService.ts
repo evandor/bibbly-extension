@@ -1,29 +1,38 @@
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
-import {QVueGlobals, useQuasar} from "quasar";
-import {LocalStoragePersistenceService} from "src/services/storage/LocalStoragePersistenceService";
 import PersistenceService from "src/services/PersistenceService";
-import IndexedDbProjectsPersistence from "src/projects/persistence/IndexedDbProjectsPersistence";
-import ProjectsPersistence from "src/projects/persistence/ProjectsPersistence";
 import FirestoreSpacesPersistence from "src/spaces/persistence/FirestoreSpacesPersistence";
 import FirestoreTabsetsPersistence from "src/tabsets/persistence/FirestoreTabsetsPersistence";
 import FirestoreSnapshotsPersistence from "src/snapshots/persistence/FirestoreSnapshotsPersistence";
+import {useAppStore} from "stores/appStore";
+import IndexedDbSpacesPersistence from "src/spaces/persistence/IndexedDbSpacesPersistence";
+import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";
+import IndexedDbSnapshotPersistence from "src/snapshots/persistence/IndexedDbSnapshotPersistence";
+import {useSettingsStore} from "stores/settingsStore";
 
-export function useDB(quasar: QVueGlobals | undefined = undefined) {
+export function useDB() {
 
   const db: PersistenceService = IndexedDbPersistenceService
-  var localDb = undefined as unknown as PersistenceService
-  if (quasar) {
-    localDb = new LocalStoragePersistenceService(quasar)
-  }
-  const projectsIndexedDB: ProjectsPersistence = IndexedDbProjectsPersistence
 
-  const spacesDb = FirestoreSpacesPersistence
-  const tabsetsDb = FirestoreTabsetsPersistence
-  const snapshotsDb = FirestoreSnapshotsPersistence
+  const localMode = useSettingsStore().isEnabled('localMode')
+
+  console.log(`using localMode=${localMode} in persistenceService`)
+  if (localMode) {
+    console.log("==>Hier", typeof localMode)
+  } else {
+    console.log("==>DA", typeof localMode)
+
+  }
+
+  const spacesDb = localMode ? IndexedDbSpacesPersistence : FirestoreSpacesPersistence
+  const tabsetsDb = localMode ? IndexedDbTabsetsPersistence : FirestoreTabsetsPersistence
+  const snapshotsDb = localMode ? IndexedDbSnapshotPersistence : FirestoreSnapshotsPersistence
+
+  spacesDb.init()
+  tabsetsDb.init()
+  snapshotsDb.init()
 
   return {
-    db, localDb,
-    projectsIndexedDB,
+    db,
     spacesDb,
     tabsetsDb,
     snapshotsDb

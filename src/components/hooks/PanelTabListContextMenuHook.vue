@@ -31,6 +31,7 @@ import {BlobMetadata} from "src/snapshots/models/BlobMetadata";
 import {useSnapshotsStore} from "src/snapshots/stores/SnapshotsStore";
 import {openURL} from "quasar";
 import _ from "lodash"
+import NavigationService from "src/services/NavigationService";
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
@@ -48,9 +49,8 @@ const openResearchPage = () => {
 const hasResearchData = () =>
   _.find(useSnapshotsStore().metadata, (md: BlobMetadata) => md.sourceId === props.tab.id)
 
-
 const startResearch = () => {
-  openURL(props.tab.url!)
+  NavigationService.openOrCreateTab([props.tab.url!])
   router.push('/sidepanel/research/' + props.tab.id)
 }
 

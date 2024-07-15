@@ -9,6 +9,7 @@ export const useAppStore = defineStore('app', () => {
 
   const currentProject = ref<string | undefined>(LocalStorage.getItem("currentProject") as string || undefined);
 
+  //const localMode = ref(false)
   //const user = ref<object | undefined>(undefined)
 
   function init() {

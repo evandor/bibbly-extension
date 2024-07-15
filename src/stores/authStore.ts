@@ -7,6 +7,8 @@ import {CURRENT_USER_ID} from "boot/constants";
 import {collection, doc, getDoc, getDocs} from "firebase/firestore";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
 import PersistenceService from "src/services/PersistenceService";
+import {useAppStore} from "stores/appStore";
+import {useSettingsStore} from "stores/settingsStore";
 
 export enum AccessItem {
   SYNC = "SYNC",
@@ -16,7 +18,7 @@ export enum AccessItem {
 
 export const useAuthStore = defineStore('auth', () => {
 
-  let storage = null as unknown as PersistenceService
+  const localMode = useSettingsStore().isEnabled('localMode')
 
   const authenticated = ref(false)
   const user = ref<User>(null as unknown as User)
@@ -29,7 +31,6 @@ export const useAuthStore = defineStore('auth', () => {
   // --- init ---
   async function initialize(ps: PersistenceService) {
     console.debug(" ...initializing AuthStore")
-    storage = ps
 
     //check stored user info
     const userId = LocalStorage.getItem(CURRENT_USER_ID) as string
@@ -47,7 +48,7 @@ export const useAuthStore = defineStore('auth', () => {
   // --- getters ---
   const isAuthenticated = computed(() => {
     return (): boolean => {
-      return authenticated.value
+      return localMode ? true : authenticated.value
     }
   })
 

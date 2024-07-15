@@ -7,7 +7,8 @@
 
 
           <div class="col-12 text-h6 cursor-pointer items-baseline" @click="router.push('/sidepanel')">
-            <img v-if="showIcon" src="icons/favicon-32x32.png" class="q-mr-sm" /><slot name="title">{{ props.title }}</slot>
+            <img v-if="showIcon" src="icons/favicon-32x32.png" class="q-mr-sm"/>
+            <slot name="title">{{ props.title }}</slot>
           </div>
 
         </div>
@@ -16,11 +17,13 @@
 
           <slot name="iconsRight">
 
-            <q-btn icon="more_vert" color="green" dense class="q-mx-none" flat  @click="router.go()"/>
-            <q-btn @click="useAuthStore().logout()"
-                   icon="account_circle"
-                   dense size="lg" class="q-mx-none" flat>
-              <q-tooltip class="tooltip-small">Logged in as {{useAuthStore().getUsername}}</q-tooltip>
+            <q-btn icon="more_vert" color="green" dense class="q-mx-none" flat @click="router.go()"/>
+            <q-btn
+              v-if="!useSettingsStore().isEnabled('localMode')"
+              @click="useAuthStore().logout()"
+              icon="account_circle"
+              dense size="lg" class="q-mx-none" flat>
+              <q-tooltip class="tooltip-small">Logged in as {{ useAuthStore().getUsername }}</q-tooltip>
             </q-btn>
 
           </slot>
@@ -36,8 +39,9 @@ import {useRouter} from "vue-router";
 import {ref, watchEffect} from "vue";
 import {useUiStore} from "src/ui/stores/uiStore";
 import {useQuasar} from "quasar";
-import SidePanelToolbarButton from "src/core/components/SidePanelToolbarButton.vue";
 import {useAuthStore} from "stores/authStore";
+import {useAppStore} from "stores/appStore";
+import {useSettingsStore} from "stores/settingsStore";
 
 const props = defineProps({
   title: {type: String, default: "My Tabsets"},

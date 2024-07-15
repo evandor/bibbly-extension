@@ -81,8 +81,7 @@
 
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
-      <FirstToolbarHelper title="Bibbly">
-      </FirstToolbarHelper>
+      <FirstToolbarHelper title="Bibbly" />
     </q-page-sticky>
   </q-page>
 
@@ -94,7 +93,6 @@ import {onMounted, onUnmounted, ref, watchEffect} from "vue";
 import {useUtils} from "src/core/services/Utils";
 import {LocalStorage, uid} from "quasar";
 import {useUiStore} from "src/ui/stores/uiStore";
-import {usePermissionsStore} from "src/stores/permissionsStore";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import Analytics from "src/core/utils/google-analytics";
 import {useSuggestionsStore} from "stores/suggestionsStore";
@@ -114,6 +112,7 @@ import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import ProjectForm from "src/projects/forms/ProjectForm.vue";
 import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const {t} = useI18n({locale: navigator.language, useScope: "global"})
 
@@ -292,19 +291,11 @@ if (inBexMode()) {
       }
       const tsId = message.data.tabsetId
     } else if (message.name === 'feature-activated') {
-      usePermissionsStore().addActivateFeature(message.data.feature)
-      if (message.data.feature === 'help') {
-      } else if (message.data.feature === 'bookmarks') {
-        usePermissionsStore().load()
-          .then(() => {
-            // useBookmarksStore().init()
-            // useBookmarksStore().loadBookmarks()
-          })
-      }
+      useFeaturesStore().activateFeature(message.data.feature)
     } else if (message.name === "text-selection") {
       console.log("message", message)
     } else if (message.name === "feature-deactivated") {
-      usePermissionsStore().removeActivateFeature(message.data.feature)
+      useFeaturesStore().deactivateFeature(message.data.feature)
     } else if (message.name === "tabsets-imported") {
       // TODO reload
     } else if (message.name === "tab-being-dragged") {
@@ -355,8 +346,8 @@ if (inBexMode()) {
       useSuggestionsStore().loadSuggestionsFromDb()
     } else if (message.name === "reload-tabset") {
       console.log("reload-tabset message received")
-    } else if (message.name === 'reload-application') {
-      AppService.restart("restarted=true")
+    } else if (message.name === 'restart-application') {
+      AppService.restart("/")
     } else {
       console.log("got unmatched message", message)
     }

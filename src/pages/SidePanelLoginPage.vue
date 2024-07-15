@@ -34,7 +34,24 @@
         </div>
 
         <div class="col q-mt-lg text-center cursor-pointer text-bold text-primary" @click="toggleRegister()"
-             v-html="registerMode ? 'Log in':'Register'"></div>
+             v-html="registerMode ? 'Log in':'Register'">
+        </div>
+
+        <template v-if="!registerMode">
+          <div class="q-ma-sm text-body2 q-mt-xl text-grey">
+            If you do not want to create an account, use the
+          </div>
+          <div class="q-ma-sm text-body2 text-center text-blue-10 cursor-pointer" @click="useLocalMode()">
+            Local Mode
+          </div>
+          <div class="q-ma-sm text-body2 text-grey text-justify">
+            Some features like sharing will not work in this mode. Your data is stored
+            solely in your browser's local database. You can create an account later if
+            you wish and import your data.
+          </div>
+
+        </template>
+
 
       </div>
     </div>
@@ -46,13 +63,13 @@
 
 import {ref} from "vue";
 import {LocalStorage} from "quasar";
-import NavigationService from "src/services/NavigationService.js";
-import {defineComponent} from "vue";
 import {createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, UserCredential} from "firebase/auth";
 import {CURRENT_USER_EMAIL} from "boot/constants";
 import {useAuthStore} from "stores/authStore";
 import {NotificationType, useNotificationHandler} from "src/core/services/ErrorHandler";
 import {useRouter} from "vue-router";
+import {useSettingsStore} from "stores/settingsStore";
+import AppService from "src/services/AppService";
 
 const email = ref('')//LocalStorage.getItem(CURRENT_USER_EMAIL))
 const password = ref('')
@@ -96,6 +113,12 @@ const signin = async () => {
     }
     loading.value = false
   }
+}
+
+const useLocalMode  = () => {
+  useSettingsStore().setFeatureToggle("localMode", true)
+  //router.push("/sidepanel/welcome")
+  AppService.restart("/sidepanel/welcome")
 }
 
 </script>

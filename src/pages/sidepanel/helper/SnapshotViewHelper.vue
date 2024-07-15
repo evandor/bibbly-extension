@@ -36,6 +36,8 @@ const deleteSnapshot = () => useSnapshotsService().deleteSnapshot(props.snapshot
 const title = () => {
   switch (props.extension.toLowerCase()) {
     case "mhtml":
+      return "MHtml Snapshot"
+    case "html":
       return "HTML Snapshot"
     case "png":
       return "Image Snapshot"

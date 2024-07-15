@@ -24,27 +24,49 @@
           <q-toggle v-model="devEnabled" @click="updateSettings('dev', devEnabled)"/>
         </div>
       </div>
-<!--    </template>-->
+      <div class="row q-pa-md">
+        <div class="col-3"><b>Local Persistence Mode</b></div>
+        <div class="col-3">
+          Use the browser's local database if you do not want to store your data in the cloud. Some
+          features like sharing etc. will not work with this mode.<br><br>
+          <b>You need to reload the extension after changing this.</b>
+        </div>
+        <div class="col-1"></div>
+        <div class="col-5">
+          <q-toggle v-model="localModeToggle" @click="updateSettings('localMode', localModeToggle)"/>
+        </div>
+      </div>
+
   </div>
 </template>
 
 <script lang="ts" setup>
 
-import {AccessItem, useAuthStore} from "stores/authStore";
 import {ref, watchEffect} from "vue";
 import {useSettingsStore} from "stores/settingsStore";
+import {useUtils} from "src/core/services/Utils";
+
+const {sendMsg} = useUtils()
 
 const settingsStore = useSettingsStore()
 
 const devEnabled = ref<boolean>(settingsStore.isEnabled('dev'))
 
+const localModeToggle = ref<boolean>(settingsStore.isEnabled('localMode'))
+
 watchEffect(() => {
   devEnabled.value = settingsStore.isEnabled('dev')
+})
+
+watchEffect(() => {
+  localModeToggle.value = settingsStore.isEnabled('localMode')
 })
 
 const updateSettings = (ident: string, val: boolean) => {
   console.log("settings updated to", ident, val)
   settingsStore.setFeatureToggle(ident, val)
+  //AppService.restart("/")
+  sendMsg('restart-application',{initiatedBy: "FeatureToggleSettings"})
 }
 
 </script>

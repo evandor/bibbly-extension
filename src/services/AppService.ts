@@ -1,11 +1,8 @@
-import {usePermissionsStore} from "stores/permissionsStore";
 import ChromeListeners from "src/services/ChromeListeners";
 import {useDB} from "src/services/usePersistenceService";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import ChromeApi from "src/services/ChromeApi";
-import {useSettingsStore} from "stores/settingsStore";
 import {Router} from "vue-router";
-import {useAppStore} from "stores/appStore";
 import {useUiStore} from "src/ui/stores/uiStore";
 import {User} from "firebase/auth";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
@@ -22,6 +19,7 @@ import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useAuthStore} from "stores/authStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 class AppService {
 
@@ -43,22 +41,20 @@ class AppService {
 
     this.initialized = true
 
-    const appStore = useAppStore()
-    const settingsStore = useSettingsStore()
+    //const appStore = useAppStore()
+
     const uiStore = useUiStore()
 
     this.router = router
 
     uiStore.appLoading = "loading projects..."
 
-    appStore.init()
+   // appStore.init()
 
     // init of stores and some listeners
-    await usePermissionsStore().initialize(useDB(quasar).localDb)
+    //await usePermissionsStore().initialize(useDB(quasar).localDb)
 
     await ChromeListeners.initListeners()
-
-    settingsStore.initialize(quasar.localStorage);
 
     await useSnapshotsService().init()
     await useSnapshotsStore().initialize(useDB().snapshotsDb)
@@ -71,7 +67,7 @@ class AppService {
 
     await useAuthStore().setUser(user)
 
-    useSuggestionsStore().init(useDB(undefined).db)
+    useSuggestionsStore().init(useDB().db)
 
     tabsetService.setLocalStorage(localStorage)
 
@@ -96,9 +92,26 @@ class AppService {
     }
   }
 
+  restart(path: string) {
+    console.log("%crestarting tabsets", "font-weight:bold", window.location.href)
+    const baseLocation = window.location.href.split("?")[0]
+    console.log("%cbaseLocation", "font-weight:bold", baseLocation)
+    console.log("%cwindow.location.href", "font-weight:bold", window.location.href)
+    if (window.location.href.indexOf("?") < 0) {
+      const tsIframe = window.parent.frames[0]
+      //log("iframe", tsIframe)
+      if (tsIframe) {
+        const location = chrome.runtime.getURL("/www/index.html#" + path)
+        console.debug("%cnew window.location.href", "font-weight:bold", location)
+        tsIframe.location.href = location
+        tsIframe.location.reload()
+      }
+    }
+  }
+
   private async initCoreSerivces(router: Router) {
 
-    if (usePermissionsStore().hasFeature(FeatureIdent.WINDOWS_MANAGEMENT)) {
+    if (useFeaturesStore().hasFeature(FeatureIdent.WINDOWS_MANAGEMENT)) {
       await useWindowsStore().initialize()
       useWindowsStore().initListeners()
     }

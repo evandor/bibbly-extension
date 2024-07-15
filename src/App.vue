@@ -10,12 +10,12 @@ import {onAuthStateChanged} from "firebase/auth";
 import {useRouter} from "vue-router";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
 import {useNotificationHandler} from "src/core/services/ErrorHandler";
-import {useUtils} from "src/core/services/Utils";
 import {CURRENT_USER_ID} from "boot/constants";
+import {useAppStore} from "stores/appStore";
+import {useSettingsStore} from "stores/settingsStore";
 
 const $q = useQuasar()
 const router = useRouter()
-const {inBexMode} = useUtils()
 
 const {handleError} = useNotificationHandler()
 
@@ -23,33 +23,43 @@ const {handleError} = useNotificationHandler()
 // const emitter = new EventEmitter()
 // emitter.setMaxListeners(12)
 
-FirebaseServices.init()
 
-const auth = FirebaseServices.getAuth()
+const settingsStore = useSettingsStore()
+settingsStore.initialize($q.localStorage)
+const localMode = settingsStore.isEnabled('localMode')
+console.log("using localMode", localMode)
 
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    console.log("%conAuthStateChanged: about to log in", "border:1px solid green")
+useAppStore().init()
 
-    try {
-      await AppService.init($q, router, true, user)
-      // if (inBexMode()) {
-      //   $q.bex.send('auth.user.login', {userId: user.uid})
-      // }
-      //FirebaseServices.startRealtimeDbListeners(user.uid)
-    } catch (error: any) {
-      console.log("%ccould not initialize appService due to " + error, "background-color:orangered")
-      console.error("error", error, typeof error, error.code, error.message)
-      handleError(error.code)
-      return Promise.resolve()
+if (!localMode) {
+  FirebaseServices.init()
+
+  const auth = FirebaseServices.getAuth()
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      console.log("%conAuthStateChanged: about to log in", "border:1px solid green")
+
+      try {
+        await AppService.init($q, router, true, user)
+        // if (inBexMode()) {
+        //   $q.bex.send('auth.user.login', {userId: user.uid})
+        // }
+        //FirebaseServices.startRealtimeDbListeners(user.uid)
+      } catch (error: any) {
+        console.log("%ccould not initialize appService due to " + error, "background-color:orangered")
+        console.error("error", error, typeof error, error.code, error.message)
+        handleError(error.code)
+        return Promise.resolve()
+      }
+
+    } else {
+      // User is signed out
+      console.log("%conAuthStateChanged: logged out", "border:1px solid green")
+      await router.push("/sidepanel/login")
     }
-
-  } else {
-    // User is signed out
-    console.log("%conAuthStateChanged: logged out", "border:1px solid green")
-    await router.push("/sidepanel/login")
-  }
-});
+  });
+}
 
 let useDarkMode: string = $q.localStorage.getItem('darkMode') || "auto" as string
 
@@ -79,7 +89,7 @@ if (useDarkMode === "true") {
 }
 
 const currentUser = $q.localStorage.getItem(CURRENT_USER_ID)
-if (currentUser) {
+if (currentUser && !localMode) {
   console.log("current user id found, waiting for auto-login")
   // we should be logged in any second
 } else {
@@ -87,7 +97,7 @@ if (currentUser) {
     // triggers, but app should already have been started, no restart enforced
     console.debug("app start fallback after 2000ms")
     AppService.init($q, router, false)
-  }, 2000)
+  }, 1000)
 }
 
 </script>
