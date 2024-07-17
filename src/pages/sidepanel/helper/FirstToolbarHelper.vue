@@ -4,7 +4,7 @@
       <div class="row q-ma-none q-pa-none" style="height:60px">
 
         <div class="col-2">
-          <img v-if="showIcon" class="q-mt-lg" width="32px" height="32px" src="icons/favicon-32x32.png"/>
+          <img v-if="showIcon" class="q-mt-md" width="42px" height="42px" src="icons/favicon-96x96.png"/>
         </div>
 
         <div class="col-8 q-ma-none q-pa-noneq q-mt-md">
@@ -18,22 +18,15 @@
           </q-input>
         </div>
 
-        <div class="col text-right q-mr-xs q-mt-lg" v-if="!useUiStore().appLoading">
+        <div class="col text-right q-mr-xs q-mt-md" v-if="!useUiStore().appLoading">
 
           <slot name="iconsRight">
 
-            <q-avatar size="32px" v-if="!useSettingsStore().isEnabled('localMode')">
+            <q-avatar size="42px" v-if="!useSettingsStore().isEnabled('localMode')">
               <img
                 @click="useAuthStore().logout()"
                 :src="useAuthStore().avatar">
             </q-avatar>
-            <!--            <q-btn-->
-            <!--              v-if="!useSettingsStore().isEnabled('localMode')"-->
-            <!--              @click="useAuthStore().logout()"-->
-            <!--              icon="account_circle"-->
-            <!--              dense size="lg" class="q-mx-none" flat>-->
-            <!--              <q-tooltip class="tooltip-small">Logged in as {{ useAuthStore().getUsername }}</q-tooltip>-->
-            <!--            </q-btn>-->
 
           </slot>
         </div>

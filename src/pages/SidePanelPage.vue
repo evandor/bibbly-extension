@@ -1,6 +1,6 @@
 <template>
 
-  <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 64px">
+  <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 60px">
 
     <!-- search -->
     <!--    <div class="row q-ma-md q-pa-md">-->
@@ -30,8 +30,11 @@
         <template v-if="view === 'projects'">
           <div class="row q-ma-none q-pa-none items-start">
             <div class="col-12 text-right">
-              <q-btn class="q-mx-sm q-px-none" label="New Collection" icon="o_add_circle" color="primary" size="sm" flat no-caps
-                     @click="view = 'new_project'"/>
+              <span @click="view = 'new_project'" class="cursor-pointer">
+                <q-icon name="add_circle" class="q-mr-md"/>New Collection
+              </span>
+<!--              <q-btn class="q-mx-sm q-px-none" label="New Collection" icon="o_add_circle" color="primary" size="sm" flat no-caps-->
+<!--                     @click="view = 'new_project'"/>-->
             </div>
             <div class="col-12">
               <hr style="height:1px;border:none;background-color: #efefef;">
