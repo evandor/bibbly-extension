@@ -12,7 +12,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/sidepanel/login',
-    component: () => import('layouts/SidePanelNoFooterLayout.vue'),
+    component: () => import('layouts/SidePanelLayout.vue'),
     children: [{path: '', component: () => import('pages/SidePanelLoginPage.vue')}],
   },
   {

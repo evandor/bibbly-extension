@@ -1,20 +1,20 @@
 <template>
 
-  <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 34px">
+  <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 64px">
 
     <!-- search -->
-    <div class="row q-ma-md q-pa-md">
-      <div class="col-12">
-        <q-input rounded standout dense v-model="search" label="Search" bg-color="white">
-          <template v-slot:prepend>
-            <q-icon name="search"/>
-          </template>
-          <template v-slot:append>
-            <q-icon name="close" @click="search = ''" class="cursor-pointer"/>
-          </template>
-        </q-input>
-      </div>
-    </div>
+    <!--    <div class="row q-ma-md q-pa-md">-->
+    <!--      <div class="col-12">-->
+    <!--        <q-input rounded standout dense v-model="search" label="Search" bg-color="white">-->
+    <!--          <template v-slot:prepend>-->
+    <!--            <q-icon name="search"/>-->
+    <!--          </template>-->
+    <!--          <template v-slot:append>-->
+    <!--            <q-icon name="close" @click="search = ''" class="cursor-pointer"/>-->
+    <!--          </template>-->
+    <!--        </q-input>-->
+    <!--      </div>-->
+    <!--    </div>-->
 
     <!--    <div class="wrap" v-if="useUiStore().appLoading">-->
     <!--      <div class="loading">-->
@@ -25,35 +25,48 @@
 
     <!-- white main box -->
     <div class="column fitpage q-pa-sm q-mx-sm q-mt-md bg-white">
-      <div class="col" style="max-width:100%">
+      <div class="col" style="max-width:100%;">
 
         <template v-if="view === 'projects'">
-          <div class="row q-ma-md q-pa-md items-start">
-            <div class="col-12">
-              <q-select filled v-model="project" :options="projectOptions" :label="t('collection')"
-                        style="border: 2px solid #21B6A8"
-                        @update:modelValue="a => projectListWasClicked(a)"
-              />
+          <div class="row q-ma-none q-pa-none items-start">
+            <div class="col-12 text-right">
+              <q-btn class="q-mx-sm q-px-none" label="New Collection" icon="o_add_circle" color="primary" size="sm" flat no-caps
+                     @click="view = 'new_project'"/>
             </div>
+            <div class="col-12">
+              <hr style="height:1px;border:none;background-color: #efefef;">
+            </div>
+
+            <div class="col-9 q-ml-md">
+              <q-select borderless v-model="project" :options="projectOptions" :label="t('collection')"
+                        @update:modelValue="a => projectListWasClicked(a)">
+                <template v-slot:selected>
+                  <span class="text-bold">{{ project }}</span>
+                </template>
+              </q-select>
+            </div>
+            <div class="col text-right vertical-middle q-mt-md">
+              <q-icon name="more_vert" size="sm"/>
+            </div>
+
             <div class="col-12 q-my-lg text-center">
-              <q-btn unelevated rounded class="q-mx-md q-px-lg" color="primary" :label="t('add_link')"
+              <q-btn unelevated rounded no-caps class="q-mx-md q-px-lg" color="primary" :label="t('add_link')"
                      @click="addCurrentTab()"
               />
             </div>
             <div class="col-12">
 
-<!--              <q-list class="q-ma-none">-->
-<!--                <q-item v-for="s in currentProject?.sources as Source[] || []"-->
-<!--                        clickable-->
-<!--                        v-ripple-->
-<!--                        class="q-ma-none q-px-sm q-pt-xs q-pb-none q-ml-sm"-->
-<!--                        :key="'source_' + s.id">-->
+              <!--              <q-list class="q-ma-none">-->
+              <!--                <q-item v-for="s in currentProject?.sources as Source[] || []"-->
+              <!--                        clickable-->
+              <!--                        v-ripple-->
+              <!--                        class="q-ma-none q-px-sm q-pt-xs q-pb-none q-ml-sm"-->
+              <!--                        :key="'source_' + s.id">-->
 
-<!--                  <SourceWidget :source="s" :project="currentProject!"/>-->
+              <!--                  <SourceWidget :source="s" :project="currentProject!"/>-->
 
-<!--                </q-item>-->
-<!--              </q-list>-->
-
+              <!--                </q-item>-->
+              <!--              </q-list>-->
 
 
             </div>
@@ -72,16 +85,16 @@
 
 
         <!-- list of tabs, assuming here we have at least one tabset -->
-        <SidePanelPageTabList v-if="currentProject"
-          :indent="calcFolders(currentProject as Tabset)?.length > 0"
-          :tabsCount="useTabsetService().tabsToShow(currentProject as Tabset).length"
-          :tabset="tabsetForTabList(currentProject as Tabset)"/>
+        <SidePanelPageTabList v-if="currentProject && view==='projects'"
+                              :indent="calcFolders(currentProject as Tabset)?.length > 0"
+                              :tabsCount="useTabsetService().tabsToShow(currentProject as Tabset).length"
+                              :tabset="tabsetForTabList(currentProject as Tabset)"/>
       </div>
     </div>
 
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
-      <FirstToolbarHelper title="Bibbly" />
+      <FirstToolbarHelper title="Bibbly"/>
     </q-page-sticky>
   </q-page>
 
@@ -91,12 +104,10 @@
 
 import {onMounted, onUnmounted, ref, watchEffect} from "vue";
 import {useUtils} from "src/core/services/Utils";
-import {LocalStorage, uid} from "quasar";
+import {uid} from "quasar";
 import {useUiStore} from "src/ui/stores/uiStore";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import Analytics from "src/core/utils/google-analytics";
-import {useSuggestionsStore} from "stores/suggestionsStore";
-import {TITLE_IDENT} from "boot/constants";
 import AppService from "src/services/AppService";
 import {useI18n} from 'vue-i18n'
 import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
@@ -109,7 +120,7 @@ import {AddTabToTabsetCommand} from "src/tabsets/commands/AddTabToTabsetCommand"
 import {Tab} from "src/tabsets/models/Tab";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
-import {ExecutionResult} from "src/core/domain/ExecutionResult";
+import {ExecutionFailureResult, ExecutionResult} from "src/core/domain/ExecutionResult";
 import ProjectForm from "src/projects/forms/ProjectForm.vue";
 import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
@@ -155,12 +166,12 @@ watchEffect(async () => {
     projectOptions.value.push({label: p.name, value: p.id})
   })
   projectOptions.value = _.sortBy(projectOptions.value, "label")
-  projectOptions.value.push({
-    label: 'Create new Project', value: 'new_project'
-  })
+  // projectOptions.value.push({
+  //   label: 'Create new Project', value: 'new_project'
+  // })
   if (useTabsetsStore().currentTabsetName) {
     project.value = useTabsetsStore().currentTabsetName!
-    console.log("project.value", project.value)
+    //console.log("project.value", project.value)
     currentProject.value = useTabsetsStore().getCurrentTabset
   }
 })
@@ -175,9 +186,13 @@ watchEffect(async () => {
 const createProject = (e: object) =>
   useCommandExecutor().executeFromUi(new CreateTabsetCommand(e['name' as keyof object], []))
     .then((res: ExecutionResult<any>) => {
-      view.value = 'projects'
-      currentProject.value = res.result
-      project.value = res.result.name
+      if (res instanceof ExecutionFailureResult) {
+        console.log("res", res)
+      } else {
+        view.value = 'projects'
+        currentProject.value = res.result
+        project.value = res.result.name
+      }
     })
 
 
@@ -226,7 +241,7 @@ watchEffect(() => {
   tabsets.value = determineTabsets()
 })
 
-const projectListWasClicked = async (a:any) => {
+const projectListWasClicked = async (a: any) => {
   // console.log("Hier", project.value)
   // console.log("Hier", a)
 
@@ -263,7 +278,7 @@ const addCurrentTab = async () => {
       // currentProject.value.sources.push(Source.newFrom(currentTab))
       // await useProjectsStore().updateProject(currentProject.value as Project)
     }
-  } catch (err:any) {
+  } catch (err: any) {
     console.warn(err)
   }
 }
@@ -343,7 +358,7 @@ if (inBexMode()) {
       useUiStore().setShowFullUrls(message.data.value)
     } else if (message.name === "reload-suggestions") {
       console.log("reload-suggestions message received")
-      useSuggestionsStore().loadSuggestionsFromDb()
+      // useSuggestionsStore().loadSuggestionsFromDb()
     } else if (message.name === "reload-tabset") {
       console.log("reload-tabset message received")
     } else if (message.name === 'restart-application') {
@@ -369,11 +384,11 @@ function checkKeystroke(e: KeyboardEvent) {
   }
 }
 
-const toolbarTitle = (tabsets: Tabset[]) => {
-
-  const title = LocalStorage.getItem(TITLE_IDENT) || ('My Tabsets' + stageIdentifier())
-  return tabsets.length > 6 ? title + ' (' + tabsets.length.toString() + ')' : title
-}
+// const toolbarTitle = (tabsets: Tabset[]) => {
+//
+//   const title = LocalStorage.getItem(TITLE_IDENT) || ('My Tabsets' + stageIdentifier())
+//   return tabsets.length > 6 ? title + ' (' + tabsets.length.toString() + ')' : title
+// }
 
 const stageIdentifier = () => process.env.TABSETS_STAGE !== 'PRD' ? ' (' + process.env.TABSETS_STAGE + ')' : ''
 
@@ -385,7 +400,7 @@ const ackSwitchToLocal = () => useUiStore().showSwitchedToLocalInfo = false
 <style lang="scss">
 
 .fitpage {
-  height: calc(100vh - 200px);
+  height: calc(100vh - 130px);
 }
 
 .v-enter-active,

@@ -29,11 +29,11 @@
         <div class="col-3">
           Use the browser's local database if you do not want to store your data in the cloud. Some
           features like sharing etc. will not work with this mode.<br><br>
-          <b>You need to reload the extension after changing this.</b>
+          <b>The Extension will be reloaded after changing this setting.</b>
         </div>
         <div class="col-1"></div>
         <div class="col-5">
-          <q-toggle v-model="localModeToggle" @click="updateSettings('localMode', localModeToggle)"/>
+          <q-toggle v-model="localModeToggle" @click="toggleLocalMode()"/>
         </div>
       </div>
 
@@ -67,6 +67,13 @@ const updateSettings = (ident: string, val: boolean) => {
   settingsStore.setFeatureToggle(ident, val)
   //AppService.restart("/")
   sendMsg('restart-application',{initiatedBy: "FeatureToggleSettings"})
+}
+
+const toggleLocalMode = () => {
+  updateSettings('localMode', localModeToggle.value)
+  setTimeout(() => {
+    window.close()
+  }, 1000)
 }
 
 </script>

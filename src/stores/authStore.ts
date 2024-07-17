@@ -7,8 +7,8 @@ import {CURRENT_USER_ID} from "boot/constants";
 import {collection, doc, getDoc, getDocs} from "firebase/firestore";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
 import PersistenceService from "src/services/PersistenceService";
-import {useAppStore} from "stores/appStore";
 import {useSettingsStore} from "stores/settingsStore";
+import { sha256 } from 'js-sha256';
 
 export enum AccessItem {
   SYNC = "SYNC",
@@ -26,6 +26,7 @@ export const useAuthStore = defineStore('auth', () => {
   const account = ref<Account | undefined>(undefined)
 
   const products = ref<string[]>([])
+  const avatar = ref('https://www.gravatar.com/avatar/unknown')
 
 
   // --- init ---
@@ -105,7 +106,7 @@ export const useAuthStore = defineStore('auth', () => {
   // --- actions ---
   async function setUser(u: User | undefined) {
     if (u) {
-      console.log("setting user id to", u.uid)
+      console.log("setting user id to", u)
       LocalStorage.set(CURRENT_USER_ID, u.uid)
       authenticated.value = true;
       user.value = JSON.parse(JSON.stringify(u))
@@ -126,11 +127,17 @@ export const useAuthStore = defineStore('auth', () => {
       })
       upsertAccount(account)
 
+      if (user.value.email) {
+        const hashedEmail = sha256( user.value.email.trim().toLowerCase() )
+        console.log("hasehdEmail", hashedEmail)
+        avatar.value = `https://www.gravatar.com/avatar/${hashedEmail}`
+      }
+
     } else {
       LocalStorage.remove(CURRENT_USER_ID)
       authenticated.value = false;
       user.value = null as unknown as User;
-      console.log(`setting user id to <null>`)
+      console.log(` ...setting user id to <null>`)
       products.value = []
     }
   }
@@ -142,6 +149,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   function logout(): Promise<any> {
     console.log("logging out user")
+    avatar.value = 'https://www.gravatar.com/avatar/unknown'
     return signOut(getAuth())
       .then(() => {
         authenticated.value = false
@@ -176,6 +184,7 @@ export const useAuthStore = defineStore('auth', () => {
     upsertAccount,
     getAccount,
     setProducts,
-    userMayAccess
+    userMayAccess,
+    avatar
   }
 })

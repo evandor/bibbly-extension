@@ -37,7 +37,7 @@ jobs:
       - name: Upload & release
         uses: mnao305/chrome-extension-upload@v4.0.1
         with:
-          file-path: dist/bex/Packaged.bookmrkx.zip
+          file-path: dist/bex/Packaged.bibbly.zip
           extension-id: gppbgicjpjhmcfgmjilicbccddhbjifb
           client-id: ${{ secrets.CLIENT_ID }}
           client-secret: ${{ secrets.CLIENT_SECRET }}

@@ -1,6 +1,5 @@
 import ChromeListeners from "src/services/ChromeListeners";
 import {useDB} from "src/services/usePersistenceService";
-import {useSuggestionsStore} from "stores/suggestionsStore";
 import ChromeApi from "src/services/ChromeApi";
 import {Router} from "vue-router";
 import {useUiStore} from "src/ui/stores/uiStore";
@@ -20,6 +19,7 @@ import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useAuthStore} from "stores/authStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 
 class AppService {
 
@@ -28,7 +28,7 @@ class AppService {
 
   async init(quasar: any, router: Router, forceRestart = false, user: User | undefined = undefined) {
 
-    console.log(`%cinitializing AppService: first start=${!this.initialized}, forceRestart=${forceRestart}, quasar set=${quasar !== undefined}, router set=${router !== undefined}`, forceRestart ? "font-weight:bold" : "")
+    console.log(`%cinitializing AppService: first start=${!this.initialized}, forceRestart=${forceRestart}, quasar set=${quasar !== undefined}, router set=${router !== undefined}`, "font-weight:bold")
 
     if (this.initialized && !forceRestart) {
       console.debug("stopping AppService initialization; already initialized and not forcing restart")
@@ -41,7 +41,7 @@ class AppService {
 
     this.initialized = true
 
-    //const appStore = useAppStore()
+    await useAuthStore().setUser(user)
 
     const uiStore = useUiStore()
 
@@ -56,18 +56,23 @@ class AppService {
 
     await ChromeListeners.initListeners()
 
-    await useSnapshotsService().init()
     await useSnapshotsStore().initialize(useDB().snapshotsDb)
+    await useSnapshotsService().init()
+    console.debug('')
 
     // should be initialized before search submodule
     await useThumbnailsService().init(IndexedDbThumbnailsPersistence)
+    console.debug('')
+
+    // should be initialized before search submodule
     await useContentService().init(IndexedDbContentPersistence)
+    console.debug('')
 
     //await searchStore.init().catch((err) => console.error(err))
 
-    await useAuthStore().setUser(user)
 
-    useSuggestionsStore().init(useDB().db)
+    await useSuggestionsStore().init()
+    console.debug('')
 
     tabsetService.setLocalStorage(localStorage)
 
@@ -85,7 +90,7 @@ class AppService {
       // console.debug(`%cchecking sync config: persistenceStore=${persistenceStore.getServiceName()}`, "font-weight:bold")
 
       // await FsPersistenceService.init()
-      console.log(`%cinitializing AppService: first start=${!this.initialized}, forceRestart=${forceRestart} -- done`, "font-weight:bold")
+
       await this.initCoreSerivces(this.router)
     } else {
       //await this.initCoreSerivces(quasar,  this.router)
@@ -111,34 +116,41 @@ class AppService {
 
   private async initCoreSerivces(router: Router) {
 
+    console.log(`%cinitializing AppService: initCoreSerivces`, "font-weight:bold")
+
     if (useFeaturesStore().hasFeature(FeatureIdent.WINDOWS_MANAGEMENT)) {
       await useWindowsStore().initialize()
       useWindowsStore().initListeners()
     }
 
     await useSpacesStore().initialize(useDB().spacesDb)
+    console.debug('')
 
-    const tabsetsPersistence = useDB().tabsetsDb
-    await useTabsetsStore().initialize(tabsetsPersistence)
-    await useTabsetService().init(tabsetsPersistence, false)
+    /**
+     * Pattern: TODO
+     * initialize store with persistence
+     * run persistence init code in store init
+     * no persistence for service!
+     */
+
+    await useTabsetsStore().initialize(useDB().tabsetsDb)
+    await useTabsetService().init(false)
+    console.debug('')
 
     await useTabsStore2().initialize()
-
-
+    console.debug('')
 
     //await useGroupsStore().initialize(useDB().groupsIndexedDb)
 
     const existingUrls = useTabsetsStore().getAllUrls()
     await useContentService().populateSearch(existingUrls)
-    await useTabsetService().populateSearch()
+    useTabsetService().populateSearch()
+    console.debug('')
 
     ChromeApi.init(router)
 
     useUiStore().appLoading = undefined
-
-    // if (useProjectsStore().projects.length > 0) {
-    //   router.push("/sidepanel/projects")
-    // }
+    console.debug('')
   }
 
 }

@@ -27,7 +27,6 @@ import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
 import {useUiStore} from "src/ui/stores/uiStore";
 import {PropType} from "vue";
 import PanelTabListElementWidget from "src/tabsets/widgets/PanelTabListElementWidget.vue";
-import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 
@@ -55,6 +54,7 @@ const startDrag = (evt: any, tab: Tab) => {
 }
 
 const itemStyle = () => {
+  // let style = "border:1px solid red;"
   let style = ""
   if (props.tab.color && useFeaturesStore().hasFeature(FeatureIdent.COLOR_TAGS)) {
     style = style + 'border-left:3px solid ' + props.tab.color + ';border-radius:4px;'

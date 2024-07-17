@@ -1,30 +1,39 @@
 <template>
-  <q-toolbar class="text-primary q-pa-none q-pl-sm q-pr-xs q-pb-none greyBorderBottom" :style="offsetTop()">
+  <q-toolbar class="text-primary q-pa-none q-pl-sm q-pr-xs q-pb-none">
     <q-toolbar-title>
-      <div class="row q-ma-none q-pa-none">
+      <div class="row q-ma-none q-pa-none" style="height:60px">
 
-        <div class="col q-ma-none q-pa-none">
-
-
-          <div class="col-12 text-h6 cursor-pointer items-baseline" @click="router.push('/sidepanel')">
-            <img v-if="showIcon" src="icons/favicon-32x32.png" class="q-mr-sm"/>
-            <slot name="title">{{ props.title }}</slot>
-          </div>
-
+        <div class="col-2">
+          <img v-if="showIcon" class="q-mt-lg" width="32px" height="32px" src="icons/favicon-32x32.png"/>
         </div>
 
-        <div class="col text-subtitle1 text-right q-ma-none q-pa-none q-pr-sm" v-if="!useUiStore().appLoading">
+        <div class="col-8 q-ma-none q-pa-noneq q-mt-md">
+          <q-input rounded standout dense v-model="search" label="Search" bg-color="white" class="q-ma-none q-pa-none">
+            <template v-slot:prepend>
+              <q-icon name="search"/>
+            </template>
+            <template v-slot:append>
+              <q-icon name="close" @click="search = ''" class="cursor-pointer"/>
+            </template>
+          </q-input>
+        </div>
+
+        <div class="col text-right q-mr-xs q-mt-lg" v-if="!useUiStore().appLoading">
 
           <slot name="iconsRight">
 
-            <q-btn icon="more_vert" color="green" dense class="q-mx-none" flat @click="router.go()"/>
-            <q-btn
-              v-if="!useSettingsStore().isEnabled('localMode')"
-              @click="useAuthStore().logout()"
-              icon="account_circle"
-              dense size="lg" class="q-mx-none" flat>
-              <q-tooltip class="tooltip-small">Logged in as {{ useAuthStore().getUsername }}</q-tooltip>
-            </q-btn>
+            <q-avatar size="32px" v-if="!useSettingsStore().isEnabled('localMode')">
+              <img
+                @click="useAuthStore().logout()"
+                :src="useAuthStore().avatar">
+            </q-avatar>
+            <!--            <q-btn-->
+            <!--              v-if="!useSettingsStore().isEnabled('localMode')"-->
+            <!--              @click="useAuthStore().logout()"-->
+            <!--              icon="account_circle"-->
+            <!--              dense size="lg" class="q-mx-none" flat>-->
+            <!--              <q-tooltip class="tooltip-small">Logged in as {{ useAuthStore().getUsername }}</q-tooltip>-->
+            <!--            </q-btn>-->
 
           </slot>
         </div>
@@ -40,7 +49,6 @@ import {ref, watchEffect} from "vue";
 import {useUiStore} from "src/ui/stores/uiStore";
 import {useQuasar} from "quasar";
 import {useAuthStore} from "stores/authStore";
-import {useAppStore} from "stores/appStore";
 import {useSettingsStore} from "stores/settingsStore";
 
 const props = defineProps({
@@ -57,6 +65,7 @@ const router = useRouter()
 
 const searching = ref(false)
 const windowLocation = ref('')
+const search = ref('')
 
 const toggleSearch = () => {
   searching.value = !searching.value
@@ -88,7 +97,7 @@ const showSearchIcon = () => true
 
 const showSyncInfo = () => false
 
-const offsetTop = () => ($q.platform.is.capacitor || $q.platform.is.cordova) ? 'margin-top:40px;' : ''
+const offsetTop = () => ($q.platform.is.capacitor || $q.platform.is.cordova) ? 'margin-top:160px;' : ''
 
 </script>
 

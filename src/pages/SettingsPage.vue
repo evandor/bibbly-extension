@@ -128,7 +128,6 @@ import {DrawerTabs, ListDetailLevel, useUiStore} from "src/ui/stores/uiStore";
 import {useSettingsStore} from "src/stores/settingsStore"
 import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue";
 import Analytics from "src/core/utils/google-analytics";
-import {useSuggestionsStore} from "stores/suggestionsStore";
 import {StaticSuggestionIdent, Suggestion} from "src/models/Suggestion";
 import {useRoute} from "vue-router";
 import {

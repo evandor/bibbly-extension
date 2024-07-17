@@ -38,7 +38,6 @@
 </template>
 <script setup lang="ts">
 import SidePanelFooterLeftButton from "components/helper/SidePanelFooterLeftButton.vue";
-import {useSuggestionsStore} from "stores/suggestionsStore";
 import {ref, watchEffect} from "vue";
 import {SuggestionState} from "src/models/Suggestion";
 import {SidePanelViews} from "src/models/SidePanelViews";

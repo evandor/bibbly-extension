@@ -96,7 +96,6 @@ import {useUtils} from "src/core/services/Utils";
 import DrawerRight from "components/DrawerRight.vue";
 import {Suggestion, SuggestionState} from "src/models/Suggestion";
 import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
-import {useSuggestionsStore} from "src/stores/suggestionsStore";
 
 const $q = useQuasar()
 const router = useRouter()

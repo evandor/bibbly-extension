@@ -41,7 +41,6 @@
 import {PropType} from "vue";
 import {openURL, useDialogPluginComponent} from "quasar";
 import {useRouter} from "vue-router";
-import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion";
 import NavigationService from "src/services/NavigationService";
 import AppService from "src/services/AppService";

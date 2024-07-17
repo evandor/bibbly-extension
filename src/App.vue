@@ -19,15 +19,10 @@ const router = useRouter()
 
 const {handleError} = useNotificationHandler()
 
-// https://stackoverflow.com/questions/9768444/possible-eventemitter-memory-leak-detected
-// const emitter = new EventEmitter()
-// emitter.setMaxListeners(12)
-
-
 const settingsStore = useSettingsStore()
 settingsStore.initialize($q.localStorage)
 const localMode = settingsStore.isEnabled('localMode')
-console.log("using localMode", localMode)
+console.log(` ...config: localMode=${localMode}`)
 
 useAppStore().init()
 
@@ -42,10 +37,6 @@ if (!localMode) {
 
       try {
         await AppService.init($q, router, true, user)
-        // if (inBexMode()) {
-        //   $q.bex.send('auth.user.login', {userId: user.uid})
-        // }
-        //FirebaseServices.startRealtimeDbListeners(user.uid)
       } catch (error: any) {
         console.log("%ccould not initialize appService due to " + error, "background-color:orangered")
         console.error("error", error, typeof error, error.code, error.message)
@@ -95,7 +86,7 @@ if (currentUser && !localMode) {
 } else {
   setTimeout(() => {
     // triggers, but app should already have been started, no restart enforced
-    console.debug("app start fallback after 2000ms")
+    console.debug("App.vue start fallback after 1000ms")
     AppService.init($q, router, false)
   }, 1000)
 }
