@@ -18,7 +18,6 @@ export default bexContent((bridge: any) => {
 
   console.log("tabsets: initializing content script for thumbnails")
 
-
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     console.log("got request!!!", request)
     if (request === 'getContent') {
@@ -33,14 +32,5 @@ export default bexContent((bridge: any) => {
     }
     return true
   })
-
-
-
-  // chrome.runtime.sendMessage({msg: "captureThumbnail"}, function (response) {
-  //   console.log("tabsets: created thumbnail for tabsets")
-  //   if (chrome.runtime.lastError) {
-  //     console.warn("got runtime error", chrome.runtime.lastError)
-  //   }
-  // });
 
 })

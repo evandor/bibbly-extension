@@ -345,7 +345,7 @@ watchEffect(() => {
 
 watchEffect(() => {
   if (source.value) {
-    useThumbnailsService().getThumbnailFor(source.value.url)
+    useThumbnailsService().getThumbnailFor(source.value.id)
       .then(data => {
         if (data) {
           thumbnail.value = data['thumbnail' as keyof object]

@@ -106,7 +106,7 @@ class ChromeListeners {
 
     const scripts: string[] = []
 
-    scripts.push("content-script-thumbnails.js")
+   // scripts.push("content-script-thumbnails.js")
     scripts.push("tabsets-content-script.js")
 
     // scripts.push("tabsets-content-script.js")

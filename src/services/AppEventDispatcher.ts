@@ -1,3 +1,4 @@
+import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 
 /**
  * meant for inter-submodule communication.
@@ -18,6 +19,12 @@ class AppEventDispatcher {
         case 'add-to-search':
           break
         case 'upsert-in-search':
+          break
+        case 'capture-screenshot':
+          useThumbnailsService().handleCaptureCallback(params['tabId' as keyof object], params['data' as keyof object])
+          break
+        case 'remove-captured-screenshot':
+          useThumbnailsService().removeThumbnailsFor(params['tabId' as keyof object])
           break
         default:
           console.log(`unknown event ${name}`)
