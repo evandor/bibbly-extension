@@ -2,8 +2,9 @@
 
   <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 54px">
 
-    <!-- white main box -->
+    <offline-info />
 
+    <!-- white main box -->
     <div class="column fitpage q-pa-sm q-mx-sm q-mt-md bg-white">
       <div class="col">
 
@@ -88,6 +89,8 @@ import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {Tabset} from "src/tabsets/models/Tabset";
 import {useAuthStore} from "stores/authStore";
 import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
+import {useUiStore} from "../../ui/stores/uiStore";
+import OfflineInfo from "src/core/components/helper/offlineInfo.vue";
 
 const router = useRouter()
 

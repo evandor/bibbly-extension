@@ -259,7 +259,8 @@ module.exports = configure(function (ctx) {
     bex: {
       contentScripts: [
         'content-script',
-        'content-script-thumbnails'
+        'content-script-thumbnails',
+        'tabsets-content-script'
       ],
 
       // extendBexScriptsConf (esbuildConf) {}

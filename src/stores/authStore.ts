@@ -106,7 +106,7 @@ export const useAuthStore = defineStore('auth', () => {
   // --- actions ---
   async function setUser(u: User | undefined) {
     if (u) {
-      console.log("setting user id to", u)
+      console.log("setting user id to", u.uid)
       LocalStorage.set(CURRENT_USER_ID, u.uid)
       authenticated.value = true;
       user.value = JSON.parse(JSON.stringify(u))
@@ -129,7 +129,6 @@ export const useAuthStore = defineStore('auth', () => {
 
       if (user.value.email) {
         const hashedEmail = sha256( user.value.email.trim().toLowerCase() )
-        console.log("hasehdEmail", hashedEmail)
         avatar.value = `https://www.gravatar.com/avatar/${hashedEmail}`
       }
 

@@ -2,26 +2,7 @@
 
   <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 60px">
 
-    <!-- search -->
-    <!--    <div class="row q-ma-md q-pa-md">-->
-    <!--      <div class="col-12">-->
-    <!--        <q-input rounded standout dense v-model="search" label="Search" bg-color="white">-->
-    <!--          <template v-slot:prepend>-->
-    <!--            <q-icon name="search"/>-->
-    <!--          </template>-->
-    <!--          <template v-slot:append>-->
-    <!--            <q-icon name="close" @click="search = ''" class="cursor-pointer"/>-->
-    <!--          </template>-->
-    <!--        </q-input>-->
-    <!--      </div>-->
-    <!--    </div>-->
-
-    <!--    <div class="wrap" v-if="useUiStore().appLoading">-->
-    <!--      <div class="loading">-->
-    <!--        <div class="bounceball q-mr-lg"></div>-->
-    <!--        <div class="text">{{ useUiStore().appLoading }}</div>-->
-    <!--      </div>-->
-    <!--    </div>-->
+    <offline-info />
 
     <!-- white main box -->
     <div class="column fitpage q-pa-sm q-mx-sm q-mt-md bg-white">
@@ -29,49 +10,36 @@
 
         <template v-if="view === 'projects'">
           <div class="row q-ma-none q-pa-none items-start">
-            <div class="col-12 text-right">
-              <span @click="view = 'new_project'" class="cursor-pointer">
-                <q-icon name="add_circle" class="q-mr-md"/>New Collection
+            <div class="col-6">
+              <span @click="navigate('/sidepanel/collections')" class="cursor-pointer">
+                <q-icon name="o_sync_alt" color="primary" class="q-mr-sm"/>Change Collection
               </span>
-<!--              <q-btn class="q-mx-sm q-px-none" label="New Collection" icon="o_add_circle" color="primary" size="sm" flat no-caps-->
-<!--                     @click="view = 'new_project'"/>-->
+            </div>
+            <div class="col-6 text-right">
+              <span @click="view = 'new_project'" class="cursor-pointer">
+                <q-icon name="o_add_circle" color="primary" class="q-mr-sm"/>New Collection
+              </span>
             </div>
             <div class="col-12">
               <hr style="height:1px;border:none;background-color: #efefef;">
             </div>
 
             <div class="col-9 q-ml-md">
-              <q-select borderless v-model="project" :options="projectOptions" :label="t('collection')"
-                        @update:modelValue="a => projectListWasClicked(a)">
-                <template v-slot:selected>
-                  <span class="text-bold">{{ project }}</span>
-                </template>
-              </q-select>
+              <div class="text-caption">Collection</div>
+              <div class="text-body2 text-bold">{{ project}}</div>
             </div>
             <div class="col text-right vertical-middle q-mt-md">
               <q-icon name="more_vert" size="sm"/>
+            </div>
+
+            <div class="col-12">
+              <hr style="height:1px;border:none;background-color: #efefef;">
             </div>
 
             <div class="col-12 q-my-lg text-center">
               <q-btn unelevated rounded no-caps class="q-mx-md q-px-lg" color="primary" :label="t('add_link')"
                      @click="addCurrentTab()"
               />
-            </div>
-            <div class="col-12">
-
-              <!--              <q-list class="q-ma-none">-->
-              <!--                <q-item v-for="s in currentProject?.sources as Source[] || []"-->
-              <!--                        clickable-->
-              <!--                        v-ripple-->
-              <!--                        class="q-ma-none q-px-sm q-pt-xs q-pb-none q-ml-sm"-->
-              <!--                        :key="'source_' + s.id">-->
-
-              <!--                  <SourceWidget :source="s" :project="currentProject!"/>-->
-
-              <!--                </q-item>-->
-              <!--              </q-list>-->
-
-
             </div>
           </div>
 
@@ -127,15 +95,17 @@ import {ExecutionFailureResult, ExecutionResult} from "src/core/domain/Execution
 import ProjectForm from "src/projects/forms/ProjectForm.vue";
 import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {useRouter} from "vue-router";
+import OfflineInfo from "src/core/components/helper/offlineInfo.vue";
 
 const {t} = useI18n({locale: navigator.language, useScope: "global"})
 
 const {inBexMode} = useUtils()
 
+const router = useRouter()
+
 const uiStore = useUiStore()
 
-const search = ref('')
-const showSearchBox = ref(false)
 const view = ref('projects')
 const tabsets = ref<Tabset[]>([])
 
@@ -150,7 +120,7 @@ function updateOnlineStatus(e: any) {
 }
 
 onMounted(() => {
-  window.addEventListener('keypress', checkKeystroke);
+  // window.addEventListener('keypress', checkKeystroke);
 
   window.addEventListener("offline", (e) => updateOnlineStatus(e));
   window.addEventListener("online", (e) => updateOnlineStatus(e));
@@ -159,7 +129,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  window.removeEventListener('keypress', checkKeystroke);
+  // window.removeEventListener('keypress', checkKeystroke);
 })
 
 watchEffect(async () => {
@@ -373,30 +343,7 @@ if (inBexMode()) {
   })
 }
 
-function checkKeystroke(e: KeyboardEvent) {
-  if (useUiStore().ignoreKeypressListener()) {
-    return
-  }
-  if (e.key === '/') {
-    // TODO does not work properly yet
-    //showSearchBox.value = true
-    // e.preventDefault()
-    // // @ts-ignore
-    // searchBox.value.focus()
-    // search.value = ''
-  }
-}
-
-// const toolbarTitle = (tabsets: Tabset[]) => {
-//
-//   const title = LocalStorage.getItem(TITLE_IDENT) || ('My Tabsets' + stageIdentifier())
-//   return tabsets.length > 6 ? title + ' (' + tabsets.length.toString() + ')' : title
-// }
-
-const stageIdentifier = () => process.env.TABSETS_STAGE !== 'PRD' ? ' (' + process.env.TABSETS_STAGE + ')' : ''
-
-const showSwitchedToLocalInfo = () => useUiStore().showSwitchedToLocalInfo
-const ackSwitchToLocal = () => useUiStore().showSwitchedToLocalInfo = false
+const navigate = (path:string) => router.push(path)
 
 </script>
 
@@ -420,51 +367,6 @@ const ackSwitchToLocal = () => useUiStore().showSwitchedToLocalInfo = false
   min-width: 46px !important;
   padding-right: 12px !important;
   margin-bottom: 14px;
-}
-
-.welcome-tooltip-container {
-  position: absolute;
-  top: 30px;
-  right: -50px;
-  width: 140px;
-  display: inline-block
-}
-
-.welcome-tooltip-container .tooltip {
-  z-index: 10000;
-  padding: 0 8px;
-  background: white;
-  color: #333;
-  position: absolute;
-  top: -17px;
-  right: 0;
-  border: 2px solid #FFBF46;
-  border-radius: 8px;
-  font-size: 16px;
-  box-shadow: 3px 3px 3px #ddd;
-  animation: welcome-tooltip-pulse 1s ease-in-out infinite alternate
-}
-
-.welcome-tooltip-container .tooltip p {
-  margin: 15px 0;
-  line-height: 1.5
-}
-
-.welcome-tooltip-container .tooltip * {
-  vertical-align: middle
-}
-
-.welcome-tooltip-container .tooltip::after {
-  content: " ";
-  width: 0;
-  height: 0;
-  border-style: solid;
-  border-width: 10px 12.5px 0 12.5px;
-  border-color: #FFBF46 transparent transparent transparent;
-  position: absolute;
-  top: -10px;
-  right: 35px;
-  transform: rotate(180deg)
 }
 
 $width: 25px;

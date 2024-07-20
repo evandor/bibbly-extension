@@ -13,6 +13,7 @@ import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {CURRENT_USER_ID} from "boot/constants";
 import {useAppStore} from "stores/appStore";
 import {useSettingsStore} from "stores/settingsStore";
+import {useUiStore} from "src/ui/stores/uiStore";
 
 const $q = useQuasar()
 const router = useRouter()
@@ -37,10 +38,14 @@ if (!localMode) {
 
       try {
         await AppService.init($q, router, true, user)
+        useUiStore().networkOnline = true
       } catch (error: any) {
         console.log("%ccould not initialize appService due to " + error, "background-color:orangered")
         console.error("error", error, typeof error, error.code, error.message)
         handleError(error.code)
+        if (error.code === 'unavailable') {
+          useUiStore().networkOnline = false
+        }
         return Promise.resolve()
       }
 

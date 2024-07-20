@@ -6,7 +6,6 @@ import {bexContent} from 'quasar/wrappers'
 
 export default bexContent((bridge: any) => {
 
-  console.log("tabsets: initializing content script for thumbnails")
 
   // @ts-ignore
   if (window.contentScriptThumbnailsAlredyCalled) {
@@ -16,6 +15,25 @@ export default bexContent((bridge: any) => {
   }
   // @ts-ignore
   window.contentScriptThumbnailsAlredyCalled  = true
+
+  console.log("tabsets: initializing content script for thumbnails")
+
+
+  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    console.log("got request!!!", request)
+    if (request === 'getContent') {
+      console.log("tabsets: received message for content")
+      //sendResponse({content: document.documentElement.outerHTML});
+      sendResponse({
+        html: document.documentElement.outerHTML,
+        metas: getMetas(document)
+      });
+    } else {
+      sendResponse({content: "unknown request in content-scripts-thumbnails: " + request});
+    }
+    return true
+  })
+
 
 
   chrome.runtime.sendMessage({msg: "captureThumbnail"}, function (response) {

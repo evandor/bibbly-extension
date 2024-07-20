@@ -1,129 +1,204 @@
 <template>
 
-  <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 54px">
+  <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 60px">
 
-    <div class="q-ma-none">
+    <offline-info/>
 
-<!--      <div class=" q-ma-xs">-->
-<!--        <div class="row q-ma-none q-pa-none">-->
-<!--          <div class="col-7 text-subtitle-1 text-bold">-->
-<!--            Active Project-->
-<!--          </div>-->
-<!--          <div class="col-5 text-blue-10 text-underline cursor-pointer text-right" @click="router.push('/sidepanel')">-->
-<!--            Back to Project&nbsp;-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--      <div class="ellipsis text-caption q-ml-md q-ma-xs">-->
-<!--        {{ useTabsetsStore().currentTabsetName || '&nbsp;' }}-->
-<!--      </div>-->
+    <!-- white main box -->
+    <div class="column fitpage q-pa-sm q-mx-sm q-mt-md bg-white">
+      <div class="col" style="max-width:100%;">
 
-      <div class="text-subtitle-1 q-ma-xs text-bold">
-        Source:
-      </div>
-      <div class="ellipsis text-caption cursor-pointer q-ml-md q-ma-xs" @click="openURL(source?.url || '')">
-        {{ source?.url || '...' }}
-      </div>
-      <div class="text-subtitle-1 q-ma-xs text-bold">
-        Tab:
-      </div>
-      <div class="ellipsis text-caption cursor-pointer q-ml-md q-ma-xs">
-        {{ useTabsStore2().currentChromeTab?.url || '...'}}
-      </div>
-
-      <div class="text-subtitle-1 q-ma-xs text-bold q-mt-lg">
-        Create new Research Snapshot as:
-      </div>
-      <div class="cursor-pointer q-ml-md q-ma-xs q-mb-lg">
-        <q-btn :disable="wrongTabOpen" label="Image" class="bg-white q-mr-xs" size="xs" @click="savePng(source as Tab)"/>
-        <q-btn :disable="wrongTabOpen" label="PDF" class="bg-white q-mr-xs" size="xs" @click="savePdf(source as Tab)"/>
-        <q-btn :disable="wrongTabOpen" label="HTML" class="bg-white q-mr-xs" size="xs" @click="saveHtml(source as Tab)"/>
-        <q-btn :disable="wrongTabOpen" label="MHTML" class="bg-white q-mr-xs" size="xs" @click="saveMHtml(source as Tab)"/>
-        <q-btn :disable="wrongTabOpen" label="WArc" class="bg-white q-mr-xs" size="xs" @click="saveWArch(source as Tab)"/>
-        <q-btn v-if="wrongTabOpen" label="open Page" class="bg-white q-mr-xs" size="xs" @click="openURL(source?.url || '')"/>
-      </div>
-
-      <template v-for="(md,index) in metadatas">
-
-        <SnapshotViewHelper
-          :snapshotId="md.id"
-          :created="md.created"
-          :extension="md.type"
-          @new-snapshot-was-clicked="view = 'start_research'"
-        />
-
-        <div class="row q-ma-sm q-ml-lg" v-for="a in md.annotations">
-          <div class="col-9 ellipsis text-caption text-blue-10 cursor-pointer" @click="toggleEditAnnotation(a,index)">
-            {{ a.title }}
-            <q-tooltip v-if="a.comment" class="tooltip-small">{{ a.comment }}</q-tooltip>
+        <div class="row q-ma-none q-pa-none items-start">
+          <div class="col-6">
+              <span @click="router.push('/sidepanel')" class="cursor-pointer">
+                <q-icon name="o_sync_alt" color="primary" class="q-mr-sm"/>Back to Collection
+              </span>
           </div>
-          <div class="col-3 ellipsis">
-            <template
-              v-if="showAnnotationMenu(md.id)">
-              <q-icon name="o_visibility" class="q-mr-md cursor-pointer" @click="restoreAnnotation(a)">
-                <q-tooltip class="tooltip-small">Show Annotation in Page</q-tooltip>
-              </q-icon>
-              <q-icon name="o_delete" class="q-mr-md cursor-pointer" size="11px" @click="deleteAnnotation(md, a)">
-                <q-tooltip class="tooltip-small">Delete Annotation from Page</q-tooltip>
-              </q-icon>
-            </template>
+          <div class="col-6 text-right">
+              <span @click="view = 'new_project'" class="cursor-pointer">
+                <q-icon name="o_add_circle" color="primary" class="q-mr-sm"/>New Collection
+              </span>
           </div>
-
           <div class="col-12">
-
-            <SourcePageAnnotation
-              v-if="currentSelectionText && currentSelectionId === a.id"
-              :key="randomKey"
-              :metadata="metadatas[currentSelectionIndex]"
-              :source-id="sourceId"
-              :snapshotId="currentSnapshotId"
-              :selectionId="currentSelectionId"
-              :selectionText="currentSelectionText"
-              :selection="currentSelection"
-              :selectionViewPort="currentSelectionViewPort"
-              :selectionRect="currentSelectionRect"
-              :selectionTitle="currentSelectionTitle || ''"
-              :selectionRemark="currentSelectionRemark"
-              @set-annotations="(as: Annotation[]) => setAnnotations(as)"
-              @close-view="currentSelectionText = undefined"
-            />
+            <hr style="height:1px;border:none;background-color: #efefef;">
           </div>
-
         </div>
 
-        <div class="q-ma-sm">
-          <SourcePageAnnotation v-if="currentSelectionText && !currentSelectionId"
-                                :key="randomKey"
-                                :metadata="metadatas[currentSelectionIndex]"
-                                :source-id="sourceId"
-                                :snapshotId="currentSnapshotId"
-                                :selectionText="currentSelectionText"
-                                :selectionTitle="currentSelectionTitle"
-                                :selection="currentSelection"
-                                :selectionViewPort="currentSelectionViewPort"
-                                :selectionRect="currentSelectionRect"
-                                :selectionRemark="currentSelectionRemark"
-                                @set-annotations="(as: Annotation[]) => setAnnotations(as)"
-                                @close-view="currentSelectionText = undefined"
+        <div class="text-subtitle-1 q-ma-xs text-bold" v-if="source">
+          <PanelTabListElementWidget :key="'ptlew__' + source?.id"
+                                     :tab="source"
           />
         </div>
-      </template>
 
-      <template v-if="!metadatas || metadatas.length === 0">
-<!--        <div class="q-ma-md text-body2">-->
-<!--          A research session will save a snapshot of the current page where you can start-->
-<!--          annotating text selections.-->
+<!--        <div class="text-subtitle-1 q-ma-xs text-bold">-->
+<!--          Source:-->
 <!--        </div>-->
-<!--        <q-btn-->
-<!--          unelevated rounded class="q-mx-md q-px-lg" color="primary" label="+ Start Research session"-->
-<!--          @click="saveMHtml(source as Tab)"/>-->
-      </template>
+<!--        <div class="ellipsis text-caption cursor-pointer q-ml-md q-ma-xs" @click="openURL(source?.url || '')">-->
+<!--          {{ source?.url || '...' }}-->
+<!--        </div>-->
+<!--        <div class="text-subtitle-1 q-ma-xs text-bold">-->
+<!--          Tab:-->
+<!--        </div>-->
+<!--        <div class="ellipsis text-caption cursor-pointer q-ml-md q-ma-xs">-->
+<!--          {{ useTabsStore2().currentChromeTab?.url || '...' }}-->
+<!--        </div>-->
 
+        <div class="q-ma-none q-pa-none q-mt-lg">
+          <q-tabs
+            v-model="tab"
+            dense
+            class="text-grey"
+            active-color="primary"
+            indicator-color="primary"
+            align="justify"
+            no-caps
+            narrow-indicator>
+            <q-tab name="metadata" label="Metadata"/>
+            <q-tab name="snapshots" :label="snapshotsLabel()"/>
+            <q-tab name="alerts" label="Alerts"/>
+          </q-tabs>
+
+          <q-separator/>
+
+          <q-tab-panels v-model="tab" animated>
+            <q-tab-panel name="metadata">
+              created: {{source?.created}}<br>
+              Description: {{source?.description}}<br>
+            </q-tab-panel>
+
+            <q-tab-panel name="snapshots">
+
+              <div class="text-center">
+                <q-btn-dropdown :loading="snapshotLoading" class="q-ma-none q-px-md" color="primary" dense no-caps
+                                label="New Snapshot...">
+                  <q-list>
+                    <q-item clickable v-close-popup @click="saveHtml(source as Tab)">
+                      <q-item-section>
+                        <q-item-label>as Html</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                    <q-item clickable v-close-popup @click="saveMHtml(source as Tab)">
+                      <q-item-section>
+                        <q-item-label>as MHtml</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                    <q-item clickable v-close-popup @click="savePng(source as Tab)">
+                      <q-item-section>
+                        <q-item-label>as Image</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                    <q-item clickable v-close-popup @click="savePdf(source as Tab)">
+                      <q-item-section>
+                        <q-item-label>as PDF</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                    <q-item clickable v-close-popup @click="saveWArch(source as Tab)">
+                      <q-item-section>
+                        <q-item-label>as Web Archive</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                  </q-list>
+                </q-btn-dropdown>
+              </div>
+
+              <!--              <div class="text-subtitle-1 q-ma-xs text-bold q-mt-lg">-->
+              <!--                Create new Research Snapshot as:-->
+              <!--              </div>-->
+              <!--              <div class="cursor-pointer q-ml-md q-ma-xs q-mb-lg">-->
+              <!--                <q-btn :disable="wrongTabOpen" label="Image" class="bg-white q-mr-xs" size="xs" @click="savePng(source as Tab)"/>-->
+              <!--                <q-btn :disable="wrongTabOpen" label="PDF" class="bg-white q-mr-xs" size="xs" @click="savePdf(source as Tab)"/>-->
+              <!--                <q-btn :disable="wrongTabOpen" label="HTML" class="bg-white q-mr-xs" size="xs" @click="saveHtml(source as Tab)"/>-->
+              <!--                <q-btn :disable="wrongTabOpen" label="MHTML" class="bg-white q-mr-xs" size="xs" @click="saveMHtml(source as Tab)"/>-->
+              <!--                <q-btn :disable="wrongTabOpen" label="WArc" class="bg-white q-mr-xs" size="xs" @click="saveWArch(source as Tab)"/>-->
+              <!--                <q-btn v-if="wrongTabOpen" label="open Page" class="bg-white q-mr-xs" size="xs" @click="openURL(source?.url || '')"/>-->
+              <!--              </div>-->
+
+              <template v-for="(md,index) in metadatas">
+
+                <SnapshotViewHelper
+                  :snapshotId="md.id"
+                  :created="md.created"
+                  :extension="md.type"
+                  @new-snapshot-was-clicked="view = 'start_research'"
+                />
+
+                <div class="row q-ma-sm q-ml-lg" v-for="a in md.annotations">
+                  <div class="col-9 ellipsis text-caption text-blue-10 cursor-pointer"
+                       @click="toggleEditAnnotation(a,index)">
+                    {{ a.title }}
+                    <q-tooltip v-if="a.comment" class="tooltip-small">{{ a.comment }}</q-tooltip>
+                  </div>
+                  <div class="col-3 ellipsis">
+                    <template
+                      v-if="showAnnotationMenu(md.id)">
+                      <q-icon name="o_visibility" class="q-mr-md cursor-pointer" @click="restoreAnnotation(a)">
+                        <q-tooltip class="tooltip-small">Show Annotation in Page</q-tooltip>
+                      </q-icon>
+                      <q-icon name="o_delete" class="q-mr-md cursor-pointer" size="11px"
+                              @click="deleteAnnotation(md, a)">
+                        <q-tooltip class="tooltip-small">Delete Annotation from Page</q-tooltip>
+                      </q-icon>
+                    </template>
+                  </div>
+
+                  <div class="col-12">
+
+                    <SourcePageAnnotation
+                      v-if="currentSelectionText && currentSelectionId === a.id"
+                      :key="randomKey"
+                      :metadata="metadatas[currentSelectionIndex]"
+                      :source-id="sourceId"
+                      :snapshotId="currentSnapshotId"
+                      :selectionId="currentSelectionId"
+                      :selectionText="currentSelectionText"
+                      :selection="currentSelection"
+                      :selectionViewPort="currentSelectionViewPort"
+                      :selectionRect="currentSelectionRect"
+                      :selectionTitle="currentSelectionTitle || ''"
+                      :selectionRemark="currentSelectionRemark"
+                      @set-annotations="(as: Annotation[]) => setAnnotations(as)"
+                      @close-view="currentSelectionText = undefined"
+                    />
+                  </div>
+
+                </div>
+
+                <div class="q-ma-sm">
+                  <SourcePageAnnotation v-if="currentSelectionText && !currentSelectionId"
+                                        :key="randomKey"
+                                        :metadata="metadatas[currentSelectionIndex]"
+                                        :source-id="sourceId"
+                                        :snapshotId="currentSnapshotId"
+                                        :selectionText="currentSelectionText"
+                                        :selectionTitle="currentSelectionTitle"
+                                        :selection="currentSelection"
+                                        :selectionViewPort="currentSelectionViewPort"
+                                        :selectionRect="currentSelectionRect"
+                                        :selectionRemark="currentSelectionRemark"
+                                        @set-annotations="(as: Annotation[]) => setAnnotations(as)"
+                                        @close-view="currentSelectionText = undefined"
+                  />
+                </div>
+              </template>
+
+
+            </q-tab-panel>
+
+            <q-tab-panel name="alerts">
+              <div class="text-h6">Website Alerts</div>
+              To be done
+            </q-tab-panel>
+          </q-tab-panels>
+        </div>
+
+
+      </div>
     </div>
+
 
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
-      <FirstToolbarHelper :showIcon="false" :title="'Project ' + useTabsetsStore().currentTabsetName || 'Bibbly'"/>
+      <FirstToolbarHelper :title="'Project ' + useTabsetsStore().currentTabsetName || 'Bibbly'"/>
     </q-page-sticky>
 
   </q-page>
@@ -155,6 +230,8 @@ import SnapshotViewHelper from "pages/sidepanel/helper/SnapshotViewHelper.vue";
 import {SavePdfCommand} from "src/snapshots/commands/SavePdfCommand";
 import {SaveWarcCommand} from "src/snapshots/commands/SaveWarcCommand";
 import {SaveHtmlCommand} from "src/snapshots/commands/SaveHtmlCommand";
+import OfflineInfo from "src/core/components/helper/offlineInfo.vue";
+import PanelTabListElementWidget from "src/tabsets/widgets/PanelTabListElementWidget.vue";
 
 const router = useRouter()
 const route = useRoute()
@@ -166,6 +243,7 @@ const source = ref<Tab | undefined>(undefined)
 const metadatas = ref<BlobMetadata[]>([])
 
 const currentSnapshotId = ref<string | undefined>(undefined)
+const snapshotLoading = ref(false)
 
 const currentSelectionText = ref<string | undefined>(undefined)
 const currentSelectionViewPort = ref<object | undefined>(undefined)
@@ -180,6 +258,7 @@ const view = ref('default')
 const randomKey = ref<string>(uid())
 const openTabMatch = ref<Map<string, boolean>>(new Map())
 const wrongTabOpen = ref(true)
+const tab = ref('metadata')
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   //console.log(" <<< received message", message)
@@ -363,7 +442,7 @@ const showAnnotationMenu = (mdId: string) => {
   return openTabMatch.value.get(mdId)
 }
 
-const openMhtml = (id: string) => window.open(chrome.runtime.getURL(`www/index.html#/mainpanel/${BlobType.MHTML}/${id}`));
+const snapshotsLabel = () => `Snapshots (${metadatas.value.length})`
 
 </script>
 
