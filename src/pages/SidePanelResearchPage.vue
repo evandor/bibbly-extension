@@ -30,18 +30,18 @@
           />
         </div>
 
-<!--        <div class="text-subtitle-1 q-ma-xs text-bold">-->
-<!--          Source:-->
-<!--        </div>-->
-<!--        <div class="ellipsis text-caption cursor-pointer q-ml-md q-ma-xs" @click="openURL(source?.url || '')">-->
-<!--          {{ source?.url || '...' }}-->
-<!--        </div>-->
-<!--        <div class="text-subtitle-1 q-ma-xs text-bold">-->
-<!--          Tab:-->
-<!--        </div>-->
-<!--        <div class="ellipsis text-caption cursor-pointer q-ml-md q-ma-xs">-->
-<!--          {{ useTabsStore2().currentChromeTab?.url || '...' }}-->
-<!--        </div>-->
+        <!--        <div class="text-subtitle-1 q-ma-xs text-bold">-->
+        <!--          Source:-->
+        <!--        </div>-->
+        <!--        <div class="ellipsis text-caption cursor-pointer q-ml-md q-ma-xs" @click="openURL(source?.url || '')">-->
+        <!--          {{ source?.url || '...' }}-->
+        <!--        </div>-->
+        <!--        <div class="text-subtitle-1 q-ma-xs text-bold">-->
+        <!--          Tab:-->
+        <!--        </div>-->
+        <!--        <div class="ellipsis text-caption cursor-pointer q-ml-md q-ma-xs">-->
+        <!--          {{ useTabsStore2().currentChromeTab?.url || '...' }}-->
+        <!--        </div>-->
 
         <div class="q-ma-none q-pa-none q-mt-lg">
           <q-tabs
@@ -62,8 +62,29 @@
 
           <q-tab-panels v-model="tab" animated>
             <q-tab-panel name="metadata">
-              created: {{source?.created}}<br>
-              Description: {{source?.description}}<br>
+
+              <div class="row q-ma-none q-pa-none">
+                <div class="col-12 text-center q-my-lg">
+                  <q-img :src="thumbnail" style="border:1px dotted grey;border-radius: 5px;max-width:230px"
+                         no-native-menu/>
+                </div>
+
+                <template v-for="[k,v] of ogMetadata()">
+                  <div class="col-3 ellipsis">
+                    {{ k }}
+                  </div>
+                  <div class="col-9 ellipsis-2-lines">
+                    {{ v }}
+                  </div>
+
+                </template>
+
+
+              </div>
+              created: {{ source?.created }}<br>
+              Description: {{ source?.description }}<br>
+
+
             </q-tab-panel>
 
             <q-tab-panel name="snapshots">
@@ -220,7 +241,7 @@ import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {Tabset} from "src/tabsets/models/Tabset";
 import {Tab} from "src/tabsets/models/Tab";
 import {SaveMHtmlCommand} from "src/snapshots/commands/SaveMHtmlCommand";
-import {openURL, uid} from "quasar";
+import {uid} from "quasar";
 import {Annotation} from "src/snapshots/models/Annotation";
 import {useUtils} from "src/core/services/Utils";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
@@ -232,6 +253,9 @@ import {SaveWarcCommand} from "src/snapshots/commands/SaveWarcCommand";
 import {SaveHtmlCommand} from "src/snapshots/commands/SaveHtmlCommand";
 import OfflineInfo from "src/core/components/helper/offlineInfo.vue";
 import PanelTabListElementWidget from "src/tabsets/widgets/PanelTabListElementWidget.vue";
+import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
+import {useContentService} from "src/content/services/ContentService";
+import {ContentItem} from "src/content/models/ContentItem";
 
 const router = useRouter()
 const route = useRoute()
@@ -259,6 +283,8 @@ const randomKey = ref<string>(uid())
 const openTabMatch = ref<Map<string, boolean>>(new Map())
 const wrongTabOpen = ref(true)
 const tab = ref('metadata')
+const thumbnail = ref('')
+const content = ref<ContentItem | undefined>(undefined)
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   //console.log(" <<< received message", message)
@@ -315,6 +341,28 @@ watchEffect(() => {
   // console.log("1", sessionUrl)
   // console.log("2", currentUrl, currentUrl?.toLowerCase() === sessionUrl.toLowerCase())
   //return
+})
+
+watchEffect(() => {
+  if (source.value) {
+    useThumbnailsService().getThumbnailFor(source.value.url)
+      .then(data => {
+        if (data) {
+          thumbnail.value = data['thumbnail' as keyof object]
+        } else {
+          thumbnail.value = ''
+        }
+      })
+  }
+})
+
+watchEffect(() => {
+  if (source.value && source.value.url) {
+    useContentService().getContent(source.value.url)
+      .then((data: ContentItem) => {
+        content.value = data
+      })
+  }
 })
 
 const updateBlobs = () => {
@@ -443,6 +491,18 @@ const showAnnotationMenu = (mdId: string) => {
 }
 
 const snapshotsLabel = () => `Snapshots (${metadatas.value.length})`
+
+const ogMetadata = () => {
+  const result: Map<string, string> = new Map()
+  if (content.value && content.value.metas) {
+    const ogKeys = _.filter(Object.keys(content.value.metas), (key: string) => key.toLowerCase().startsWith('og:'))
+    // console.log("ogKeys", ogKeys)
+    for (const k of ogKeys) {
+      result.set(k.substring(3), content.value.metas[k as keyof object])
+    }
+  }
+  return result
+}
 
 </script>
 
