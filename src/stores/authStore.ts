@@ -1,6 +1,6 @@
 import {defineStore} from 'pinia';
 import {getAuth, signOut, User} from "firebase/auth";
-import {LocalStorage, useQuasar} from "quasar";
+import {LocalStorage} from "quasar";
 import {computed, ref} from "vue";
 import {Account, UserData} from "src/models/Account";
 import {CURRENT_USER_ID} from "boot/constants";
@@ -8,12 +8,10 @@ import {collection, doc, getDoc, getDocs} from "firebase/firestore";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
 import PersistenceService from "src/services/PersistenceService";
 import {useSettingsStore} from "stores/settingsStore";
-import { sha256 } from 'js-sha256';
+import {sha256} from 'js-sha256';
 
 export enum AccessItem {
-  SYNC = "SYNC",
-  SHARE = "SHARE",
-  FEATURE_TOGGLES = "FEATURE_TOGGLES"
+  TABSETS = "TABSETS"
 }
 
 export const useAuthStore = defineStore('auth', () => {
@@ -22,6 +20,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   const authenticated = ref(false)
   const user = ref<User>(null as unknown as User)
+  const roles = ref<string[]>([])
   const authRequest = ref<string>(null as unknown as string)
   const account = ref<Account | undefined>(undefined)
 
@@ -81,35 +80,33 @@ export const useAuthStore = defineStore('auth', () => {
     return val
   })
 
-  const userMayAccess = computed(() => {
-    return (item: AccessItem): boolean => {
-      //console.log("checking access item", item)
-      if (!user.value) {
-        //console.log("result: no (no user)")
-        return false
-      }
-      //console.log("checking against account", account.value)
+  const limitExceeded = computed(() => {
+    return (item: AccessItem, count: number): boolean => {
       switch (item) {
-        case AccessItem.SYNC:
-          // return products.value.indexOf("prod_PLJipUG1Zfw7pC") >= 0
-          return account.value ? account.value.products.indexOf("skysailSync") >= 0 : false
-        case AccessItem.SHARE:
-          return account.value !== undefined
-        case AccessItem.FEATURE_TOGGLES:
-          return true
-        default:
-          return false
+        case AccessItem.TABSETS:
+          if (roles.value.indexOf('bibbly.user') >= 0 && count < 10) {
+            return false
+          }
+          break;
       }
+      return true
     }
   })
+
+  async function getCustomClaimRoles(): Promise<string[]> {
+    await FirebaseServices.getAuth().currentUser!.getIdToken(true);
+    const decodedToken = await FirebaseServices.getAuth().currentUser!.getIdTokenResult();
+    return decodedToken.claims.stripeRole as string[]
+  }
 
   // --- actions ---
   async function setUser(u: User | undefined) {
     if (u) {
-      console.log("setting user id to", u.uid)
+      console.log("setting user id to", u.uid, await getCustomClaimRoles())
       LocalStorage.set(CURRENT_USER_ID, u.uid)
       authenticated.value = true;
       user.value = JSON.parse(JSON.stringify(u))
+      roles.value = await getCustomClaimRoles()
 
       const userDoc = await getDoc(doc(FirebaseServices.getFirestore(), "users", u.uid))
       const userData = userDoc.data() as UserData
@@ -128,7 +125,7 @@ export const useAuthStore = defineStore('auth', () => {
       upsertAccount(account)
 
       if (user.value.email) {
-        const hashedEmail = sha256( user.value.email.trim().toLowerCase() )
+        const hashedEmail = sha256(user.value.email.trim().toLowerCase())
         avatar.value = `https://www.gravatar.com/avatar/${hashedEmail}`
       }
 
@@ -183,7 +180,7 @@ export const useAuthStore = defineStore('auth', () => {
     upsertAccount,
     getAccount,
     setProducts,
-    userMayAccess,
+    limitExceeded,
     avatar
   }
 })

@@ -1,6 +1,5 @@
 import NavigationService from "src/services/NavigationService";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
-import {usePermissionsStore} from "src/stores/permissionsStore";
 import {uid} from "quasar";
 import {Router} from "vue-router";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
@@ -20,11 +19,11 @@ class ChromeApi {
 
         console.debug(" ...initializing ChromeApi")
 
-        chrome.runtime.onUpdateAvailable.addListener(
-            (details: any) => {
-                NavigationService.updateAvailable(details)
-            }
-        )
+        // chrome.runtime.onUpdateAvailable.addListener(
+        //     (details: any) => {
+        //         NavigationService.updateAvailable(details)
+        //     }
+        // )
 
     }
 

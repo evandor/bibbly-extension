@@ -34,10 +34,11 @@ class FirebaseServices {
     this.auth = getAuth(this.firebaseApp)
 
     // https://firebase.google.com/docs/firestore/manage-data/enable-offline#web-modular-api
-    initializeFirestore(this.firebaseApp, {
-      localCache:
-        persistentLocalCache({tabManager: persistentMultipleTabManager()})
-    })
+    // initializeFirestore(this.firebaseApp, {
+    //   localCache:
+    //     persistentLocalCache({tabManager: persistentMultipleTabManager()})
+    // })
+    initializeFirestore(this.firebaseApp,{})
     this.firestore = getFirestore(this.firebaseApp)
     this.storage = getStorage(this.firebaseApp)
     console.log("initializing FirebaseServices -- done")

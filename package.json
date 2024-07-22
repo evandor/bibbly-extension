@@ -21,6 +21,7 @@
     "@intlify/unplugin-vue-i18n": "^4.0.0",
     "@isomorphic-git/lightning-fs": "^4.6.0",
     "@quasar/extras": "^1.16.9",
+    "@stripe/firestore-stripe-payments": "^0.0.6",
     "@types/lodash": "^4.14.182",
     "@types/sanitize-html": "^2.11.0",
     "axios": "^1.7.2",

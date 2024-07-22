@@ -11,13 +11,11 @@
         <div class="row q-ma-none q-pa-none items-start">
           <div class="col-6">
               <span @click="router.push('/sidepanel')" class="cursor-pointer">
-                <q-icon name="o_sync_alt" color="primary" class="q-mr-sm"/>Back to Collection
+                <q-icon name="turn_left" color="primary" class="q-mr-sm"/>Back to Collection
               </span>
           </div>
           <div class="col-6 text-right">
-              <span @click="view = 'new_project'" class="cursor-pointer">
-                <q-icon name="o_add_circle" color="primary" class="q-mr-sm"/>New Collection
-              </span>
+             &nbsp;
           </div>
           <div class="col-12">
             <hr style="height:1px;border:none;background-color: #efefef;">
@@ -70,10 +68,10 @@
                 </div>
 
                 <template v-for="[k,v] of ogMetadata()">
-                  <div class="col-3 ellipsis">
+                  <div class="col-3 ellipsis text-subtitle2">
                     {{ k }}
                   </div>
-                  <div class="col-9 ellipsis-2-lines">
+                  <div class="col-9 ellipsis-2-lines text-right">
                     {{ v }}
                   </div>
 
@@ -81,8 +79,8 @@
 
 
               </div>
-              created: {{ source?.created }}<br>
-              Description: {{ source?.description }}<br>
+<!--              created: {{ source?.created }}<br>-->
+<!--              Description: {{ source?.description }}<br>-->
 
 
             </q-tab-panel>
@@ -348,7 +346,7 @@ watchEffect(() => {
     useThumbnailsService().getThumbnailFor(source.value.id)
       .then(data => {
         if (data) {
-          thumbnail.value = data['thumbnail' as keyof object]
+          thumbnail.value = data
         } else {
           thumbnail.value = ''
         }
@@ -358,7 +356,7 @@ watchEffect(() => {
 
 watchEffect(() => {
   if (source.value && source.value.url) {
-    useContentService().getContent(source.value.url)
+    useContentService().getContent(source.value.id)
       .then((data: ContentItem) => {
         content.value = data
       })

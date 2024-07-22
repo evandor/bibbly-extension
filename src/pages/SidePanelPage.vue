@@ -11,8 +11,9 @@
         <template v-if="view === 'projects'">
           <div class="row q-ma-none q-pa-none items-start">
             <div class="col-6">
-              <span @click="navigate('/sidepanel/collections')" class="cursor-pointer">
-                <q-icon name="o_sync_alt" color="primary" class="q-mr-sm"/>Change Collection
+              <span v-if="projects.length > 1"
+                @click="navigate('/sidepanel/collections')" class="cursor-pointer">
+                <q-icon name="o_swap_horiz" color="primary" class="q-mr-sm"/>Change Collection
               </span>
             </div>
             <div class="col-6 text-right">
@@ -37,7 +38,9 @@
             </div>
 
             <div class="col-12 q-my-lg text-center">
-              <q-btn unelevated rounded no-caps class="q-mx-md q-px-lg" color="primary" :label="t('add_link')"
+              <q-btn
+                :disable="alreadyAdded()"
+                unelevated rounded no-caps class="q-mx-md q-px-lg" color="primary" :label="t('add_link')"
                      @click="addCurrentTab()"
               />
             </div>
@@ -58,7 +61,7 @@
         <!-- list of tabs, assuming here we have at least one tabset -->
         <SidePanelPageTabList v-if="currentProject && view==='projects'"
                               :indent="calcFolders(currentProject as Tabset)?.length > 0"
-                              :tabsCount="useTabsetService().tabsToShow(currentProject as Tabset).length"
+                              :tabsCount="useTabsetService().tabsToShow(currentProject as Tabset)?.length"
                               :tabset="tabsetForTabList(currentProject as Tabset)"/>
       </div>
     </div>
@@ -97,6 +100,7 @@ import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {useRouter} from "vue-router";
 import OfflineInfo from "src/core/components/helper/offlineInfo.vue";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 
 const {t} = useI18n({locale: navigator.language, useScope: "global"})
 
@@ -134,17 +138,17 @@ onUnmounted(() => {
 
 watchEffect(async () => {
   projects.value = [...useTabsetsStore().tabsets.values()]
+  console.log("=====>", projects.value.length)
+  if (projects.value.length === 0) {
+    router.push("/sidepanel/welcome")
+  }
   projectOptions.value = []
   _.forEach(projects.value as Tabset[], (p: Tabset) => {
     projectOptions.value.push({label: p.name, value: p.id})
   })
   projectOptions.value = _.sortBy(projectOptions.value, "label")
-  // projectOptions.value.push({
-  //   label: 'Create new Project', value: 'new_project'
-  // })
   if (useTabsetsStore().currentTabsetName) {
     project.value = useTabsetsStore().currentTabsetName!
-    //console.log("project.value", project.value)
     currentProject.value = useTabsetsStore().getCurrentTabset
   }
 })
@@ -214,46 +218,27 @@ watchEffect(() => {
   tabsets.value = determineTabsets()
 })
 
-const projectListWasClicked = async (a: any) => {
-  // console.log("Hier", project.value)
-  // console.log("Hier", a)
-
-  if (a.value === "new_project") {
-    view.value = 'new_project'
-    return
-  } else if (currentProject.value) {
-    //useAppStore().setCurrentProject(currentProject.value.id)
-  }
-
-  useCommandExecutor().execute(new SelectTabsetCommand(a.value, useSpacesStore().space?.id))
-    .then((res: ExecutionResult<Tabset | undefined>) => {
-      if (res.result) {
-        currentProject.value = res.result
-      }
-    })
-
-  // if (project.value && project.value.value) {
-  //   currentProject.value = await useProjectsStore().findProject(project.value.value)
-  // }
-
-}
-
 const addCurrentTab = async () => {
   let queryOptions = {active: true, lastFocusedWindow: true};
-  // if (!currentProject.value) {
-  //   console.warn("current project not set")
-  //   return
-  // }
   try {
     let [currentTab] = await chrome.tabs.query(queryOptions);
     if (currentTab) {
       await useCommandExecutor().executeFromUi(new AddTabToTabsetCommand(new Tab(uid(), currentTab)))
-      // currentProject.value.sources.push(Source.newFrom(currentTab))
-      // await useProjectsStore().updateProject(currentProject.value as Project)
     }
   } catch (err: any) {
     console.warn(err)
   }
+}
+
+const  alreadyAdded = ():boolean => {
+  const currentChromeTabUrl = useTabsStore2().currentChromeTab?.url
+  if (currentChromeTabUrl) {
+    const currentTabset = useTabsetsStore().getCurrentTabset
+    if (currentTabset) {
+      return _.find(currentTabset.tabs, (t:Tab) => t.url === currentChromeTabUrl) !== undefined
+    }
+  }
+  return false
 }
 
 function inIgnoredMessages(message: any) {

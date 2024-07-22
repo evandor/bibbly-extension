@@ -8,12 +8,12 @@ import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useDB} from "src/services/usePersistenceService";
 import {UpdateTabUrlCommand} from "src/domain/tabs/UpdateTabUrl";
-import {useSearchStore} from "src/search/stores/searchStore";
 import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";
 import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import IndexedDbContentPersistence from "src/content/persistence/IndexedDbContentPersistence";
 import {useContentService} from "src/content/services/ContentService";
+import {useSearchStore} from "src/search/stores/searchStore"
 
 installQuasarPlugin();
 
@@ -28,12 +28,12 @@ describe('UpdateTabUrl', () => {
   beforeEach(async () => {
     setActivePinia(createPinia())
     //await IndexedDbPersistenceService.init("db")
-    await IndexedDbTabsetsPersistence.init()
+    // await IndexedDbTabsetsPersistence.init()
     await IndexedDbContentPersistence.init()
     await useContentService().init(IndexedDbContentPersistence)
-    db = useDB(undefined).tabsetsIndexedDb
-    await useTabsetService().init(db)
+    db = IndexedDbTabsetsPersistence
     await useTabsetsStore().initialize(db)
+    await useTabsetService().init()
     await useSearchStore().init()
   })
 
