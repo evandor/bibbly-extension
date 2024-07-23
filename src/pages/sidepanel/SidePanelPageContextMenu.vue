@@ -7,10 +7,10 @@
 <!--                       icon="o_note"-->
 <!--                       label="Edit Tabset"/>-->
 
-      <ContextMenuItem v-close-popup
-                       @was-clicked="emits('editHeaderDescription')"
-                       icon="o_description"
-                       label="Tabset Description..."/>
+<!--      <ContextMenuItem v-close-popup-->
+<!--                       @was-clicked="emits('editHeaderDescription')"-->
+<!--                       icon="o_description"-->
+<!--                       label="Tabset Description..."/>-->
 
 
 
@@ -53,28 +53,28 @@
 <!--                         label="Open in window..."/>-->
       </template>
 
-      <ContextMenuItem v-if="useTabsetsStore().tabsets.size > 1"
-                       v-close-popup
-                       @was-clicked="focus(tabset)"
-                       icon="filter_center_focus"
-                       color="accent"
-                       label="Focus on tabset"/>
+<!--      <ContextMenuItem v-if="useTabsetsStore().tabsets.size > 1"-->
+<!--                       v-close-popup-->
+<!--                       @was-clicked="focus(tabset)"-->
+<!--                       icon="filter_center_focus"-->
+<!--                       color="accent"-->
+<!--                       label="Focus on tabset"/>-->
 
-      <template v-if="tabset.status === TabsetStatus.DEFAULT && useTabsetsStore().tabsets.size > 1">
-        <ContextMenuItem v-close-popup
-                         @was-clicked="pin(tabset)"
-                         icon="o_push_pin"
-                         color="warning"
-                         label="Pin"/>
-      </template>
-      <template v-else-if="tabset.status === TabsetStatus.FAVORITE">
-        <ContextMenuItem v-close-popup
-                         @was-clicked="unpin(tabset)"
-                         icon="push_pin"
-                         color="warning"
-                         label="Unpin"/>
+<!--      <template v-if="tabset.status === TabsetStatus.DEFAULT && useTabsetsStore().tabsets.size > 1">-->
+<!--        <ContextMenuItem v-close-popup-->
+<!--                         @was-clicked="pin(tabset)"-->
+<!--                         icon="o_push_pin"-->
+<!--                         color="warning"-->
+<!--                         label="Pin"/>-->
+<!--      </template>-->
+<!--      <template v-else-if="tabset.status === TabsetStatus.FAVORITE">-->
+<!--        <ContextMenuItem v-close-popup-->
+<!--                         @was-clicked="unpin(tabset)"-->
+<!--                         icon="push_pin"-->
+<!--                         color="warning"-->
+<!--                         label="Unpin"/>-->
 
-      </template>
+<!--      </template>-->
 
 <!--      <template v-if="usePermissionsStore().hasFeature(FeatureIdent.ARCHIVE_TABSET) &&-->
 <!--        tabset.status === TabsetStatus.DEFAULT">-->
@@ -114,7 +114,7 @@
 <!--        <q-tooltip class="tooltip-small">Delete Shared Link</q-tooltip>-->
 <!--      </ContextMenuItem>-->
 
-      <q-separator inset v-if="usePermissionsStore().hasFeature(FeatureIdent.TABSETS_SHARING)" />
+<!--      <q-separator inset v-if="usePermissionsStore().hasFeature(FeatureIdent.TABSETS_SHARING)" />-->
 
 <!--      <template v-if="useSettingsStore().isEnabled('dev')">-->
 <!--        <ContextMenuItem v-close-popup-->
@@ -125,6 +125,15 @@
 <!--        <q-separator inset/>-->
 <!--      </template>-->
 
+
+      <ContextMenuItem v-close-popup
+                       @was-clicked="deleteTabsetDialog(tabset as Tabset)"
+                       icon="o_delete"
+                       color="negative"
+                       :disable="tabset.sharedId !== undefined"
+                       label="Delete Tabset">
+      </ContextMenuItem>
+
     </q-list>
   </q-menu>
 
@@ -132,17 +141,14 @@
 
 <script lang="ts" setup>
 
-import {usePermissionsStore} from "stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
-import {useSettingsStore} from "stores/settingsStore";
-import NavigationService from "src/services/NavigationService";
+import {Tabset, TabsetSharing, TabsetStatus} from "src/tabsets/models/Tabset";
 import {LocalStorage, openURL, useQuasar} from "quasar";
 import {useUtils} from "src/core/services/Utils";
 import ContextMenuItem from "pages/sidepanel/helper/ContextMenuItem.vue";
 import {PropType} from "vue";
 import {useRouter} from "vue-router";
-import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import DeleteTabsetDialog from "src/tabsets/dialogues/DeleteTabsetDialog.vue";
 
 const {inBexMode} = useUtils()
 
@@ -155,73 +161,17 @@ const props = defineProps({
 
 const emits = defineEmits(['editHeaderDescription'])
 
-const publictabsetsPath = "https://public.tabsets.net/tabsets/"
 
-// const startTabsetNote = (tabset: Tabset) => {
-//   const url = chrome && chrome.runtime && chrome.runtime.getURL ?
-//     chrome.runtime.getURL('www/index.html') + "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true" :
-//     "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true"
-//   NavigationService.openOrCreateTab([url])
-// }
+const deleteTabsetDialog = (tabset: Tabset) => {
+  $q.dialog({
+    component: DeleteTabsetDialog,
+    componentProps: {
+      tabsetId: tabset.id,
+      tabsetName: tabset.name,
+      tabsCount: tabset.tabs.length
+    }
+  })
+}
 
-// const createSubfolder = (tabset: Project) => {
-//   $q.dialog({
-//     component: NewSubfolderDialog,
-//     componentProps: {
-//       tabsetId: tabset.id,
-//       parentFolder: undefined
-//     }
-//   })
-// }
-
-// const openEditTabsetDialog = (tabset: Project) => {
-//   $q.dialog({
-//     component: EditTabsetDialog,
-//     //TODO switch to tabset: tabset?
-//     componentProps: {
-//       tabsetId: tabset.id,
-//       tabsetName: tabset.name,
-//       tabsetColor: tabset.color,
-//       window: tabset.window,
-//       details: tabset.details || useUiStore().listDetailLevel,
-//       fromPanel: true
-//     }
-//   })
-// }
-
-
-const focus = (tabset: Tabset) =>
-  router.push("/sidepanel/tabsets/" + tabset.id)
-
-
-
-// const shareTabsetPubliclyDialog = (tabset: Tabset, republish: boolean = false) => {
-//   $q.dialog({
-//     component: ShareTabsetPubliclyDialog,
-//     componentProps: {
-//       tabsetId: tabset.id,
-//       sharedId: tabset.sharedId,
-//       tabsetName: tabset.name,
-//       republish: republish
-//     }
-//   })
-// }
-
-// const removeWindow = () => {
-//   const ts = useTabsStore().getCurrentTabset
-//   if (ts) {
-//     ts.window = 'current'
-//     useTabsetService().saveTabset(ts)
-//   }
-// }
-//
-// const openNewWindowDialog = () => {
-//   $q.dialog({
-//     component: NewWindowDialog,
-//     componentProps: {
-//       tabsetId: useTabsStore().currentTabsetId
-//     }
-//   })
-// }
 
 </script>

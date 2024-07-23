@@ -27,10 +27,11 @@
 
             <div class="col-9 q-ml-md">
               <div class="text-caption">Collection</div>
-              <div class="text-body2 text-bold">{{ project}}</div>
+              <div class="text-body2 text-bold">{{ project}} ({{currentProject?.status}})</div>
             </div>
             <div class="col text-right vertical-middle q-mt-md">
-              <q-icon name="more_vert" size="sm"/>
+              <q-icon name="more_vert" size="sm" class="cursor-pointer"/>
+              <SidePanelPageContextMenu v-if="currentProject" :tabset="currentProject as Tabset" />
             </div>
 
             <div class="col-12">
@@ -101,6 +102,8 @@ import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {useRouter} from "vue-router";
 import OfflineInfo from "src/core/components/helper/offlineInfo.vue";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import SidePanelSubfolderContextMenu from "src/tabsets/widgets/SidePanelSubfolderContextMenu.vue";
+import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.vue";
 
 const {t} = useI18n({locale: navigator.language, useScope: "global"})
 
@@ -138,7 +141,6 @@ onUnmounted(() => {
 
 watchEffect(async () => {
   projects.value = [...useTabsetsStore().tabsets.values()]
-  console.log("=====>", projects.value.length)
   if (projects.value.length === 0) {
     router.push("/sidepanel/welcome")
   }
