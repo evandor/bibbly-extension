@@ -10,12 +10,15 @@
     "dev --devtools": "quasar dev --devtools",
     "dev spa": "quasar dev",
     "build": "quasar build -m bex",
+    "build pwa": "quasar build -m pwa",
     "test:unit:ui": "vitest --ui",
     "test:unit": "vitest",
     "test:unit:ci": "vitest run",
     "test:unit:coverage": "vitest --coverage",
     "test:unit:watch": "vitest --watch",
-    "test:unit:watchAll": "vitest --watchAll"
+    "test:unit:watchAll": "vitest --watchAll",
+    "build pwa.prd & deploy to india032": "mv .env .env.tmp && cp .prd.env .env && quasar build -m pwa && scp -r -P 222 dist/pwa/* carsten@carsten.evandor.de:/home/carsten/tabsets/pwa.bibbly.me && mv .env.tmp .env",
+    "build pwa.dev & deploy to india032": "mv .env .env.tmp && cp .dev.env .env && quasar build -m pwa && scp -r -P 222 dist/pwa/* carsten@carsten.evandor.de:/home/carsten/tabsets/pwa.dev.bibbly.me && mv .env.tmp .env"
   },
   "dependencies": {
     "@intlify/unplugin-vue-i18n": "^4.0.0",
