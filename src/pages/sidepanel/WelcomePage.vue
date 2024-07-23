@@ -76,9 +76,7 @@ import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {useAppStore} from "stores/appStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {Tabset} from "src/tabsets/models/Tabset";
-import {useAuthStore} from "stores/authStore";
 import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
-import {useUiStore} from "../../ui/stores/uiStore";
 import OfflineInfo from "src/core/components/helper/offlineInfo.vue";
 
 const router = useRouter()
