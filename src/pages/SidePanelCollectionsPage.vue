@@ -9,7 +9,7 @@
         <template v-if="view === 'projects'">
           <div class="row q-ma-none q-pa-none items-start">
             <div class="col-6">
-              <span class="cursor-pointer">
+              <span class="cursor-pointer"  v-if="projects.length > 0">
                 <q-icon name="o_sync_alt" color="primary" class="q-mr-sm"/>Select Collection:
               </span>
             </div>
@@ -58,7 +58,7 @@
 
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
-      <FirstToolbarHelper title="Bibbly"/>
+      <FirstToolbarHelper title="Bibbly" :show-search-box="projects.length > 0"/>
     </q-page-sticky>
   </q-page>
 

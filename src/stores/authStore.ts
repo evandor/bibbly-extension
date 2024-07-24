@@ -82,8 +82,13 @@ export const useAuthStore = defineStore('auth', () => {
 
   const limitExceeded = computed(() => {
     return (item: AccessItem, count: number): boolean => {
+      const localMode = useSettingsStore().isEnabled('localMode')
+      if (localMode) {
+        return false
+      }
       switch (item) {
         case AccessItem.TABSETS:
+
           if (roles.value.indexOf('bibbly.user') >= 0 && count < 10) {
             return false
           }

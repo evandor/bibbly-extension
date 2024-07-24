@@ -46,6 +46,21 @@ const routes: RouteRecordRaw[] = [
     children: [{path: '', component: () => import('src/features/pages/FeaturesPage.vue')}],
   },
   {
+    path: '/mainpanel/notes/:noteId/edit', // editorjs setup cannot toggle between readonly/write mode
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('pages/mainpanel/MainPanelNotePage.vue')}],
+  },
+  {
+    path: '/mainpanel/notes/:noteId',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('pages/mainpanel/MainPanelNotePage.vue')}],
+  },
+  {
+    path: '/mainpanel/notes/',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('pages/mainpanel/MainPanelNotePage.vue')}],
+  },
+  {
     path: '/mainpanel/html/:snapshotId', // both MHtml and HTML managed by same page
     component: () => import('layouts/PlainLayout.vue'),
     children: [{path: '', component: () => import('src/snapshots/pages/MainPanelMHtmlPage.vue')}],

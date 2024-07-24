@@ -42,3 +42,7 @@
 	path = src/search
 	url = https://github.com/evandor/submodule-search.git
 	branch = main
+[submodule "src/notes"]
+	path = src/notes
+	url = https://github.com/evandor/submodule-notes.git
+	branch = main

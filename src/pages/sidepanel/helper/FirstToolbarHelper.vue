@@ -7,7 +7,7 @@
           <img v-if="showIcon" class="q-mt-md" width="42px" height="42px" src="icons/favicon-96x96.png"/>
         </div>
 
-        <div class="col-8 q-ma-none q-pa-noneq q-mt-md">
+        <div class="col-8 q-ma-none q-pa-noneq q-mt-md" v-if="props.showSearchBox">
           <q-input rounded standout dense v-model="search" label="Search" bg-color="white" class="q-ma-none q-pa-none">
             <template v-slot:prepend>
               <q-icon name="search"/>
@@ -17,6 +17,7 @@
             </template>
           </q-input>
         </div>
+        <div v-else class="col-8">&nbsp;</div>
 
         <div class="col text-right q-mr-xs q-mt-md" v-if="!useUiStore().appLoading">
 

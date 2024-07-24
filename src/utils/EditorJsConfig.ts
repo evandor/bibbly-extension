@@ -40,17 +40,17 @@ class EditorJsConfig {
     toolsconfig = {
         header: {
             class: Header,
-            shortcut: "CMD+SHIFT+H"
+   //         shortcut: "CMD+SHIFT+H"
         },
-        quote: {
-            class: Quote,
-            inlineToolbar: true,
-            shortcut: 'CMD+SHIFT+O',
-            config: {
-                quotePlaceholder: 'Enter a quote',
-                captionPlaceholder: 'Quote\'s author',
-            }
-        },
+        // quote: {
+        //     class: Quote,
+        //     inlineToolbar: true,
+        //     shortcut: 'CMD+SHIFT+O',
+        //     config: {
+        //         quotePlaceholder: 'Enter a quote',
+        //         captionPlaceholder: 'Quote\'s author',
+        //     }
+        // },
         linkTool2: {
             class: LinkTool2,
             config: {

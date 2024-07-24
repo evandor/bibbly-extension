@@ -14,36 +14,36 @@
 
 
 
-      <q-separator inset v-if="useTabsetsStore().tabsets.size > 1"/>
+<!--      <q-separator inset v-if="useTabsetsStore().tabsets.size > 1"/>-->
 
 
-      <template v-if="tabset.tabs.length > 0 && inBexMode() && (
-          (!tabset.window || tabset.window === 'current'))">
-        <ContextMenuItem
-          icon="open_in_new"
-          label="Open all in...">
+<!--      <template v-if="tabset.tabs.length > 0 && inBexMode() && (-->
+<!--          (!tabset.window || tabset.window === 'current'))">-->
+<!--        <ContextMenuItem-->
+<!--          icon="open_in_new"-->
+<!--          label="Open all in...">-->
 
-          <q-item-section side>
-            <q-icon name="keyboard_arrow_right"/>
-          </q-item-section>
-<!--          <q-menu anchor="top end" self="top start">-->
-<!--            <q-list>-->
-<!--              <q-item v-if="usePermissionsStore().hasFeature(FeatureIdent.AUTO_TAB_SWITCHER)"-->
-<!--                      dense clickable v-close-popup @click="startAutoSwitchingTab(tabset.id)">-->
-<!--                <q-item-section>switching tab</q-item-section>-->
-<!--              </q-item>-->
-<!--              <q-item dense clickable v-close-popup @click="restoreInNewWindow(tabset.id)">-->
-<!--                <q-item-section>new window</q-item-section>-->
-<!--              </q-item>-->
-<!--              <q-item dense clickable v-close-popup @click="restoreInGroup(tabset.id)">-->
-<!--                <q-item-section>current window</q-item-section>-->
-<!--              </q-item>-->
-<!--            </q-list>-->
-<!--          </q-menu>-->
+<!--          <q-item-section side>-->
+<!--            <q-icon name="keyboard_arrow_right"/>-->
+<!--          </q-item-section>-->
+<!--&lt;!&ndash;          <q-menu anchor="top end" self="top start">&ndash;&gt;-->
+<!--&lt;!&ndash;            <q-list>&ndash;&gt;-->
+<!--&lt;!&ndash;              <q-item v-if="usePermissionsStore().hasFeature(FeatureIdent.AUTO_TAB_SWITCHER)"&ndash;&gt;-->
+<!--&lt;!&ndash;                      dense clickable v-close-popup @click="startAutoSwitchingTab(tabset.id)">&ndash;&gt;-->
+<!--&lt;!&ndash;                <q-item-section>switching tab</q-item-section>&ndash;&gt;-->
+<!--&lt;!&ndash;              </q-item>&ndash;&gt;-->
+<!--&lt;!&ndash;              <q-item dense clickable v-close-popup @click="restoreInNewWindow(tabset.id)">&ndash;&gt;-->
+<!--&lt;!&ndash;                <q-item-section>new window</q-item-section>&ndash;&gt;-->
+<!--&lt;!&ndash;              </q-item>&ndash;&gt;-->
+<!--&lt;!&ndash;              <q-item dense clickable v-close-popup @click="restoreInGroup(tabset.id)">&ndash;&gt;-->
+<!--&lt;!&ndash;                <q-item-section>current window</q-item-section>&ndash;&gt;-->
+<!--&lt;!&ndash;              </q-item>&ndash;&gt;-->
+<!--&lt;!&ndash;            </q-list>&ndash;&gt;-->
+<!--&lt;!&ndash;          </q-menu>&ndash;&gt;-->
 
-        </ContextMenuItem>
+<!--        </ContextMenuItem>-->
 
-      </template>
+<!--      </template>-->
 
       <template v-if="tabset.tabs.length > 0 && inBexMode() &&
             tabset.window && tabset.window !== 'current'">
@@ -127,6 +127,12 @@
 
 
       <ContextMenuItem v-close-popup
+                       @was-clicked="startTabsetNote(tabset as Tabset)"
+                       icon="o_note"
+                       label="Start Note">
+      </ContextMenuItem>
+
+      <ContextMenuItem v-close-popup
                        @was-clicked="deleteTabsetDialog(tabset as Tabset)"
                        icon="o_delete"
                        color="negative"
@@ -149,6 +155,9 @@ import {PropType} from "vue";
 import {useRouter} from "vue-router";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import DeleteTabsetDialog from "src/tabsets/dialogues/DeleteTabsetDialog.vue";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
+import {DeleteTabsetCommand} from "src/tabsets/commands/DeleteTabset";
+import NavigationService from "src/services/NavigationService";
 
 const {inBexMode} = useUtils()
 
@@ -163,14 +172,29 @@ const emits = defineEmits(['editHeaderDescription'])
 
 
 const deleteTabsetDialog = (tabset: Tabset) => {
+  if (tabset.tabs.length === 0) {
+    useCommandExecutor().executeFromUi(new DeleteTabsetCommand(tabset.id))
+      .then((res: any) => {
+        router.push("/sidepanel/collections")
+      })
+    return
+  }
   $q.dialog({
     component: DeleteTabsetDialog,
     componentProps: {
       tabsetId: tabset.id,
       tabsetName: tabset.name,
-      tabsCount: tabset.tabs.length
+      tabsCount: tabset.tabs.length,
+      redirectTo: "/sidepanel/collections"
     }
   })
+}
+
+const startTabsetNote = (tabset: Tabset) => {
+  const url = chrome && chrome.runtime && chrome.runtime.getURL ?
+    chrome.runtime.getURL('www/index.html') + "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true" :
+    "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true"
+  NavigationService.openOrCreateTab([url])
 }
 
 
