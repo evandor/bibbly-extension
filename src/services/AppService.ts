@@ -20,6 +20,7 @@ import {useAuthStore} from "stores/authStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
+import {useNotesStore} from "src/notes/stores/NotesStore";
 
 class AppService {
 
@@ -122,6 +123,9 @@ class AppService {
       await useWindowsStore().initialize()
       useWindowsStore().initListeners()
     }
+
+    await useNotesStore().initialize(useDB().notesDb)
+    console.debug('')
 
     await useSpacesStore().initialize(useDB().spacesDb)
     console.debug('')

@@ -7,6 +7,7 @@ import IndexedDbSpacesPersistence from "src/spaces/persistence/IndexedDbSpacesPe
 import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";
 import IndexedDbSnapshotPersistence from "src/snapshots/persistence/IndexedDbSnapshotPersistence";
 import {useSettingsStore} from "stores/settingsStore";
+import IndexedDbNotesPersistence from "src/notes/persistence/IndexedDbNotesPersistence";
 
 export function useDB() {
 
@@ -19,12 +20,14 @@ export function useDB() {
   const spacesDb = localMode ? IndexedDbSpacesPersistence : FirestoreSpacesPersistence
   const tabsetsDb = localMode ? IndexedDbTabsetsPersistence : FirestoreTabsetsPersistence
   const snapshotsDb = localMode ? IndexedDbSnapshotPersistence : FirestoreSnapshotsPersistence
+  const notesDb = IndexedDbNotesPersistence
 
   return {
     db,
     spacesDb,
     tabsetsDb,
-    snapshotsDb
+    snapshotsDb,
+    notesDb
   }
 
 }

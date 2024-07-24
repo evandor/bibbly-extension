@@ -1,4 +1,3 @@
-import {SyncType} from "stores/appStore";
 
 export class SyncSettings {
 

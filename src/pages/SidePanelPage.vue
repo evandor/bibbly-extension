@@ -2,7 +2,7 @@
 
   <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 60px">
 
-    <offline-info />
+    <offline-info/>
 
     <!-- white main box -->
     <div class="column fitpage q-pa-sm q-mx-sm q-mt-md bg-white">
@@ -12,7 +12,7 @@
           <div class="row q-ma-none q-pa-none items-start">
             <div class="col-6">
               <span v-if="projects.length > 1"
-                @click="navigate('/sidepanel/collections')" class="cursor-pointer">
+                    @click="navigate('/sidepanel/collections')" class="cursor-pointer">
                 <q-icon name="o_swap_horiz" color="primary" class="q-mr-sm"/>Change Collection
               </span>
             </div>
@@ -27,25 +27,45 @@
 
             <div class="col-9 q-ml-md">
               <div class="text-caption">Collection</div>
-              <div class="text-body2 text-bold">{{ project}} ({{currentProject?.status}})</div>
+              <div class="text-body2 text-bold">{{ project }} ({{ currentProject?.status }})</div>
             </div>
             <div class="col text-right vertical-middle q-mt-md">
               <q-icon name="more_vert" size="sm" class="cursor-pointer"/>
-              <SidePanelPageContextMenu v-if="currentProject" :tabset="currentProject as Tabset" />
+              <SidePanelPageContextMenu v-if="currentProject" :tabset="currentProject as Tabset"/>
             </div>
 
             <div class="col-12">
               <hr style="height:1px;border:none;background-color: #efefef;">
             </div>
-
-            <div class="col-12 q-my-lg text-center">
-              <q-btn
-                :disable="alreadyAdded()"
-                unelevated rounded no-caps class="q-mx-md q-px-lg" color="primary" :label="t('add_link')"
-                     @click="addCurrentTab()"
-              />
-            </div>
           </div>
+
+          <template v-for="n in notes">
+            <div class="row">
+              <div
+                class="col-1 cursor-pointer"
+                @click="openNote(n)">
+                <q-icon name="description" class="q-ml-md" color="grey" size="12px"/>
+              </div>
+              <div
+                class="col vertical-bottom q-ml-xs ellipsis text-caption cursor-pointer text-blue-10"
+                @click="openNote(n)">
+                {{ n.title }}
+              </div>
+            </div>
+          </template>
+
+          <div class="col-12" v-if="notes.length > 0">
+            <hr style="height:1px;border:none;background-color: #efefef;">
+          </div>
+
+          <div class="col-12 q-my-lg text-center">
+            <q-btn
+              :disable="alreadyAdded()"
+              unelevated rounded no-caps class="q-mx-md q-px-lg" color="primary" :label="t('add_link')"
+              @click="addCurrentTab()"
+            />
+          </div>
+
 
         </template>
 
@@ -88,8 +108,6 @@ import {useI18n} from 'vue-i18n'
 import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
 import _ from "lodash"
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useSpacesStore} from "src/spaces/stores/spacesStore";
-import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {AddTabToTabsetCommand} from "src/tabsets/commands/AddTabToTabsetCommand";
 import {Tab} from "src/tabsets/models/Tab";
@@ -102,8 +120,10 @@ import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {useRouter} from "vue-router";
 import OfflineInfo from "src/core/components/helper/offlineInfo.vue";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
-import SidePanelSubfolderContextMenu from "src/tabsets/widgets/SidePanelSubfolderContextMenu.vue";
 import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.vue";
+import {Note} from "src/notes/models/Note";
+import {useNotesStore} from "src/notes/stores/NotesStore";
+import NavigationService from "src/services/NavigationService";
 
 const {t} = useI18n({locale: navigator.language, useScope: "global"})
 
@@ -120,6 +140,7 @@ const projects = ref<Tabset[]>([])
 const project = ref('')
 const currentProject = ref<Tabset | undefined>(undefined)
 const projectOptions = ref<object[]>([])
+const notes = ref<Note[]>([])
 
 function updateOnlineStatus(e: any) {
   const {type} = e
@@ -152,6 +173,10 @@ watchEffect(async () => {
   if (useTabsetsStore().currentTabsetName) {
     project.value = useTabsetsStore().currentTabsetName!
     currentProject.value = useTabsetsStore().getCurrentTabset
+  }
+  if (currentProject.value) {
+    console.log("getting notes for ", currentProject.value.id)
+    notes.value = await useNotesStore().getNotesFor(currentProject.value.id)
   }
 })
 
@@ -232,12 +257,12 @@ const addCurrentTab = async () => {
   }
 }
 
-const  alreadyAdded = ():boolean => {
+const alreadyAdded = (): boolean => {
   const currentChromeTabUrl = useTabsStore2().currentChromeTab?.url
   if (currentChromeTabUrl) {
     const currentTabset = useTabsetsStore().getCurrentTabset
     if (currentTabset) {
-      return _.find(currentTabset.tabs, (t:Tab) => t.url === currentChromeTabUrl) !== undefined
+      return _.find(currentTabset.tabs, (t: Tab) => t.url === currentChromeTabUrl) !== undefined
     }
   }
   return false
@@ -276,19 +301,8 @@ if (inBexMode()) {
     } else if (message.name === "tab-being-dragged") {
       useUiStore().draggingTab(message.data.tabId, null as unknown as any)
     } else if (message.name === "note-changed") {
-      if (message.data.noteId) {
-        console.log("updating note", message.data.noteId)
-        //.then((res: TabAndTabsetId | undefined) => {
-        // if (res) {
-        //   const note = res.tab
-        //   note.title = message.data.tab.title
-        //   note.description = message.data.tab.description
-        //   note.longDescription = message.data.tab.longDescription
-        // }
-        //    })
-      } else {
-        console.log("adding tab", message.data.tab)
-      }
+     useNotesStore().getNotesFor(currentProject.value!.id)
+       .then((ns: Note[]) => notes.value = ns)
     } else if (message.name === "tab-added") {
       // hmm - getting this twice...
       console.log(" > got message '" + message.name + "'", message)
@@ -330,7 +344,12 @@ if (inBexMode()) {
   })
 }
 
-const navigate = (path:string) => router.push(path)
+const navigate = (path: string) => router.push(path)
+
+const openNote = (note: Note) => {
+  const url = chrome.runtime.getURL(`/www/index.html#/mainpanel/notes/${note.id}`)
+  NavigationService.openOrCreateTab([url])
+}
 
 </script>
 

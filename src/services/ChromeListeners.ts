@@ -28,6 +28,7 @@ function inIgnoredMessages(request: any) {
     request.name === 'feature-deactivated' ||
     request.name === 'restore-selection' ||
     request.name === 'text-selection' ||
+    request.name === 'note-changed' ||
     request.action === 'highlight-annotation'
 
 }

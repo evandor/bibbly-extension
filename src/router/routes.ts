@@ -48,17 +48,17 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/mainpanel/notes/:noteId/edit', // editorjs setup cannot toggle between readonly/write mode
     component: () => import('layouts/PlainLayout.vue'),
-    children: [{path: '', component: () => import('pages/mainpanel/MainPanelNotePage.vue')}],
+    children: [{path: '', component: () => import('src/notes/pages/mainpanel/MainPanelNotePage.vue')}],
   },
   {
     path: '/mainpanel/notes/:noteId',
     component: () => import('layouts/PlainLayout.vue'),
-    children: [{path: '', component: () => import('pages/mainpanel/MainPanelNotePage.vue')}],
+    children: [{path: '', component: () => import('src/notes/pages/mainpanel/MainPanelNotePage.vue')}],
   },
   {
     path: '/mainpanel/notes/',
     component: () => import('layouts/PlainLayout.vue'),
-    children: [{path: '', component: () => import('pages/mainpanel/MainPanelNotePage.vue')}],
+    children: [{path: '', component: () => import('src/notes/pages/mainpanel/MainPanelNotePage.vue')}],
   },
   {
     path: '/mainpanel/html/:snapshotId', // both MHtml and HTML managed by same page
