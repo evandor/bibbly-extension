@@ -81,27 +81,36 @@ export const useAuthStore = defineStore('auth', () => {
   })
 
   const limitExceeded = computed(() => {
+
+    function hasRole(role: string) {
+      return roles.value.indexOf(role) >= 0
+    }
+
     return (item: AccessItem, count: number): boolean => {
       const localMode = useSettingsStore().isEnabled('localMode')
       if (localMode) {
         return false
       }
+
       switch (item) {
         case AccessItem.TABSETS:
-
-          if (roles.value.indexOf('bibbly.user') >= 0 && count < 10) {
-            return false
+          if (hasRole('bibbly.team')) {
+            return count >= 50
+          } else if (hasRole('bibbly.user')) {
+            return count >= 10
+          } else {
+            return count >= 5
           }
-          break;
+        default:
+          return false
       }
-      return true
     }
   })
 
   async function getCustomClaimRoles(): Promise<string[]> {
     await FirebaseServices.getAuth().currentUser!.getIdToken(true);
     const decodedToken = await FirebaseServices.getAuth().currentUser!.getIdTokenResult();
-    return decodedToken.claims.stripeRole as string[]
+    return decodedToken.claims.stripeRole as string[] || []
   }
 
   // --- actions ---

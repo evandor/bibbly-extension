@@ -45,6 +45,7 @@
 import {ref, watchEffect} from "vue";
 import {useSettingsStore} from "stores/settingsStore";
 import {useUtils} from "src/core/services/Utils";
+import {useAuthStore} from "stores/authStore";
 
 const {sendMsg} = useUtils()
 
@@ -62,9 +63,12 @@ watchEffect(() => {
   localModeToggle.value = settingsStore.isEnabled('localMode')
 })
 
-const updateSettings = (ident: string, val: boolean) => {
+const updateSettings = async (ident: string, val: boolean) => {
   console.log("settings updated to", ident, val)
   settingsStore.setFeatureToggle(ident, val)
+  if (val) {
+    await useAuthStore().logout()
+  }
   //AppService.restart("/")
   sendMsg('restart-application',{initiatedBy: "FeatureToggleSettings"})
 }
