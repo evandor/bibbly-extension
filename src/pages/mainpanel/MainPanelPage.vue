@@ -34,27 +34,6 @@
               <SidePanelPageContextMenu v-if="currentProject" :tabset="currentProject as Tabset"/>
             </div>
 
-            <div class="col-12 q-ml-md" v-if="currentProject?.sharedId">
-              <q-icon style="position: relative;top:-2px;left:-2px"
-                      @click="shareTabsetPubliclyDialog(currentProject as Tabset, currentProject.sharing.toString().toLowerCase().indexOf('_outdated') >= 0)"
-                      name="ios_share"
-                      class="q-ma-none q-pa-none q-mr-xs"
-                      :class="currentProject.sharing.toString().toLowerCase().indexOf('_outdated') >= 0 ? 'cursor-pointer' : ''"
-                      :color="currentProject.sharing.toString().toLowerCase().indexOf('_outdated') >= 0 ? 'warning' : 'primary'">
-                <q-tooltip class="tooltip" v-if="currentProject.sharing.toString().toLowerCase().indexOf('_outdated') >= 0">
-                  This tabset is shared but has been changed in the meantime. You need to re-publish.
-                </q-tooltip>
-                <q-tooltip v-else class="tooltip">This tabset is shared</q-tooltip>
-              </q-icon>
-              <span class="text-caption cursor-pointer text-grey-7"
-                    @click="openPublicShare(currentProject.id)">open shared page</span>
-              <q-icon
-                class="q-ml-sm cursor-pointer"
-                name="content_copy" color="primary" @click="copyPublicShareToClipboard(currentProject.id)">
-                <q-tooltip class="tooltip-small">Copy the Link to your Clipboard</q-tooltip>
-              </q-icon>
-            </div>
-
             <div class="col-12">
               <hr style="height:1px;border:none;background-color: #efefef;">
             </div>
@@ -120,7 +99,7 @@
 
 import {onMounted, onUnmounted, ref, watchEffect} from "vue";
 import {useUtils} from "src/core/services/Utils";
-import {openURL, uid} from "quasar";
+import {uid} from "quasar";
 import {useUiStore} from "src/ui/stores/uiStore";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import Analytics from "src/core/utils/google-analytics";
@@ -145,7 +124,6 @@ import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.v
 import {Note} from "src/notes/models/Note";
 import {useNotesStore} from "src/notes/stores/NotesStore";
 import NavigationService from "src/services/NavigationService";
-import {CopyToClipboardCommand} from "src/core/domain/commands/CopyToClipboard";
 
 const {t} = useI18n({locale: navigator.language, useScope: "global"})
 
@@ -323,8 +301,8 @@ if (inBexMode()) {
     } else if (message.name === "tab-being-dragged") {
       useUiStore().draggingTab(message.data.tabId, null as unknown as any)
     } else if (message.name === "note-changed") {
-      useNotesStore().getNotesFor(currentProject.value!.id)
-        .then((ns: Note[]) => notes.value = ns)
+     useNotesStore().getNotesFor(currentProject.value!.id)
+       .then((ns: Note[]) => notes.value = ns)
     } else if (message.name === "tab-added") {
       // hmm - getting this twice...
       console.log(" > got message '" + message.name + "'", message)
@@ -371,31 +349,6 @@ const navigate = (path: string) => router.push(path)
 const openNote = (note: Note) => {
   const url = chrome.runtime.getURL(`/www/index.html#/mainpanel/notes/${note.id}`)
   NavigationService.openOrCreateTab([url])
-}
-
-const openPublicShare = (tabsetId: string) => {
-  const ts = useTabsetsStore().getTabset(tabsetId)
-  if (ts && ts.sharedId) {
-    openURL(getPublicTabsetLink(ts))
-  }
-}
-
-const getPublicTabsetLink = (ts: Tabset) => {
-  let image = "https://tabsets.web.app/favicon.ico"
-  if (ts && ts.sharedId) {
-    //return PUBLIC_SHARE_URL + "#/pwa/imp/" + ts.sharedId + "?n=" + btoa(ts.name) + "&a=" + btoa(ts.sharedBy || 'n/a') + "&d=" + ts.sharedAt
-    //return "https://us-central1-tabsets-backend-prd.cloudfunctions.net/app/share/preview/" + ts.sharedId + "?n=" + btoa(ts.name) + "&a=" + btoa(ts.sharedBy || 'n/a')
-    return process.env.PWA_URL + "/share-preview.html?id=" + ts.sharedId + "&n=" + btoa(ts.name) + "&a=" + btoa(ts.sharedBy || 'n/a')
-  }
-  return image
-}
-
-const copyPublicShareToClipboard = (tabsetId: string) => {
-  const ts = useTabsetsStore().getTabset(tabsetId)
-  if (ts && ts.sharedId) {
-    const link = getPublicTabsetLink(ts)
-    useCommandExecutor().executeFromUi(new CopyToClipboardCommand(link))
-  }
 }
 
 </script>

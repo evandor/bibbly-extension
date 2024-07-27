@@ -3,7 +3,10 @@ import {RouteRecordRaw} from 'vue-router';
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    redirect: '/sidepanel/welcome' // redirects to /sidepanel if there is at least one project (i.e. tabset)
+    //redirect: '/sidepanel/welcome'
+    redirect: (process.env.MODE === 'pwa' || process.env.MODE === 'spa') ?
+      '/mainpanel/welcome' :
+      '/sidepanel/welcome' // redirects to /sidepanel if there is at least one project (i.e. tabset)
   },
   {
     path: '/sidepanel',
@@ -34,6 +37,16 @@ const routes: RouteRecordRaw[] = [
     path: '/sidepanel/research/:sourceId',
     component: () => import('layouts/SidePanelLayout.vue'),
     children: [{path: '', component: () => import('src/pages/SidePanelResearchPage.vue')}],
+  },
+  {
+    path: '/mainpanel',
+    component: () => import('layouts/PlainWithRightDrawerLayout.vue'),
+    children: [{path: '', component: () => import('pages/mainpanel/MainPanelPage.vue')}],
+  },
+  {
+    path: '/mainpanel/welcome',
+    component: () => import('layouts/PlainWithRightDrawerLayout.vue'),
+    children: [{path: '', component: () => import('pages/mainpanel/WelcomePage.vue')}],
   },
   {
     path: '/mainpanel/settings',
@@ -79,6 +92,11 @@ const routes: RouteRecordRaw[] = [
     path: '/mainpanel/pdf/:snapshotId',
     component: () => import('layouts/PlainLayout.vue'),
     children: [{path: '', component: () => import('src/snapshots/pages/MainPanelPdfPage.vue')}],
+  },
+  {
+    path: '/mainpanel/share-preview/:tabsetId',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('src/tabsets/pages/MainPanelSharePreviewPage.vue')}],
   },
   {
     path: '/features/:feature',

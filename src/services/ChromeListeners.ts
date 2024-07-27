@@ -64,11 +64,13 @@ class ChromeListeners {
   }
 
   async resetListeners() {
-    console.log(" ...resetting listeners (after re-initialization)")
-    chrome.tabs.onUpdated.removeListener(this.onUpdatedListener)
-    chrome.tabs.onRemoved.removeListener(this.onRemovedListener)
-    chrome.tabs.onActivated.removeListener(this.onActivatedListener)
-    chrome.runtime.onMessage.removeListener(this.onMessageListener)
+    if (process.env.MODE === 'bex') {
+      console.log(" ...resetting listeners (after re-initialization)")
+      chrome.tabs.onUpdated.removeListener(this.onUpdatedListener)
+      chrome.tabs.onRemoved.removeListener(this.onRemovedListener)
+      chrome.tabs.onActivated.removeListener(this.onActivatedListener)
+      chrome.runtime.onMessage.removeListener(this.onMessageListener)
+    }
   }
 
   clearWorking() {

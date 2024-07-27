@@ -129,8 +129,38 @@
       <ContextMenuItem v-close-popup
                        @was-clicked="startTabsetNote(tabset as Tabset)"
                        icon="o_note"
-                       label="Start Note">
+                       label="Add Note to Tabset">
       </ContextMenuItem>
+
+      <q-separator inset v-if="useFeaturesStore().hasFeature(FeatureIdent.TABSETS_SHARING)" />
+
+      <ContextMenuItem v-if="useFeaturesStore().hasFeature(FeatureIdent.TABSETS_SHARING) && (tabset.sharing === TabsetSharing.UNSHARED || !tabset.sharing)"
+                       v-close-popup
+                       @was-clicked="shareTabsetPubliclyDialog(tabset)"
+                       icon="ios_share"
+                       color="warning"
+                       label="Share as link..."/>
+
+      <ContextMenuItem v-if="tabset.sharing === TabsetSharing.PUBLIC_LINK_OUTDATED"
+                       v-close-popup
+                       @was-clicked="shareTabsetPubliclyDialog(tabset, true)"
+                       icon="ios_share"
+                       color="warning"
+                       label="Republish">
+        <q-tooltip class="tooltip-small">Tabset has changed, republish</q-tooltip>
+      </ContextMenuItem>
+
+      <ContextMenuItem
+        v-if="tabset.sharing === TabsetSharing.PUBLIC_LINK || tabset.sharing === TabsetSharing.PUBLIC_LINK_OUTDATED"
+        v-close-popup
+        @was-clicked="removePublicShare(tabset.id, tabset.sharedId || '')"
+        icon="ios_share"
+        color="warning"
+        label="Stop Sharing">
+        <q-tooltip class="tooltip-small">Delete Shared Link</q-tooltip>
+      </ContextMenuItem>
+
+     <q-separator inset />
 
       <ContextMenuItem v-close-popup
                        @was-clicked="deleteTabsetDialog(tabset as Tabset)"
@@ -158,6 +188,9 @@ import DeleteTabsetDialog from "src/tabsets/dialogues/DeleteTabsetDialog.vue";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {DeleteTabsetCommand} from "src/tabsets/commands/DeleteTabset";
 import NavigationService from "src/services/NavigationService";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {FeatureIdent} from "src/models/FeatureIdent";
+import ShareTabsetPubliclyDialog from "src/tabsets/dialogues/ShareTabsetPubliclyDialog.vue";
 
 const {inBexMode} = useUtils()
 
@@ -197,5 +230,16 @@ const startTabsetNote = (tabset: Tabset) => {
   NavigationService.openOrCreateTab([url])
 }
 
+const shareTabsetPubliclyDialog = (tabset: Tabset, republish: boolean = false) => {
+  $q.dialog({
+    component: ShareTabsetPubliclyDialog,
+    componentProps: {
+      tabsetId: tabset.id,
+      sharedId: tabset.sharedId,
+      tabsetName: tabset.name,
+      republish: republish
+    }
+  })
+}
 
 </script>

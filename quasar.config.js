@@ -88,7 +88,8 @@ module.exports = configure(function (ctx) {
         FIREBASE_MESSAGING_KEY: process.env.FIREBASE_MESSAGING_KEY,
         FIREBASE_STORAGE_BUCKET: process.env.FIREBASE_STORAGE_BUCKET,
         FIREBASE_DATABASE_URL: process.env.FIREBASE_DATABASE_URL,
-        STRIPE_SYNC_PRODUCT_LINK: process.env.STRIPE_SYNC_PRODUCT_LINK
+        STRIPE_SYNC_PRODUCT_LINK: process.env.STRIPE_SYNC_PRODUCT_LINK,
+        PWA_URL: process.env.PWA_URL
       },
       // rawDefine: {}
       // ignorePublicFolder: true,

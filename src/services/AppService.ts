@@ -21,6 +21,7 @@ import {FeatureIdent} from "src/models/FeatureIdent";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {useNotesStore} from "src/notes/stores/NotesStore";
+import {LocalStorageFeaturesPersistence} from "src/features/persistence/LocalStorageFeaturesPersistence";
 
 class AppService {
 
@@ -50,7 +51,7 @@ class AppService {
 
     uiStore.appLoading = "loading projects..."
 
-   // appStore.init()
+    // appStore.init()
 
     // init of stores and some listeners
     //await usePermissionsStore().initialize(useDB(quasar).localDb)
@@ -79,10 +80,9 @@ class AppService {
 
     //await this.initCoreSerivces(quasar, useDB(undefined).db, this.router)
 
+    await useFeaturesStore().initialize(new LocalStorageFeaturesPersistence(quasar))
+
     if (useAuthStore().isAuthenticated()) {
-
-      // await useFeaturesStore().initialize(useDB(quasar).featuresLocalStorage)
-
 
       if (router.currentRoute.value.query.token === "failed") {
         console.log("failed login, falling back to indexedDB")
