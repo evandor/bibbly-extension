@@ -47,7 +47,7 @@
                 <q-tooltip v-else class="tooltip">This tabset is shared</q-tooltip>
               </q-icon>
               <span class="text-caption cursor-pointer text-grey-7"
-                    @click="openPublicShare(currentProject.id)">open shared page</span>
+                    @click="openPublicShare(currentProject.id)">open shared collection</span>
               <q-icon
                 class="q-ml-sm cursor-pointer"
                 name="content_copy" color="primary" @click="copyPublicShareToClipboard(currentProject.id)">

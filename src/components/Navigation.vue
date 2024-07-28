@@ -19,7 +19,7 @@
             <q-icon
               class="cursor-pointer" size="22px" color="warning"
               style="position: relative;top:5px;right:-2px"
-              name="add_circle" @click="addTabset">
+              name="add_circle" @click="addTabset()">
               <q-tooltip
                 class="tooltip"
                 :delay="200"
