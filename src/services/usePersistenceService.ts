@@ -9,6 +9,7 @@ import IndexedDbSnapshotPersistence from "src/snapshots/persistence/IndexedDbSna
 import {useSettingsStore} from "stores/settingsStore";
 import IndexedDbNotesPersistence from "src/notes/persistence/IndexedDbNotesPersistence";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
+import FirestoreNotesPersistence from "src/notes/persistence/FirestoreNotesPersistence";
 
 function determineTabsetsDb(localMode: boolean) {
   if (FirebaseServices.getAuth().currentUser?.isAnonymous) {
@@ -28,7 +29,7 @@ export function useDB() {
   const spacesDb = localMode ? IndexedDbSpacesPersistence : FirestoreSpacesPersistence
   const tabsetsDb = determineTabsetsDb(localMode)
   const snapshotsDb = localMode ? IndexedDbSnapshotPersistence : FirestoreSnapshotsPersistence
-  const notesDb = IndexedDbNotesPersistence
+  const notesDb = localMode ? IndexedDbNotesPersistence : FirestoreNotesPersistence
   // const featuresDb: FeaturesPersistence = LocalStorageFeaturesPersistence
 
   return {

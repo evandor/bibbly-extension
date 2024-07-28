@@ -191,6 +191,7 @@ import NavigationService from "src/services/NavigationService";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import ShareTabsetPubliclyDialog from "src/tabsets/dialogues/ShareTabsetPubliclyDialog.vue";
+import {UnShareTabsetCommand} from "src/tabsets/commands/UnShareTabsetCommand";
 
 const {inBexMode} = useUtils()
 
@@ -241,5 +242,8 @@ const shareTabsetPubliclyDialog = (tabset: Tabset, republish: boolean = false) =
     }
   })
 }
+
+const removePublicShare = (tabsetId: string, sharedId: string) => useCommandExecutor().executeFromUi(new UnShareTabsetCommand(tabsetId, sharedId))
+
 
 </script>

@@ -7,7 +7,7 @@ export class AppFeatures {
 
     new Feature(FeatureIdent.WINDOWS_MANAGEMENT, FeatureType.RECOMMENDED, 'Windows Management', 'grid_view', "","", ['bex']),
 
-    new Feature(FeatureIdent.TABSETS_SHARING, FeatureType.OPTIONAL, 'Share your Tabsets', 'Share tabsets publicly or with specific users', 'o_ios_share', "",['bex']),
+    new Feature(FeatureIdent.TABSETS_SHARING, FeatureType.EXPERIMENTAL, 'Share your Tabsets', 'Share tabsets publicly or with specific users', 'o_ios_share', "",['bex']),
 
     // new AppFeature(FeatureIdent.OPEN_TABS, FeatureType.RECOMMENDED, 'Open Tabs', 'o_playlist_add', ['bex']),
     //
