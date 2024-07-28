@@ -7,7 +7,7 @@
           class="q-ml-xs q-mr-none cursor-pointer" style="margin-top:-7px"
           src="favicon.ico" height="32px" width="32px"/>
         <q-toolbar-title>
-          Tabsets
+          Bibbly Web
         </q-toolbar-title>
 
 
