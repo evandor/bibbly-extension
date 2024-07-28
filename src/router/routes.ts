@@ -99,6 +99,17 @@ const routes: RouteRecordRaw[] = [
     children: [{path: '', component: () => import('src/tabsets/pages/MainPanelSharePreviewPage.vue')}],
   },
   {
+    path: '/pwa/imp/:sharedId',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('src/tabsets/pages/sharing/ImportPublicTabsetPage.vue') }],
+  },
+  {
+    path: '/pwa/tabsets/:tabsetId',
+    component: () => import('layouts/PwaPageLayout.vue'),
+    children: [{ path: '', component: () => import('src/tabsets/pages/pwa/PwaTabsetPage.vue') }],
+  },
+
+  {
     path: '/features/:feature',
     component: () => import('layouts/FullPageLayout.vue'),
     children: [{path: '', component: () => import('src/features/pages/FeaturesPage.vue')}],

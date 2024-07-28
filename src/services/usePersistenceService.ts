@@ -8,8 +8,14 @@ import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabset
 import IndexedDbSnapshotPersistence from "src/snapshots/persistence/IndexedDbSnapshotPersistence";
 import {useSettingsStore} from "stores/settingsStore";
 import IndexedDbNotesPersistence from "src/notes/persistence/IndexedDbNotesPersistence";
-import {LocalStorageFeaturesPersistence} from "src/features/persistence/LocalStorageFeaturesPersistence";
-import FeaturesPersistence from "src/features/persistence/FeaturesPersistence";
+import FirebaseServices from "src/services/firebase/FirebaseServices";
+
+function determineTabsetsDb(localMode: boolean) {
+  if (FirebaseServices.getAuth().currentUser?.isAnonymous) {
+    return IndexedDbTabsetsPersistence
+  }
+  return localMode ? IndexedDbTabsetsPersistence : FirestoreTabsetsPersistence
+}
 
 export function useDB() {
 
@@ -20,7 +26,7 @@ export function useDB() {
   //console.log(`using localMode=${localMode} in persistenceService`)
 
   const spacesDb = localMode ? IndexedDbSpacesPersistence : FirestoreSpacesPersistence
-  const tabsetsDb = localMode ? IndexedDbTabsetsPersistence : FirestoreTabsetsPersistence
+  const tabsetsDb = determineTabsetsDb(localMode)
   const snapshotsDb = localMode ? IndexedDbSnapshotPersistence : FirestoreSnapshotsPersistence
   const notesDb = IndexedDbNotesPersistence
   // const featuresDb: FeaturesPersistence = LocalStorageFeaturesPersistence

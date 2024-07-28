@@ -6,8 +6,8 @@
 
 import {setCssVar, useQuasar} from "quasar";
 import AppService from "src/services/AppService";
-import {onAuthStateChanged} from "firebase/auth";
-import {useRouter} from "vue-router";
+import {onAuthStateChanged, signInAnonymously} from "firebase/auth";
+import {useRoute, useRouter} from "vue-router";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
 import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {CURRENT_USER_ID} from "boot/constants";
@@ -17,6 +17,7 @@ import {useUiStore} from "src/ui/stores/uiStore";
 
 const $q = useQuasar()
 const router = useRouter()
+const route = useRoute()
 
 const {handleError} = useNotificationHandler()
 
@@ -34,7 +35,7 @@ if (!localMode) {
 
   onAuthStateChanged(auth, async (user) => {
     if (user) {
-      console.log("%conAuthStateChanged: about to log in", "border:1px solid green")
+      console.log(`%conAuthStateChanged: logged in (anonymously: ${auth.currentUser?.isAnonymous})`, "border:1px solid green")
 
       try {
         await AppService.init($q, router, true, user)
@@ -51,8 +52,19 @@ if (!localMode) {
 
     } else {
       // User is signed out
-      console.log("%conAuthStateChanged: logged out", "border:1px solid green")
-      await router.push("/sidepanel/login")
+      console.log("%conAuthStateChanged: logged out", "border:1px solid green", route.path)
+
+      if (route.path.startsWith("/pwa/imp/")) {
+        signInAnonymously(auth)
+          .then(() => {
+            console.log("%conAuthStateChanged: anonymous login", "border:1px solid green")
+          })
+          .catch((error) => {
+            console.warn("%conAuthStateChanged: got error:", error, "border:1px solid green")
+          });
+      } else {
+        await router.push("/sidepanel/login")
+      }
     }
   });
 }

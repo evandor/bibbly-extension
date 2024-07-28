@@ -6,10 +6,10 @@
         <div class="row fit">
           <div class="col-xs-12 col-md-6">
             <q-toolbar-title>
-              <div class="row justify-start items-baseline" v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)">
-                <SpacesSelectorWidget />
-              </div>
-              <div class="row justify-start items-baseline" v-else>
+<!--              <div class="row justify-start items-baseline" v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)">-->
+<!--                <SpacesSelectorWidget />-->
+<!--              </div>-->
+              <div class="row justify-start items-baseline">
                 My Tabsets
               </div>
             </q-toolbar-title>

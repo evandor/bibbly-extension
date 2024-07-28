@@ -383,9 +383,8 @@ const openPublicShare = (tabsetId: string) => {
 const getPublicTabsetLink = (ts: Tabset) => {
   let image = "https://tabsets.web.app/favicon.ico"
   if (ts && ts.sharedId) {
-    //return PUBLIC_SHARE_URL + "#/pwa/imp/" + ts.sharedId + "?n=" + btoa(ts.name) + "&a=" + btoa(ts.sharedBy || 'n/a') + "&d=" + ts.sharedAt
-    //return "https://us-central1-tabsets-backend-prd.cloudfunctions.net/app/share/preview/" + ts.sharedId + "?n=" + btoa(ts.name) + "&a=" + btoa(ts.sharedBy || 'n/a')
-    return process.env.PWA_URL + "/share-preview.html?id=" + ts.sharedId + "&n=" + btoa(ts.name) + "&a=" + btoa(ts.sharedBy || 'n/a')
+    //return process.env.PWA_URL + "/#/mainpanel/share-preview/" + ts.sharedId //+ "&n=" + btoa(ts.name) + "&a=" + btoa(ts.sharedBy || 'n/a')
+    return process.env.PWA_URL + "/#/pwa/imp/" + ts.sharedId //+ "&n=" + btoa(ts.name) + "&a=" + btoa(ts.sharedBy || 'n/a')
   }
   return image
 }
