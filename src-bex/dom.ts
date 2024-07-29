@@ -56,20 +56,40 @@ export default bexDom((bridge) => {
     let fragment = document.createDocumentFragment();
     let html = ''
     diff.forEach((part: any) => {
-      // green for additions, red for deletions
-      // grey for common parts
-      const color = part.added ? 'green' :
-        part.removed ? 'red' : 'grey';
-      const span = document.createElement('span');
-      span.style.backgroundColor = color;
-      //console.log("part.value", part.value)
+      if (part.added) {
+        const span = document.createElement('span');
+        span.style.backgroundColor = "green";
+        var doc = new DOMParser().parseFromString(part.value, "text/html");
+        span.innerHTML = part.value
+        console.log("span", span)
+        fragment.appendChild(span);
+        html += span.outerHTML
+      } else if (part.removed) {
+        const span = document.createElement('span');
+        span.style.backgroundColor = "red";
+        var doc = new DOMParser().parseFromString(part.value, "text/html");
+        span.innerHTML = part.value
+        console.log("span", span)
+        fragment.appendChild(span);
+        html += span.outerHTML
 
-      var doc = new DOMParser().parseFromString(part.value, "text/html");
-      // span.appendChild(doc.innerHTML);
-      span.innerHTML = part.value
-      console.log("span", span)
-      fragment.appendChild(span);
-      html += span.outerHTML
+      } else {
+        html += part.value
+      }
+
+
+      // const color = part.added ? 'green' :
+      //   part.removed ? 'red' : 'grey';
+      // const span = document.createElement('span');
+      // span.style.backgroundColor = color;
+      // //console.log("part.value", part.value)
+      //
+      // var doc = new DOMParser().parseFromString(part.value, "text/html");
+      // // span.appendChild(doc.innerHTML);
+      // span.innerHTML = part.value
+      // console.log("span", span)
+      // fragment.appendChild(span);
+      //html += span.outerHTML
 
     });
 
