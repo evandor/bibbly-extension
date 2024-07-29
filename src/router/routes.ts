@@ -76,7 +76,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/mainpanel/html/:snapshotId', // both MHtml and HTML managed by same page
     component: () => import('layouts/PlainLayout.vue'),
-    children: [{path: '', component: () => import('src/snapshots/pages/MainPanelMHtmlPage.vue')}],
+    children: [{path: '', component: () => import('src/snapshots/pages/MainPanelHtmlPage.vue')}],
   },
   {
     path: '/mainpanel/mhtml/:snapshotId',

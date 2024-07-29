@@ -138,6 +138,7 @@
                   :snapshotId="md.id"
                   :created="md.created"
                   :extension="md.type"
+                  :predecessor="getPredecessor(metadatas, index, md.type)"
                   @new-snapshot-was-clicked="view = 'start_research'"
                 />
 
@@ -500,6 +501,10 @@ const ogMetadata = () => {
     }
   }
   return result
+}
+
+const getPredecessor = (mds: BlobMetadata[], index: number, type: BlobType): BlobMetadata | undefined => {
+  return _.findLast(_.filter(mds.slice(0,index), (md: BlobMetadata) => md.type === type))
 }
 
 </script>

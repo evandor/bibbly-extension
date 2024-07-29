@@ -61,7 +61,7 @@ const {inBexMode} = useUtils()
 
 $q.loadingBar.setDefaults({
   color: 'positive',
-  size: '10px',
+  size: '300px',
   position: 'top'
 })
 

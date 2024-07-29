@@ -52,7 +52,7 @@ const $q = useQuasar();
 
 $q.loadingBar.setDefaults({
   color: 'green',
-  size: '10px',
+  size: '100px',
   position: 'bottom'
 })
 

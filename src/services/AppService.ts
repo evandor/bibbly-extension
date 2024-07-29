@@ -43,6 +43,12 @@ class AppService {
 
     this.initialized = true
 
+    const bridge = quasar.bex
+    bridge.on('quasar.detect', ({ data, respond }) => {
+      console.log('Event received, responding...')
+      respond(data.someKey + ' hey!')
+    })
+
     await useAuthStore().setUser(user)
 
     const uiStore = useUiStore()

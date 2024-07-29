@@ -22,12 +22,13 @@ export default bexContent((bridge: any) => {
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     console.log("got request!!!", request)
     if (request === 'getContent') {
-      console.log("tabsets: received message for content")
-      //sendResponse({content: document.documentElement.outerHTML});
-      sendResponse({
+      const responseMessage = {
         html: document.documentElement.outerHTML,
         metas: getMetas(document)
-      });
+      }
+      console.log("tabsets: received message for content, html size:", responseMessage.html.length)
+      //sendResponse({content: document.documentElement.outerHTML});
+      sendResponse(responseMessage);
     } else {
       sendResponse({content: "unknown request in tabsets-content-scripts: " + request});
     }
