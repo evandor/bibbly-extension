@@ -3,9 +3,9 @@
     <div class="col-5 text-caption text-bold">{{ title() }}</div>
     <div class="col-5 text-caption">{{ date.formatDate(created, 'DD.MM.YYYY HH:mm') }}</div>
     <div class="col-2 text-caption text-right">
-      <q-icon v-if="props.predecessor"
-              name="o_open_in_new" class="q-ml-xs cursor-pointer" @click="compareWith(props.predecessor)">
-        <q-tooltip class="tooltip-small">Diff</q-tooltip>
+      <q-icon v-if="props.extension === BlobType.HTML"
+              name="o_edit" class="q-ml-xs cursor-pointer" @click="editHtml()">
+        <q-tooltip class="tooltip-small">Edit</q-tooltip>
       </q-icon>
       <q-icon name="o_open_in_new" class="q-ml-xs cursor-pointer" @click="openMhtml">
         <q-tooltip class="tooltip-small">Open</q-tooltip>
@@ -20,18 +20,18 @@
 <script lang="ts" setup>
 import {date} from "quasar";
 import {useSnapshotsService} from "src/snapshots/services/SnapshotsService";
-import {BlobMetadata} from "src/snapshots/models/BlobMetadata";
+import {BlobMetadata, BlobType} from "src/snapshots/models/BlobMetadata";
 import {PropType} from "vue";
-import mhtml2html from "mhtml2html";
 
 const props = defineProps({
   extension: {type: String, default: 'mhtml'},
   created: {type: Number, required: true},
-  snapshotId: {type: String, required: true},
-  predecessor: {type: Object as PropType<BlobMetadata | undefined>, default: undefined}
+  snapshotId: {type: String, required: true}
 })
 
 //const emits = defineEmits(['newSnapshotWasClicked','newClipWasClicked'])
+
+const editHtml = () => window.open(chrome.runtime.getURL(`www/index.html#/mainpanel/${props.extension}/${props.snapshotId}?edit=true`));
 
 const openMhtml = () => window.open(chrome.runtime.getURL(`www/index.html#/mainpanel/${props.extension}/${props.snapshotId}`));
 // const openMhtml = () => window.open(chrome.runtime.getURL(`www/mirror.html#/mainpanel/${props.extension}/${props.tabId}/${props.index}`));
@@ -50,23 +50,6 @@ const title = () => {
     default:
       return "Session"
   }
-}
-
-const compareWith = async (other: BlobMetadata) => {
-  const blob = await useSnapshotsService().getMetadataById(props.snapshotId)
-  // console.log("blob", blob)
-  // if (blob) {
-  //   const data = await useSnapshotsService().getBlobFor(blob?.blobId)
-  //   //console.log("data", data)
-  //   const c = await data!.text()
-  //   const converted = mhtml2html.convert(c)
-  //   const htmlBlob = converted.window.document.documentElement.innerHTML
-  //   //console.log("htmlBlob", htmlBlob)
-  //
-  //   const diff = HtmlDiff.execute("htmlBlob", "htmlBlob");
-  //   console.log("---diff---", diff)
-  //
-  // }
 }
 
 </script>
