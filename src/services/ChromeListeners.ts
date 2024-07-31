@@ -29,6 +29,7 @@ function inIgnoredMessages(request: any) {
     request.name === 'restore-selection' ||
     request.name === 'text-selection' ||
     request.name === 'note-changed' ||
+    request.name === 'snapshot-edited' ||
     request.action === 'highlight-annotation'
 
 }

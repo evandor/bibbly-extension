@@ -14,6 +14,9 @@
         <q-tooltip class="tooltip-small">Delete</q-tooltip>
       </q-icon>
     </div>
+    <div class="col-12" v-if="props.wasEdited" @click="emits('saveSnapshot', snapshotId)">
+      save!
+    </div>
   </div>
 </template>
 
@@ -26,10 +29,11 @@ import {PropType} from "vue";
 const props = defineProps({
   extension: {type: String, default: 'mhtml'},
   created: {type: Number, required: true},
+  wasEdited: {type: Boolean, default: false},
   snapshotId: {type: String, required: true}
 })
 
-//const emits = defineEmits(['newSnapshotWasClicked','newClipWasClicked'])
+const emits = defineEmits(['saveSnapshot'])
 
 const editHtml = () => window.open(chrome.runtime.getURL(`www/index.html#/mainpanel/${props.extension}/${props.snapshotId}?edit=true`));
 

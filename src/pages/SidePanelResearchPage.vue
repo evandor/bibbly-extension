@@ -138,7 +138,8 @@
                   :snapshotId="md.id"
                   :created="md.created"
                   :extension="md.type"
-                  :predecessor="getPredecessor(metadatas, index, md.type)"
+                  :wasEdited="editedSnapshot ? editedSnapshot.snapshotId === md.id : false"
+                  @save-snapshot="saveSnapshot"
                   @new-snapshot-was-clicked="view = 'start_research'"
                 />
 
@@ -255,6 +256,7 @@ import PanelTabListElementWidget from "src/tabsets/widgets/PanelTabListElementWi
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import {useContentService} from "src/content/services/ContentService";
 import {ContentItem} from "src/content/models/ContentItem";
+import {EditedSnapshot} from "src/snapshots/models/EditedSnapshot";
 
 const router = useRouter()
 const route = useRoute()
@@ -284,6 +286,7 @@ const wrongTabOpen = ref(true)
 const tab = ref('metadata')
 const thumbnail = ref('')
 const content = ref<ContentItem | undefined>(undefined)
+const editedSnapshot = ref<EditedSnapshot | undefined>(undefined)
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   //console.log(" <<< received message", message)
@@ -292,7 +295,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 
   if (message.name === "text-selection") {
-    console.log(" <<< received message", message)
+    //console.log(" <<< received message", message)
     const split: string[] = message.data.text ? (message.data.text as string).split(" ") : []
     let titleSuggestion = undefined
     switch (split.length) {
@@ -319,11 +322,27 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     currentSelectionRect.value = message.data.rect
     currentSelectionRemark.value = undefined
     randomKey.value = uid()
+  } else if (message.name === "snapshot-edited") {
+    console.log(" <<< received message", message)
+    // #/mainpanel/HTML/45adbe60-0169-4bc9-ac4b-74aecac5625d?edit=true
+    const path = message.data.path
+    const pathSplit = path.split('?')[0].split("/")
+    const snapshotId = pathSplit[pathSplit.length-1]
+    console.log("snapshotId", snapshotId)
+    if (snapshotId) {
+      useSnapshotsService().getMetadataById(snapshotId)
+        .then((metadata: BlobMetadata | undefined) => {
+          console.log("metadata", metadata)
+          editedSnapshot.value = new EditedSnapshot(snapshotId, metadata!.sourceId, metadata!.url, message.data.html)
+        })
+    } else {
+      editedSnapshot.value = undefined
+    }
   }
 })
 
 onMounted(async () => {
-  Analytics.firePageViewEvent('SidePanelSourcePage', document.location.href);
+  Analytics.firePageViewEvent('SidePanelResearchPage', document.location.href);
 })
 
 watchEffect(() => {
@@ -503,10 +522,13 @@ const ogMetadata = () => {
   return result
 }
 
-const getPredecessor = (mds: BlobMetadata[], index: number, type: BlobType): BlobMetadata | undefined => {
-  return _.findLast(_.filter(mds.slice(0,index), (md: BlobMetadata) => md.type === type))
+const saveSnapshot = async () => {
+  //console.log("saving", editedSnapshot.value)
+  if (editedSnapshot.value) {
+    console.log("saving", editedSnapshot.value)
+    await useSnapshotsService().saveEditedHTML(editedSnapshot.value!.sourceId, editedSnapshot.value!.url, editedSnapshot.value!.html)
+  }
 }
-
 </script>
 
 <style scoped>

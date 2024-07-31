@@ -295,6 +295,7 @@ function inIgnoredMessages(message: any) {
     message.msg === "captureThumbnail" ||
     message.msg === "capture-annotation" ||
     message.name === "reload-spaces" ||
+    message.name === "snapshot-edited" ||
     // message.name === "window-updated" ||
     message.msg === "html2links"
 }

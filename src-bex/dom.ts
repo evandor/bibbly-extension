@@ -3,44 +3,35 @@
 import {bexDom} from 'quasar/wrappers'
 import {diffChars} from "diff"
 import {useUtils} from "src/core/services/Utils";
+import {useRoute} from "vue-router";
 
 // import {execute} from 'htmldiff-js';
 
 const {sendMsg} = useUtils()
 
+const route = useRoute()
+
 export default bexDom((bridge) => {
 
-  // function getCEOfCaret() {
-  //   const selection = window.getSelection()
-  //   if (!selection) {
-  //     console.log("no selection")
-  //     return null
-  //   }
-  //   if (selection.rangeCount === 0) {
-  //     console.log("no selection range")
-  //     return null
-  //   }
-  //   const range = selection.getRangeAt(0)
-  //   const start = range.startContainer;
-  //   let startElement;
-  //   if (start.nodeType === 1) {
-  //     startElement = start;
-  //   } else {
-  //     startElement = start.parentElement
-  //   }
-  //   return startElement ? startElement.closest('[contenteditable="true"]') : null
-  // }
-
   document.addEventListener('focusin', function (e: FocusEvent) {
-    // console.log('focusin!', e)
+    console.log('focusin!', e)
+    const target = e.target!
     // console.log('focusin!', e.target)
     // console.log('focusin!', e.target?.innerHTML)
-    // @ts-ignore
-    e.target.dataset.originalHtml = e.target.innerHTML
+
+      // @ts-ignore
+    if (target.dataset.changedHtml) {
+      console.log("setting to changed HTML")
+      // @ts-ignore
+      target.innerHTML = target.dataset.changedHtml
+    } else {
+      // @ts-ignore
+      e.target.dataset.originalHtml = e.target.innerHTML
+    }
     // @ts-ignore
     console.log("set data to", e.target.dataset.originalHtml)
-
   })
+
   document.addEventListener('focusout', function (e: FocusEvent) {
 
     const target = e.target!
@@ -96,15 +87,16 @@ export default bexDom((bridge) => {
     console.log("parsing", html)
     const domFromHtml = new DOMParser().parseFromString(html, "text/html");
 
-    //console.log(fragment);
 
-    // let div=document.createElement("div");
-    // div.appendChild(domFromHtml);
-    // console.log("===>", div.innerHTML)
-
+    // @ts-ignore
+    target.dataset.changedHtml = target.innerHTML
+    // @ts-ignore
     target.innerHTML = domFromHtml.body.innerHTML
 
-    sendMsg('sending-message', {html: document.body.innerHTML})
+    sendMsg('snapshot-edited', {
+      html: document.documentElement.innerHTML,
+      path: document.location.hash
+    })
 
     //target.appendChild(fragment.textContent)
     // document.body.appendChild(fragment)
