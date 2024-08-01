@@ -2,62 +2,65 @@
 
   <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 54px">
 
-    <offline-info />
+    <offline-info/>
+    <transition
+      appear
+      enter-active-class="animated fadeIn slower delay-5s"
+      leave-active-class="animated fadeOut">
+      <!-- white main box -->
+      <div class="column fitpage q-pa-sm q-mx-sm q-mt-md bg-white">
+        <div class="col">
 
-    <!-- white main box -->
-    <div class="column fitpage q-pa-sm q-mx-sm q-mt-md bg-white">
-      <div class="col">
-
-        <template v-if="view === 'add-project'">
-          <div class="row q-ma-md q-pa-md">
-            <div class="col-12 text-black">
-              <ProjectForm @project-created="e => createProject(e)" @skip="view = 'projects'"/>
-            </div>
-          </div>
-        </template>
-
-        <template v-else>
-
-
-          <div class="row q-ma-md q-pa-md items-start text-primary">
-            <div class="col-12">
-              <div class="text-h6 text-black q-mb-lg">
-                Thank you for choosing Bibbly - we appreciate it
+          <template v-if="view === 'add-project'">
+            <div class="row q-ma-md q-pa-md">
+              <div class="col-12 text-black">
+                <ProjectForm @project-created="e => createProject(e)" @skip="view = 'projects'"/>
               </div>
-
-              <div class="text-body1 text-black q-mb-lg">
-                Let's begin without further delay!
-              </div>
-              <div class="text-body1 text-black q-mb-lg">
-
-                Create your first project so that you can start adding webpages to it! A project can be writing a book,
-                your master thesis or just collecting ideas on recipes, interior design or shopping :-).
-              </div>
-              <div class="text-body1 text-black q-mb-lg">
-                For more info check our FAQ at
-                bibbly.me.
-              </div>
-
             </div>
-            <div class="col-12 q-my-lg text-center text-black">
-              <q-btn unelevated rounded class="q-mx-md q-px-lg" color="primary" label="+ add project"
-                     @click="addProject()"
-              />
+          </template>
 
+          <template v-else>
+
+
+            <div class="row q-ma-md q-pa-md items-start text-primary">
+              <div class="col-12">
+                <div class="text-h6 text-black q-mb-lg">
+                  Thank you for choosing Bibbly - we appreciate it
+                </div>
+
+                <div class="text-body1 text-black q-mb-lg">
+                  Let's begin without further delay!
+                </div>
+                <div class="text-body1 text-black q-mb-lg">
+
+                  Create your first project so that you can start adding webpages to it! A project can be writing a
+                  book,
+                  your master thesis or just collecting ideas on recipes, interior design or shopping :-).
+                </div>
+                <div class="text-body1 text-black q-mb-lg">
+                  For more info check our FAQ at
+                  bibbly.me.
+                </div>
+
+              </div>
+              <div class="col-12 q-my-lg text-center text-black">
+                <q-btn unelevated rounded class="q-mx-md q-px-lg" color="primary" label="+ add project"
+                       @click="addProject()"
+                />
+
+              </div>
+              <div class="col-12">
+
+              </div>
             </div>
-            <div class="col-12">
+          </template>
 
-            </div>
-          </div>
-
-        </template>
-
+        </div>
       </div>
-    </div>
-
+    </transition>
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
-      <FirstToolbarHelper title="Bibbly" />
+      <FirstToolbarHelper title="Bibbly"/>
     </q-page-sticky>
 
   </q-page>

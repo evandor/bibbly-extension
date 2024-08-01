@@ -28,6 +28,11 @@
                 @click="useAuthStore().logout()"
                 :src="useAuthStore().avatar">
             </q-avatar>
+            <q-icon v-else name="sym_o_database"
+                    size="md"
+                    class="cursor-pointer" color="grey" @click="openSettingsPage()">
+              <q-tooltip class="tooltip-small">You are using the local Persistence Mode</q-tooltip>
+            </q-icon>
 
           </slot>
         </div>
@@ -44,6 +49,7 @@ import {useUiStore} from "src/ui/stores/uiStore";
 import {useQuasar} from "quasar";
 import {useAuthStore} from "stores/authStore";
 import {useSettingsStore} from "stores/settingsStore";
+import NavigationService from "src/services/NavigationService";
 
 const props = defineProps({
   title: {type: String, default: "My Tabsets"},
@@ -92,6 +98,11 @@ const showSearchIcon = () => true
 const showSyncInfo = () => false
 
 const offsetTop = () => ($q.platform.is.capacitor || $q.platform.is.cordova) ? 'margin-top:160px;' : ''
+
+const openSettingsPage = () => {
+  const url = chrome.runtime.getURL("www/index.html#/mainpanel/settings?tab=featureToggles")
+  NavigationService.openSingleTab(url)
+}
 
 </script>
 

@@ -41,7 +41,6 @@ const props = defineProps({
 const router = useRouter()
 
 const openResearchPage = () => {
-  // window.open(chrome.runtime.getURL(`www/index.html#/mainpanel/mhtml/${props.tab.id}/0`));
   openURL(props.tab.url!)
   router.push('/sidepanel/research/' + props.tab.id)
 }

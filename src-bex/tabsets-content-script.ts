@@ -105,16 +105,16 @@ export default bexContent((bridge: any) => {
   //   }
   // });
 
-  chrome.runtime.sendMessage({
-    msg: "html2links",
-    anchors: getAnchors(document),
-    links: getLinks(document)
-  }, function (response) {
-    console.log("tabsets: created links excerpt for tabsets")
-    if (chrome.runtime.lastError) {
-      console.warn("got runtime error", chrome.runtime.lastError)
-    }
-  });
+  // chrome.runtime.sendMessage({
+  //   msg: "html2links",
+  //   anchors: getAnchors(document),
+  //   links: getLinks(document)
+  // }, function (response) {
+  //   console.log("tabsets: created links excerpt for tabsets")
+  //   if (chrome.runtime.lastError) {
+  //     console.warn("got runtime error", chrome.runtime.lastError)
+  //   }
+  // });
 
 
 })

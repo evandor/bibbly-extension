@@ -1,11 +1,9 @@
 // Hooks added here have a bridge allowing communication between the Web Page and the BEX Content Script.
 // More info: https://quasar.dev/quasar-cli/developing-browser-extensions/dom-hooks
 import {bexDom} from 'quasar/wrappers'
-import {diffChars} from "diff"
+import {diffWords} from "diff"
 import {useUtils} from "src/core/services/Utils";
 import {useRoute} from "vue-router";
-
-// import {execute} from 'htmldiff-js';
 
 const {sendMsg} = useUtils()
 
@@ -40,7 +38,8 @@ export default bexDom((bridge) => {
     // console.log('focusout!', e.target.innerHTML)
 
     // @ts-ignore
-    const diff = diffChars(target.dataset.originalHtml || '', target.innerHTML);
+    //const diff = diffChars(target.dataset.originalHtml || '', target.innerHTML);
+    const diff = diffWords(target.dataset.originalHtml || '', target.innerHTML);
     // const diff = execute(e.target.dataset.originalHtml || '', e.target.innerHTML);
     console.log("diff", diff)
 
@@ -49,18 +48,17 @@ export default bexDom((bridge) => {
     diff.forEach((part: any) => {
       if (part.added) {
         const span = document.createElement('span');
-        span.style.backgroundColor = "green";
+        span.style.backgroundColor = "lightgreen";
         var doc = new DOMParser().parseFromString(part.value, "text/html");
         span.innerHTML = part.value
-        console.log("span", span)
         fragment.appendChild(span);
         html += span.outerHTML
       } else if (part.removed) {
         const span = document.createElement('span');
-        span.style.backgroundColor = "red";
-        var doc = new DOMParser().parseFromString(part.value, "text/html");
+        span.style.backgroundColor = "lightred";
+        span.style.textDecoration = "line-through"
+        let doc = new DOMParser().parseFromString(part.value, "text/html");
         span.innerHTML = part.value
-        console.log("span", span)
         fragment.appendChild(span);
         html += span.outerHTML
 
