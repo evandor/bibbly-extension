@@ -1,4 +1,5 @@
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
+import {useSearchStore} from "src/search/stores/searchStore";
 
 /**
  * meant for inter-submodule communication.
@@ -17,8 +18,10 @@ class AppEventDispatcher {
 
       switch (name) {
         case 'add-to-search':
+          useSearchStore().addObjectToIndex(params)
           break
         case 'upsert-in-search':
+          useSearchStore().upsertObject(params)
           break
         case 'capture-screenshot':
           useThumbnailsService().handleCaptureCallback(params['tabId' as keyof object], params['data' as keyof object])
