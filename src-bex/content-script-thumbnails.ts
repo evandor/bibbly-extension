@@ -3,7 +3,6 @@
 // @ts-ignore
 import {bexContent} from 'quasar/wrappers'
 
-
 export default bexContent((bridge: any) => {
 
 
