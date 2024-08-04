@@ -22,6 +22,7 @@ import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {useNotesStore} from "src/notes/stores/NotesStore";
 import {LocalStorageFeaturesPersistence} from "src/features/persistence/LocalStorageFeaturesPersistence";
+import {useSearchStore} from "src/search/stores/searchStore";
 
 class AppService {
 
@@ -43,15 +44,10 @@ class AppService {
 
     this.initialized = true
 
-    const bridge = quasar.bex
-    bridge.on('quasar.detect', ({ data, respond }) => {
-      console.log('Event received, responding...')
-      respond(data.someKey + ' hey!')
-    })
-
     await useAuthStore().setUser(user)
 
     const uiStore = useUiStore()
+    const searchStore = useSearchStore()
 
     this.router = router
 
@@ -73,10 +69,12 @@ class AppService {
     console.debug('')
 
     // should be initialized before search submodule
+    await useThumbnailsService().init(IndexedDbThumbnailsPersistence)
     await useContentService().init(IndexedDbContentPersistence)
+
     console.debug('')
 
-    //await searchStore.init().catch((err) => console.error(err))
+    await searchStore.init().catch((err) => console.error(err))
 
 
     await useSuggestionsStore().init()

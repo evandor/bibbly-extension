@@ -7,18 +7,10 @@ export class AppFeatures {
 
     new Feature(FeatureIdent.WINDOWS_MANAGEMENT, FeatureType.RECOMMENDED, 'Windows Management', 'grid_view', "","", ['bex']),
 
-    new Feature(FeatureIdent.TABSETS_SHARING, FeatureType.EXPERIMENTAL, 'Share your Tabsets', 'Share tabsets publicly or with specific users', 'o_ios_share', "",['bex']),
+    new Feature(FeatureIdent.TABSETS_SHARING, FeatureType.EXPERIMENTAL, 'Share your Tabsets',
+      'Share tabsets publicly or with specific users. Not available in local persistence mode!', 'o_ios_share', "",['bex']),
 
-    // new AppFeature(FeatureIdent.OPEN_TABS, FeatureType.RECOMMENDED, 'Open Tabs', 'o_playlist_add', ['bex']),
-    //
-    // new AppFeature(FeatureIdent.OPENTABS_THRESHOLD, FeatureType.OPTIONAL, 'Open Tabs Warnings', 'o_tab', ['bex']),
-    //
-    // new AppFeature(FeatureIdent.STANDALONE_APP, FeatureType.RECOMMENDED, 'Standalone App', 'o_open_in_new', ['bex']),
-    //
-    // new AppFeature(FeatureIdent.NOTIFICATIONS, FeatureType.RECOMMENDED, 'Browser Notifications', 'o_notifications', ['all'])
-    //   .setActivateCommands([new GrantPermissionCommand('notifications')])
-    //   .setDeactivateCommands([new RevokePermissionCommand('notifications')]),
-
+    new Feature(FeatureIdent.OPEN_TABS, FeatureType.OPTIONAL, 'Open Tabs', '','o_playlist_add', '',['bex']),
   ]
 
   getFeature(f: FeatureIdent): Feature | undefined {

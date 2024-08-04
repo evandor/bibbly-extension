@@ -46,3 +46,7 @@
 	path = src/windows
 	url = https://github.com/evandor/submodule-windows.git
 	branch = main
+[submodule "src/opentabs"]
+	path = src/opentabs
+	url = https://github.com/evandor/submodule-opentabs.git
+	branch = main

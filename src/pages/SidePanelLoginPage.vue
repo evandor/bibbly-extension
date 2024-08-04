@@ -5,6 +5,9 @@
     <div class="q-pa-md example-column-equal-width">
 
       <div class="column q-mt-xl">
+        <div class="text-caption">
+          Please log in or create an account @
+        </div>
         <div class="text-h6">
           Bibbly
         </div>
@@ -12,49 +15,60 @@
           Your Email Address
         </div>
         <div class="col">
-          <q-input id="username" square filled type="email" v-model="email" dense tabindex="1" autofocus autocomplete="on"/>
-        </div>
-        <div class="col q-mt-md">
-          Password
-        </div>
-        <div class="col">
-          <q-input id="password" square filled type="password" v-model="password" dense tabindex="2"/>
-        </div>
-        <div class="col q-mt-xl">
-          <q-btn :label="registerMode ? 'Register':'Log in'" style="width:100%"
-                 tabindex="3"
-                 color="primary"
-                 :loading="password.length === 0 && loading"
-                 :disable="mailSent"
-                 @click="signin()"/>
+          <q-input id="username" square filled type="email"
+                   v-model="email"
+                   dense tabindex="1" autofocus
+                   autocomplete="on"/>
         </div>
 
-        <div v-if="registerMode" class="q-ma-sm text-body2">
-          By clicking on <em>Register</em> your comply with the Terms of service.
-        </div>
+        <template v-if="isValidEmail(email)">
+          <div class="col q-mt-md">
+            Password
+          </div>
+          <div class="col">
+            <q-input id="password" square filled type="password"
+                     v-model="password"
+                     dense tabindex="2"/>
+          </div>
 
-        <div class="col q-mt-lg text-center cursor-pointer text-bold text-primary" @click="toggleRegister()"
-             v-html="registerMode ? 'Log in':'Register'">
-        </div>
+          <div class="col q-mt-xl" v-if="password">
+            <q-btn :label="registerMode ? 'Register':'Log in'" style="width:100%"
+                   tabindex="3"
+                   color="primary"
+                   :loading="password.length === 0 && loading"
+                   :disable="mailSent"
+                   @click="signin()"/>
+          </div>
 
-        <div v-if="showResetPassword" class="col q-mt-lg text-center cursor-pointer text-blue-10" @click="resetPassword()">
+          <div v-if="registerMode" class="q-ma-sm text-body2">
+            By clicking on <em>Register</em> your comply with the Terms of service.
+          </div>
+
+          <div v-if="password"
+               class="col q-mt-lg text-center cursor-pointer text-bold text-primary" @click="toggleRegister()"
+               v-html="registerMode ? 'Log in':'Register'">
+          </div>
+        </template>
+
+        <div v-if="showResetPassword" class="col q-mt-lg text-center cursor-pointer text-blue-10"
+             @click="resetPassword()">
           Reset Password
         </div>
 
-<!--        <template v-if="!registerMode">-->
-<!--          <div class="q-ma-sm text-body2 q-mt-xl text-grey">-->
-<!--            If you do not want to create an account, use the-->
-<!--          </div>-->
-<!--          <div class="q-ma-sm text-body2 text-center text-blue-10 cursor-pointer" @click="useLocalMode()">-->
-<!--            Local Mode-->
-<!--          </div>-->
-<!--          <div class="q-ma-sm text-body2 text-grey text-justify">-->
-<!--            Some features like sharing will not work in this mode. Your data is stored-->
-<!--            solely in your browser's local database. You can create an account later if-->
-<!--            you wish and import your data.-->
-<!--          </div>-->
+        <!--        <template v-if="!registerMode">-->
+        <!--          <div class="q-ma-sm text-body2 q-mt-xl text-grey">-->
+        <!--            If you do not want to create an account, use the-->
+        <!--          </div>-->
+        <!--          <div class="q-ma-sm text-body2 text-center text-blue-10 cursor-pointer" @click="useLocalMode()">-->
+        <!--            Local Mode-->
+        <!--          </div>-->
+        <!--          <div class="q-ma-sm text-body2 text-grey text-justify">-->
+        <!--            Some features like sharing will not work in this mode. Your data is stored-->
+        <!--            solely in your browser's local database. You can create an account later if-->
+        <!--            you wish and import your data.-->
+        <!--          </div>-->
 
-<!--        </template>-->
+        <!--        </template>-->
 
 
       </div>
@@ -67,7 +81,13 @@
 
 import {ref} from "vue";
 import {LocalStorage} from "quasar";
-import {createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, UserCredential,sendPasswordResetEmail} from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  getAuth,
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+  UserCredential
+} from "firebase/auth";
 import {CURRENT_USER_EMAIL} from "boot/constants";
 import {useAuthStore} from "stores/authStore";
 import {NotificationType, useNotificationHandler} from "src/core/services/ErrorHandler";
@@ -123,7 +143,7 @@ const signin = async () => {
   }
 }
 
-const useLocalMode  = () => {
+const useLocalMode = () => {
   useSettingsStore().setFeatureToggle("localMode", true)
   //router.push("/sidepanel/welcome")
   AppService.restart("/sidepanel/welcome")
@@ -134,8 +154,8 @@ const resetPassword = () => {
     // .then((link:any) => {
     //   return sendCustomPasswordResetEmail(email.value, email.value, link);
     // })
-    .then(()=> {
-      const dummyresult = new ExecutionResult<any>("","Email was sent")
+    .then(() => {
+      const dummyresult = new ExecutionResult<any>("", "Email was sent")
       handleSuccess(dummyresult, NotificationType.TOAST)
     })
     .catch((error) => {
@@ -143,4 +163,8 @@ const resetPassword = () => {
     });
 }
 
+const isValidEmail = (email: string) => {
+  const regex = /^[a-zA-Z0-9_.±]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$/;
+  return regex.test(email);
+}
 </script>

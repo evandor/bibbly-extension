@@ -12,6 +12,9 @@ import FirebaseServices from "src/services/firebase/FirebaseServices";
 import FirestoreNotesPersistence from "src/notes/persistence/FirestoreNotesPersistence";
 
 function determineTabsetsDb(localMode: boolean) {
+  if (localMode) {
+    return IndexedDbTabsetsPersistence
+  }
   try {
     if (FirebaseServices.getAuth().currentUser?.isAnonymous) {
       return IndexedDbTabsetsPersistence
@@ -19,7 +22,7 @@ function determineTabsetsDb(localMode: boolean) {
   } catch (err) {
     console.warn("offline? could not determine current user...", err)
   }
-  return localMode ? IndexedDbTabsetsPersistence : FirestoreTabsetsPersistence
+  return FirestoreTabsetsPersistence
 }
 
 export function useDB() {

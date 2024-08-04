@@ -34,6 +34,7 @@ export default route(function (/* { store, ssrContext } */) {
 
   Router.beforeEach((to, from) => {
     console.log(`%crouter event '${from.fullPath}' -> '${to.fullPath}'`,"color:green")
+    // debugger
   })
 
   return Router;

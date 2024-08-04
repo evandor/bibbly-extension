@@ -27,7 +27,7 @@
 
             <div class="col-9 q-ml-md">
               <div class="text-caption">Collection</div>
-              <div class="text-body2 text-bold">{{ project }} ({{ currentProject?.status }})</div>
+              <div class="text-body2 text-bold">{{ project }}</div>
             </div>
             <div class="col text-right vertical-middle q-mt-md">
               <q-icon name="more_vert" size="sm" class="cursor-pointer"/>
