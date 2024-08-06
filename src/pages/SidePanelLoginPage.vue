@@ -93,7 +93,7 @@ import {useAuthStore} from "stores/authStore";
 import {NotificationType, useNotificationHandler} from "src/core/services/ErrorHandler";
 import {useRouter} from "vue-router";
 import {useSettingsStore} from "stores/settingsStore";
-import AppService from "src/services/AppService";
+import AppService from "src/app/AppService";
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
 
 const email = ref('')//LocalStorage.getItem(CURRENT_USER_EMAIL))

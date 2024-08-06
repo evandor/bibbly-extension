@@ -103,7 +103,7 @@ import {uid} from "quasar";
 import {useUiStore} from "src/ui/stores/uiStore";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import Analytics from "src/core/utils/google-analytics";
-import AppService from "src/services/AppService";
+import AppService from "src/app/AppService";
 import {useI18n} from 'vue-i18n'
 import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
 import _ from "lodash"

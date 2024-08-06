@@ -5,7 +5,7 @@
 <script setup lang="ts">
 
 import {setCssVar, useQuasar} from "quasar";
-import AppService from "src/services/AppService";
+import AppService from "src/app/AppService";
 import {onAuthStateChanged, signInAnonymously} from "firebase/auth";
 import {useRoute, useRouter} from "vue-router";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
