@@ -149,7 +149,7 @@ class AppService {
 
     const tabsetsStore = useTabsetsStore()
     watch(tabsetsStore.tabsets, (newTabsets:Map<string,any>) => {
-      const tsInfo =_.map([...newTabsets.values()], (ts: any) => new TabsetInfo(ts.id, ts.name, ts.tabs.length))
+      const tsInfo =_.map([...newTabsets.values()], (ts: any) => new Ta bsetInfo(ts.id, ts.name, ts.window, ts.tabs.length))
       registryStore.tabsetRegistry = tsInfo
     })
     await tabsetsStore.initialize(useDB().tabsetsDb)
