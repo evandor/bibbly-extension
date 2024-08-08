@@ -95,7 +95,7 @@ onMounted(() => {
 
 watchEffect(() => {
   tabsets.value = [...useTabsetsStore().tabsets.values()]
-  console.log("===>", tabsets.value)
+  //console.log("===>", tabsets.value)
   if (tabsets.value.length > 0) {
     router.push("/sidepanel")
   }

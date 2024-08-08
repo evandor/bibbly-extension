@@ -23,6 +23,10 @@ import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {useNotesStore} from "src/notes/stores/NotesStore";
 import {LocalStorageFeaturesPersistence} from "src/features/persistence/LocalStorageFeaturesPersistence";
 import {useSearchStore} from "src/search/stores/searchStore";
+import {toRef, watch} from "vue";
+import {useEntityRegistryStore} from "src/core/stores/entityRegistryStore";
+import _ from "lodash"
+import {TabsetInfo} from "src/core/models/TabsetInfo";
 
 class AppService {
 
@@ -128,6 +132,8 @@ class AppService {
       useWindowsStore().initListeners()
     }
 
+    const registryStore = useEntityRegistryStore()
+
     await useNotesStore().initialize(useDB().notesDb)
     console.debug('')
 
@@ -136,12 +142,17 @@ class AppService {
 
     /**
      * Pattern: TODO
-     * initialize store with persistence
+     * initialize store with optional registry watcher and persistence
      * run persistence init code in store init
      * no persistence for service!
      */
 
-    await useTabsetsStore().initialize(useDB().tabsetsDb)
+    const tabsetsStore = useTabsetsStore()
+    watch(tabsetsStore.tabsets, (newTabsets:Map<string,any>) => {
+      const tsInfo =_.map([...newTabsets.values()], (ts: any) => new TabsetInfo(ts.id, ts.name, ts.tabs.length))
+      registryStore.tabsetRegistry = tsInfo
+    })
+    await tabsetsStore.initialize(useDB().tabsetsDb)
     await useTabsetService().init(false)
     console.debug('')
 
