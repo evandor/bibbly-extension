@@ -220,43 +220,43 @@ module.exports = configure(function (ctx) {
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/developing-electron-apps/configuring-electron
-    electron: {
-      // extendElectronMainConf (esbuildConf)
-      // extendElectronPreloadConf (esbuildConf)
-
-      inspectPort: 5858,
-
-      bundler: 'builder', // 'packager' or 'builder'
-
-      packager: {
-        // https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#options
-        // OS X / Mac App Store
-        // appBundleId: '',
-        // appCategoryType: '',
-        // osxSign: '',
-        // protocol: 'myapp://path',
-        protocols: [
-          {
-            name: 'Electron Tabsets',
-            schemes: ['electron-tabsets']
-          }
-        ]
-
-        // Windows only
-        // win32metadata: { ... }
-      },
-
-      builder: {
-        // https://www.electron.build/configuration/configuration
-
-        appId: 'tabsets.net',
-        publish: {
-          'provider': 'github',
-          'private': false,
-          'timeout': 480000
-        }
-      }
-    },
+    // electron: {
+    //   // extendElectronMainConf (esbuildConf)
+    //   // extendElectronPreloadConf (esbuildConf)
+    //
+    //   inspectPort: 5858,
+    //
+    //   bundler: 'builder', // 'packager' or 'builder'
+    //
+    //   packager: {
+    //     // https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#options
+    //     // OS X / Mac App Store
+    //     // appBundleId: '',
+    //     // appCategoryType: '',
+    //     // osxSign: '',
+    //     // protocol: 'myapp://path',
+    //     protocols: [
+    //       {
+    //         name: 'Electron Tabsets',
+    //         schemes: ['electron-tabsets']
+    //       }
+    //     ]
+    //
+    //     // Windows only
+    //     // win32metadata: { ... }
+    //   },
+    //
+    //   builder: {
+    //     // https://www.electron.build/configuration/configuration
+    //
+    //     appId: 'tabsets.net',
+    //     publish: {
+    //       'provider': 'github',
+    //       'private': false,
+    //       'timeout': 480000
+    //     }
+    //   }
+    // },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/developing-browser-extensions/configuring-bex
     bex: {
