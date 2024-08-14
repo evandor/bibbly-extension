@@ -1,4 +1,4 @@
-import ChromeListeners from "src/services/ChromeListeners";
+import ChromeListeners from "src/app/listeners/BrowserListeners";
 import {useDB} from "src/services/usePersistenceService";
 import ChromeApi from "src/services/ChromeApi";
 import {Router} from "vue-router";
@@ -17,7 +17,7 @@ import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useAuthStore} from "stores/authStore";
-import {FeatureIdent} from "src/models/FeatureIdent";
+import {FeatureIdent} from "src/app/models/FeatureIdent";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {useNotesStore} from "src/notes/stores/NotesStore";

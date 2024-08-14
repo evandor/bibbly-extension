@@ -35,7 +35,7 @@ function inIgnoredMessages(request: any) {
 }
 
 
-class ChromeListeners {
+class BrowserListeners {
 
   inProgress = false;
 
@@ -183,5 +183,5 @@ class ChromeListeners {
 
 }
 
-export default new ChromeListeners();
+export default new BrowserListeners();
 

@@ -188,7 +188,7 @@ import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {DeleteTabsetCommand} from "src/tabsets/commands/DeleteTabset";
 import NavigationService from "src/services/NavigationService";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
-import {FeatureIdent} from "src/models/FeatureIdent";
+import {FeatureIdent} from "src/app/models/FeatureIdent";
 import ShareTabsetPubliclyDialog from "src/tabsets/dialogues/ShareTabsetPubliclyDialog.vue";
 import {UnShareTabsetCommand} from "src/tabsets/commands/UnShareTabsetCommand";
 import {useSettingsStore} from "stores/settingsStore";

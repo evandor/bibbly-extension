@@ -45,7 +45,7 @@
 <script setup lang="ts">
 
 import {useQuasar} from "quasar";
-import {FeatureIdent} from "src/models/FeatureIdent";
+import {FeatureIdent} from "src/app/models/FeatureIdent";
 import {useFeaturesStore} from "../features/stores/featuresStore";
 
 const $q = useQuasar();
