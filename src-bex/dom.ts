@@ -1,17 +1,21 @@
 // Hooks added here have a bridge allowing communication between the Web Page and the BEX Content Script.
 // More info: https://quasar.dev/quasar-cli/developing-browser-extensions/dom-hooks
 import {bexDom} from 'quasar/wrappers'
-import {diffWords} from "diff"
+//import {diffWords} from "diff"
 import {useUtils} from "src/core/services/Utils";
-import {useRoute} from "vue-router";
+
+
 
 const {sendMsg} = useUtils()
 
-const route = useRoute()
-
 export default bexDom((bridge) => {
 
+  console.log("=====================")
+
   document.addEventListener('focusin', function (e: FocusEvent) {
+    const target = e.target!
+    console.log('focusin!', window.location.href, e.target)
+    // console.log('focusin!', e.target?.innerHTML)
     if (!window.location.href.startsWith("chrome-extension://")) {
       return
     }
@@ -19,9 +23,6 @@ export default bexDom((bridge) => {
       return
     }
     console.log('focusin!', window.location.href, e)
-    const target = e.target!
-    // console.log('focusin!', e.target)
-    // console.log('focusin!', e.target?.innerHTML)
 
       // @ts-ignore
     if (target.dataset.changedHtml) {
@@ -37,6 +38,9 @@ export default bexDom((bridge) => {
   })
 
   document.addEventListener('focusout', function (e: FocusEvent) {
+    const target = e.target!
+    console.log('focusout!', e)
+    console.log('focusout!', e.target)
     if (!window.location.href.startsWith("chrome-extension://")) {
       return
     }
@@ -44,9 +48,6 @@ export default bexDom((bridge) => {
       return
     }
 
-    const target = e.target!
-    console.log('focusout!', e)
-    console.log('focusout!', e.target)
     // console.log('focusout!', e.target.innerHTML)
 
     // @ts-ignore
