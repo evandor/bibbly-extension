@@ -111,7 +111,7 @@ class BrowserListeners {
     const scripts: string[] = []
 
    // scripts.push("content-script-thumbnails.js")
-    scripts.push("tabsets-content-script.js")
+   //  scripts.push("tabsets-content-script.js")
 
     // scripts.push("tabsets-content-script.js")
     if (scripts.length > 0 && tab.id !== null) { // && !this.injectedScripts.get(.chromeTabId)) {

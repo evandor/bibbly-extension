@@ -263,6 +263,7 @@ module.exports = configure(function (ctx) {
       contentScripts: [
         //'content-script',
         //'content-script-thumbnails',
+        //'my-content-script',
         'tabsets-content-script'
       ],
 

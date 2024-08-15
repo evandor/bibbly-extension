@@ -304,10 +304,10 @@ if (inBexMode()) {
   // seems we need to define these listeners here to get the matching messages reliably
   // these messages are created by triggering events in the mainpanel
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    console.log(" <<< received message", message)
     if (inIgnoredMessages(message)) {
       return true
     }
+    console.log(" <<< received message", message)
     if (message.name === 'current-tabset-id-change') {
       if (message.ignore) {
         return true

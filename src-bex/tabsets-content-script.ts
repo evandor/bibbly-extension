@@ -1,6 +1,8 @@
-// Hooks added here have a bridge allowing communication between the BEX Content Script and the Quasar Application.
-// More info: https://quasar.dev/quasar-cli/developing-browser-extensions/content-hooks
-// @ts-ignore
+/**
+ * This script is meant to be added automatically to every page as defined in manifest.json.
+ * There is no need to dynamically add it in BrowserListeners or similar pages.
+ */
+
 import {bexContent} from 'quasar/wrappers'
 
 export default bexContent((bridge: any) => {
@@ -12,7 +14,7 @@ export default bexContent((bridge: any) => {
     return
   }
 
-  console.log("tabsets: initializing content script for tab analysis")
+  console.log("tabsets: initializing bibbly default content script")
   // @ts-ignore
   window.contentScriptAnalysisAlredyCalled  = true
 
