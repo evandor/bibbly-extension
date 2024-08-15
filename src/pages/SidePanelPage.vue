@@ -375,6 +375,7 @@ const openNote = (note: Note) => {
 }
 
 const openPublicShare = (tabsetId: string) => {
+  console.log("=>", tabsetId)
   const ts = useTabsetsStore().getTabset(tabsetId)
   if (ts && ts.sharedId) {
     openURL(getPublicTabsetLink(ts))

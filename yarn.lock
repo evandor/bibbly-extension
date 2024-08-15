@@ -1012,6 +1012,26 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
+"@bomdi/codebox@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@bomdi/codebox/-/codebox-2.0.0.tgz#abddc7aa556c5a47458dd3bcdd9ab299bafb6f99"
+  integrity sha512-t1xjfur4wAWfKsoS+KkeARUVxBM43QwIMVxqEmhEhyCI7ixhFSBtda8FWZ9udk/+SRdM6gXPaxd2/yUQfEuDbA==
+
+"@calumk/codecup@^1.8.1":
+  version "1.9.2"
+  resolved "https://registry.yarnpkg.com/@calumk/codecup/-/codecup-1.9.2.tgz#f807282cec68f09a8acd986bae8a336ca1a260b8"
+  integrity sha512-sD0uMwA8FrviwOEGheek9Vftj4oa//y9G3Kl00dt8nN+r0EdcoeWrUX2LtD/FjSmqaeKY9QM+A+ZM6vTdN07QQ==
+  dependencies:
+    "@types/prismjs" "^1.9.1"
+    prismjs "^1.29.0"
+
+"@calumk/editorjs-codecup@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@calumk/editorjs-codecup/-/editorjs-codecup-1.2.0.tgz#6722c7c13fe0c7fdca5ef144686ce2e6478fb3c7"
+  integrity sha512-FtFxWcmh2Wrh6fBZ+ahdvpIIt0WzXj0z2iuq8APo+8SOomkWsNS78azGfsl0Q0Z3cdU7krHgpYvpT8n9ARCMXw==
+  dependencies:
+    "@calumk/codecup" "^1.8.1"
+
 "@calumk/editorjs-columns@^0.3.2":
   version "0.3.2"
   resolved "https://registry.yarnpkg.com/@calumk/editorjs-columns/-/editorjs-columns-0.3.2.tgz#a93ce77e0049ff5dc23b55efbce11970187ac4b9"
@@ -1036,7 +1056,7 @@
   resolved "https://registry.yarnpkg.com/@codexteam/icons/-/icons-0.0.6.tgz#5553ada48dddf5940851ccc142cfe17835c36ad3"
   integrity sha512-L7Q5PET8PjKcBT5wp7VR+FCjwCi5PUp7rd/XjsgQ0CI5FJz0DphyHGRILMuDUdCW2MQT9NHbVr4QP31vwAkS/A==
 
-"@codexteam/icons@^0.3.0":
+"@codexteam/icons@^0.3.0", "@codexteam/icons@^0.3.2":
   version "0.3.2"
   resolved "https://registry.yarnpkg.com/@codexteam/icons/-/icons-0.3.2.tgz#b7aed0ba7b344e07953101f5476cded570d4f150"
   integrity sha512-P1ep2fHoy0tv4wx85eic+uee5plDnZQ1Qa6gDfv7eHPkCXorMtVqJhzMb75o1izogh6G7380PqmFDXV3bW3Pig==
@@ -1052,6 +1072,13 @@
   integrity sha512-hRNP36DInr73mSK3noHBQeoQb7DA12ANfqTXufEkTgQzx+k4mRJ0HdeGukTIR4JbwjHJ9ecUBnnQqIEGnxCFEg==
   dependencies:
     "@codexteam/icons" "^0.3.0"
+
+"@editorjs/code@^2.9.0":
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/@editorjs/code/-/code-2.9.0.tgz#8633b7c565212396385a3d41b4f72b7650f60a42"
+  integrity sha512-QNOWxF29j6mYl/gM5HJzeGOt3s4laoZCUbuRqj6RkIvLBWMU+ASwjckEiouA61hcYUOMfpw4vQjzhsfC7xm/vA==
+  dependencies:
+    "@codexteam/icons" "^0.0.5"
 
 "@editorjs/editorjs@^2.26.5", "@editorjs/editorjs@^2.29.1", "@editorjs/editorjs@^2.30.2":
   version "2.30.5"
@@ -1072,6 +1099,13 @@
   integrity sha512-hBOHuqvL/ovjrns+xLuBh/b3kqABDlLxlByWnSuKnE31O351NDrg9AXrB1yYo0yZerw5V591rP0US3PEzp7CzQ==
   dependencies:
     "@codexteam/icons" "^0.3.0"
+
+"@editorjs/inline-code@^1.5.1":
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/@editorjs/inline-code/-/inline-code-1.5.1.tgz#482709fb75c1a92161ef001d65f468cbda67aa5d"
+  integrity sha512-XvKpqw9y1bOYgyuVUHGDuu7KlNWCYIXD5uU1Lpc4s4LJ8VN4TjWFGKJ3sS+LR7zzasWe8hu2ffR1JC6MHIS0EQ==
+  dependencies:
+    "@codexteam/icons" "^0.3.2"
 
 "@editorjs/link@^2.6.2":
   version "2.6.2"
@@ -2522,6 +2556,11 @@
   version "2.4.4"
   resolved "https://registry.yarnpkg.com/@types/normalize-package-data/-/normalize-package-data-2.4.4.tgz#56e2cc26c397c038fab0e3a917a12d5c5909e901"
   integrity sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==
+
+"@types/prismjs@^1.9.1":
+  version "1.26.4"
+  resolved "https://registry.yarnpkg.com/@types/prismjs/-/prismjs-1.26.4.tgz#1a9e1074619ce1d7322669e5b46fbe823925103a"
+  integrity sha512-rlAnzkW2sZOjbqZ743IHUhFcvzaGbqijwOu8QZnZCjfQzBqFE3s4lOTJEsxikImav9uzz/42I+O7YUs1mWgMlg==
 
 "@types/qs@*":
   version "6.9.15"
@@ -7891,6 +7930,11 @@ pretty-format@^29.7.0:
     "@jest/schemas" "^29.6.3"
     ansi-styles "^5.0.0"
     react-is "^18.0.0"
+
+prismjs@^1.29.0:
+  version "1.29.0"
+  resolved "https://registry.yarnpkg.com/prismjs/-/prismjs-1.29.0.tgz#f113555a8fa9b57c35e637bba27509dcf802dd12"
+  integrity sha512-Kx/1w86q/epKcmte75LNrEoT+lX8pBpavuAbvJWRXar7Hz8jrtF+e3vY751p0R8H9HdArwaCTNDDzHg/ScJK1Q==
 
 process-nextick-args@~2.0.0:
   version "2.0.1"
