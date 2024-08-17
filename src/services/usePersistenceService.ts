@@ -10,6 +10,8 @@ import {useSettingsStore} from "stores/settingsStore";
 import IndexedDbNotesPersistence from "src/notes/persistence/IndexedDbNotesPersistence";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
 import FirestoreNotesPersistence from "src/notes/persistence/FirestoreNotesPersistence";
+import IndexedDbThumbnailsPersistence from "src/thumbnails/persistence/IndexedDbThumbnailsPersistence";
+import FirestoreThumbnailsPersistence from "src/thumbnails/persistence/FirestoreThumbnailsPersistence";
 
 function determineTabsetsDb(localMode: boolean) {
   if (localMode) {
@@ -37,6 +39,7 @@ export function useDB() {
   const tabsetsDb = determineTabsetsDb(localMode)
   const snapshotsDb = localMode ? IndexedDbSnapshotPersistence : FirestoreSnapshotsPersistence
   const notesDb = localMode ? IndexedDbNotesPersistence : FirestoreNotesPersistence
+  const thumbnailsDb = localMode ? IndexedDbThumbnailsPersistence: FirestoreThumbnailsPersistence
   // const featuresDb: FeaturesPersistence = LocalStorageFeaturesPersistence
 
   return {
@@ -45,6 +48,7 @@ export function useDB() {
     tabsetsDb,
     snapshotsDb,
     notesDb,
+    thumbnailsDb
     // featuresDb
   }
 

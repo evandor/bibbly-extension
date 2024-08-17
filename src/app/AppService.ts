@@ -69,11 +69,7 @@ class AppService {
     console.debug('')
 
     // should be initialized before search submodule
-    await useThumbnailsService().init(IndexedDbThumbnailsPersistence)
-    console.debug('')
-
-    // should be initialized before search submodule
-    await useThumbnailsService().init(IndexedDbThumbnailsPersistence)
+    await useThumbnailsService().init(useDB().thumbnailsDb)
     await useContentService().init(IndexedDbContentPersistence)
 
     console.debug('')
