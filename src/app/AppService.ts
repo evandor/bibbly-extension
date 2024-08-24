@@ -1,6 +1,6 @@
 import ChromeListeners from "src/app/listeners/BrowserListeners";
 import {useDB} from "src/services/usePersistenceService";
-import ChromeApi from "src/services/ChromeApi";
+import ChromeApi from "src/app/BrowserApi";
 import {Router} from "vue-router";
 import {useUiStore} from "src/ui/stores/uiStore";
 import {User} from "firebase/auth";
@@ -8,7 +8,6 @@ import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {useSnapshotsService} from "src/snapshots/services/SnapshotsService";
 import {useSnapshotsStore} from "src/snapshots/stores/SnapshotsStore";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
-import IndexedDbThumbnailsPersistence from "src/thumbnails/persistence/IndexedDbThumbnailsPersistence";
 import {useContentService} from "src/content/services/ContentService";
 import IndexedDbContentPersistence from "src/content/persistence/IndexedDbContentPersistence";
 import tabsetService from "src/tabsets/services/TabsetService";

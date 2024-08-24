@@ -37,7 +37,7 @@ import {useRouter} from "vue-router";
 
 import {useDialogPluginComponent} from 'quasar'
 import normalizeUrl from 'normalize-url';
-import ChromeApi from "src/services/ChromeApi";
+import ChromeApi from "src/app/BrowserApi";
 import {useUtils} from "src/core/services/Utils";
 import {useUiStore} from "src/ui/stores/uiStore";
 

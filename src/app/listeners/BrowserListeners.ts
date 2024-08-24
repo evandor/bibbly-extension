@@ -2,6 +2,7 @@ import {useUtils} from "src/core/services/Utils";
 import {useUiStore} from "src/ui/stores/uiStore";
 import {SidePanelViews} from "src/models/SidePanelViews";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import BrowserApi from "src/app/BrowserApi";
 
 async function setCurrentTab() {
   const tabs = await chrome.tabs.query({active: true, lastFocusedWindow: true})
@@ -112,6 +113,8 @@ class BrowserListeners {
 
    // scripts.push("content-script-thumbnails.js")
    //  scripts.push("tabsets-content-script.js")
+
+    BrowserApi.addIndicatorIcon(tab.id, tab.url)
 
     // scripts.push("tabsets-content-script.js")
     if (scripts.length > 0 && tab.id !== null) { // && !this.injectedScripts.get(.chromeTabId)) {

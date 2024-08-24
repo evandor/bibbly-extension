@@ -3,7 +3,7 @@ import {QueryResult} from "src/domain/QueryResult";
 import _ from "lodash";
 import {Hit} from "src/models/Hit";
 import {uid} from "quasar";
-import ChromeApi from "src/services/ChromeApi";
+import ChromeApi from "src/app/BrowserApi";
 import {useSearchStore} from "src/stores/searchStore";
 import {Hits} from "src/models/Hits";
 
