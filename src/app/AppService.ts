@@ -46,7 +46,6 @@ class AppService {
     }
 
     this.initialized = true
-
     await useAuthStore().setUser(user)
 
     const uiStore = useUiStore()

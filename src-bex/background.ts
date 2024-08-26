@@ -1,5 +1,4 @@
 import {bexBackground} from 'quasar/wrappers';
-import OnInstalledReason = chrome.runtime.OnInstalledReason;
 
 addEventListener('unhandledrejection', async (event) => {
   console.log("[service-worker] ga: fire error event", event)

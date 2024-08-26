@@ -121,8 +121,9 @@ export const useAuthStore = defineStore('auth', () => {
       authenticated.value = true;
       user.value = JSON.parse(JSON.stringify(u))
       roles.value = await getCustomClaimRoles()
-
-      const userDoc = await getDoc(doc(FirebaseServices.getFirestore(), "users", u.uid))
+      const fs = FirebaseServices.getFirestore()
+      const d = doc(fs, "users", u.uid)
+      const userDoc = await getDoc(d)
       const userData = userDoc.data() as UserData
       const account = new Account(u.uid, userData)
       console.debug("created account object", account)
