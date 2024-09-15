@@ -2,6 +2,7 @@ import Command from "src/core/domain/Command";
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import TabsetService from "src/tabsets/services/TabsetService";
 import {Tab, UrlExtension} from "src/tabsets/models/Tab";
+import {useSearchStore} from "src/search/stores/searchStore";
 
 class UndoCommand implements Command<any> {
 
@@ -13,7 +14,7 @@ class UndoCommand implements Command<any> {
     return TabsetService.setUrl(this.tab, this.oldUrl)
       .then(res => {
         if (this.tab.url) {
-          //useSearchStore().update(this.tab.url, 'url', this.oldUrl)
+          useSearchStore().update(this.tab.url, 'url', this.oldUrl)
         }
         return res
       })
@@ -22,7 +23,7 @@ class UndoCommand implements Command<any> {
 
 }
 
-export class UpdateTabUrlCommand implements Command<any> {
+export class UpdateTabCommand implements Command<any> {
 
   constructor(
     public tab: Tab,
@@ -55,6 +56,6 @@ export class UpdateTabUrlCommand implements Command<any> {
 
 }
 
-UpdateTabUrlCommand.prototype.toString = function cmdToString() {
+UpdateTabCommand.prototype.toString = function cmdToString() {
   return `UpdateTabNameCommand: {tabId=${this.tab.id}, newUrl=${this.newUrl}, placeholders=${this.placeholders}, placeholderValues=${this.placeholderValues}}`;
 };

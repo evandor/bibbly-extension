@@ -11,7 +11,8 @@
 
 const { configure } = require('quasar/wrappers');
 const path = require('path');
-const fs = require("fs");
+// const fs = require("fs");
+// const {sentryVitePlugin} = require("@sentry/vite-plugin");
 
 module.exports = configure(function (ctx) {
 
@@ -29,6 +30,7 @@ module.exports = configure(function (ctx) {
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
     boot: [
+      'errorhandling',
       'i18n',
       'constants'
     ],
@@ -56,6 +58,10 @@ module.exports = configure(function (ctx) {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#build
     build: {
+
+      // https://github.com/quasarframework/quasar/issues/14589
+      sourcemap: 'true',
+
       target: {
         browser: [ 'es2020', 'edge88', 'firefox78', 'chrome87' ],
         node: 'node16'
@@ -80,6 +86,10 @@ module.exports = configure(function (ctx) {
       // analyze: true,
       env: {
         BUILD_TIMESTAMP: new Date().toISOString().split('T')[0],
+        BACKEND_URL: process.env.BACKEND_URL,
+
+        TABSETS_PWA_URL: process.env.TABSETS_PWA_URL,
+        TABSETS_STAGE: process.env.STAGE,
         LOCALE: process.env.LOCALE,
         FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
         FIREBASE_AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN,
@@ -90,7 +100,8 @@ module.exports = configure(function (ctx) {
         FIREBASE_STORAGE_BUCKET: process.env.FIREBASE_STORAGE_BUCKET,
         FIREBASE_DATABASE_URL: process.env.FIREBASE_DATABASE_URL,
         STRIPE_SYNC_PRODUCT_LINK: process.env.STRIPE_SYNC_PRODUCT_LINK,
-        PWA_URL: process.env.PWA_URL
+        PWA_URL: process.env.PWA_URL,
+        SENTRY_DSN: process.env.SENTRY_DSN
       },
       // rawDefine: {}
       // ignorePublicFolder: true,
@@ -123,8 +134,12 @@ module.exports = configure(function (ctx) {
         ['@intlify/unplugin-vue-i18n/vite', {
           include: [path.resolve(__dirname, './src/i18n/**')],
         }],
-        ['vite-plugin-package-version' ,{}],
-       // [VueDevTools()],
+        ['vite-plugin-package-version', {}],
+        [require('@sentry/vite-plugin').sentryVitePlugin,{
+            authToken: process.env.SENTRY_AUTH_TOKEN,
+            org: "skysail-dk",
+            project: "tabsets"
+        }]
       ]
     },
 
@@ -138,7 +153,7 @@ module.exports = configure(function (ctx) {
     framework: {
       config: {},
 
-      //iconSet: 'eva-icons',
+      iconSet: 'eva-icons',
       // lang: 'en-US', // Quasar language pack
 
       // For special cases outside of where the auto-import strategy can have an impact
@@ -261,14 +276,8 @@ module.exports = configure(function (ctx) {
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/developing-browser-extensions/configuring-bex
     bex: {
       contentScripts: [
-        //'content-script',
-        //'content-script-thumbnails',
-        //'my-content-script',
         'tabsets-content-script'
-      ],
-
-      // extendBexScriptsConf (esbuildConf) {}
-      // extendBexManifestJson (json) {}
+      ]
     }
   }
 });

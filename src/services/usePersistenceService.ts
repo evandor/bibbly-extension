@@ -6,12 +6,13 @@ import FirestoreSnapshotsPersistence from "src/snapshots/persistence/FirestoreSn
 import IndexedDbSpacesPersistence from "src/spaces/persistence/IndexedDbSpacesPersistence";
 import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";
 import IndexedDbSnapshotPersistence from "src/snapshots/persistence/IndexedDbSnapshotPersistence";
-import {useSettingsStore} from "stores/settingsStore";
 import IndexedDbNotesPersistence from "src/notes/persistence/IndexedDbNotesPersistence";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
 import FirestoreNotesPersistence from "src/notes/persistence/FirestoreNotesPersistence";
 import IndexedDbThumbnailsPersistence from "src/thumbnails/persistence/IndexedDbThumbnailsPersistence";
 import FirestoreThumbnailsPersistence from "src/thumbnails/persistence/FirestoreThumbnailsPersistence";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {FeatureIdent} from "src/app/models/FeatureIdent";
 
 function determineTabsetsDb(localMode: boolean) {
   if (localMode) {
@@ -31,7 +32,8 @@ export function useDB() {
 
   const db: PersistenceService = IndexedDbPersistenceService
 
-  const localMode = useSettingsStore().isEnabled('localMode')
+  // const localMode = useSettingsStore().isEnabled('localMode')
+  const localMode = useFeaturesStore().hasFeature(FeatureIdent.LOCAL_MODE)
 
   //console.log(`using localMode=${localMode} in persistenceService`)
 
