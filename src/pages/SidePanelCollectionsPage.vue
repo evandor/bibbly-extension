@@ -9,13 +9,13 @@
         <template v-if="view === 'projects'">
           <div class="row q-ma-none q-pa-none items-start">
             <div class="col-6">
-              <span class="cursor-pointer"  v-if="projects.length > 0">
-                <q-icon name="o_sync_alt" color="primary" class="q-mr-sm"/>Select Collection:
+              <span class="cursor-pointer text-subtitle1" v-if="projects.length > 0">
+                <q-icon name="o_sync_alt" color="primary" class="q-mr-sm" size="sm"/>Select Collection
               </span>
             </div>
             <div class="col-6 text-right">
-              <span @click="view = 'new_project'" class="cursor-pointer">
-                <q-icon name="o_add_circle" color="primary" class="q-mr-sm"/>New Collection
+              <span @click="view = 'new_project'" class="cursor-pointer text-subtitle1">
+                <q-icon name="o_add_circle" color="primary" class="q-mr-sm" size="sm"/>New Collection
               </span>
             </div>
             <div class="col-12">
@@ -26,14 +26,14 @@
               <q-list>
                 <q-item clickable v-for="c in projects" @click="selectCollection(c as Tabset)">
                   <q-item-section>
-                    <q-item-label>{{c.name}}</q-item-label>
-                    <q-item-label caption lines="2">{{c.headerDescription}}</q-item-label>
+                    <q-item-label>{{ c.name }}</q-item-label>
+                    <q-item-label caption lines="2">{{ c.headerDescription }}</q-item-label>
                   </q-item-section>
 
-<!--                  <q-item-section side top>-->
-<!--                    <q-item-label caption>5 min ago</q-item-label>-->
-<!--                    <q-icon name="star" color="yellow" />-->
-<!--                  </q-item-section>-->
+                  <!--                  <q-item-section side top>-->
+                  <!--                    <q-item-label caption>5 min ago</q-item-label>-->
+                  <!--                    <q-icon name="star" color="yellow" />-->
+                  <!--                  </q-item-section>-->
                 </q-item>
               </q-list>
             </div>
@@ -68,11 +68,9 @@
 
 import {onMounted, onUnmounted, ref, watchEffect} from "vue";
 import {useUtils} from "src/core/services/Utils";
-import {uid} from "quasar";
 import {useUiStore} from "src/ui/stores/uiStore";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import Analytics from "src/core/utils/google-analytics";
-import AppService from "src/app/AppService";
 import {useI18n} from 'vue-i18n'
 import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
 import _ from "lodash"

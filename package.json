@@ -10,7 +10,7 @@
     "dev --devtools": "quasar dev --devtools",
     "dev spa": "quasar dev",
     "dev pwa": "quasar dev -m pwa",
-    "build": "quasar build -m bex",
+    "build": "quasar build -m bex && yarn sentry:sourcemaps",
     "build pwa": "quasar build -m pwa",
     "test:unit:ui": "vitest --ui",
     "test:unit": "vitest",
@@ -19,7 +19,8 @@
     "test:unit:watch": "vitest --watch",
     "test:unit:watchAll": "vitest --watchAll",
     "build pwa.prd & deploy to india032": "mv .env .env.tmp && cp .prd.env .env && quasar build -m pwa && scp -r -P 222 dist/pwa/* carsten@carsten.evandor.de:/home/carsten/tabsets/pwa.bibbly.me && mv .env.tmp .env",
-    "build pwa.dev & deploy to india032": "mv .env .env.tmp && cp .dev.env .env && quasar build -m pwa && scp -r -P 222 dist/pwa/* carsten@carsten.evandor.de:/home/carsten/tabsets/pwa.dev.bibbly.me && mv .env.tmp .env"
+    "build pwa.dev & deploy to india032": "mv .env .env.tmp && cp .dev.env .env && quasar build -m pwa && scp -r -P 222 dist/pwa/* carsten@carsten.evandor.de:/home/carsten/tabsets/pwa.dev.bibbly.me && mv .env.tmp .env",
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org skysail-dk --project bibbly ./dist && sentry-cli sourcemaps upload --org skysail-dk --project bibbly ./dist"
   },
   "dependencies": {
     "@bomdi/codebox": "^2.0.0",

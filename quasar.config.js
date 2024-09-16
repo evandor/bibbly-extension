@@ -137,6 +137,7 @@ module.exports = configure(function (ctx) {
         ['vite-plugin-package-version', {}],
         [require('@sentry/vite-plugin').sentryVitePlugin,{
             authToken: process.env.SENTRY_AUTH_TOKEN,
+            // telemetry: false,
             org: "skysail-dk",
             project: "tabsets"
         }]

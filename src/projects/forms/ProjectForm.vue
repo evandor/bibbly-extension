@@ -1,7 +1,7 @@
 <template>
   <div class="row q-ma-none">
     <div class="col-12 text-body1">
-      <q-icon name="list" class="q-mr-sm" color="primary" />New Project
+      <q-icon name="list" class="q-mr-sm" color="primary" />New Collection
     </div>
     <div class="col-12">
       <hr style="border-top: 1px solid #efefef">

@@ -78,3 +78,9 @@ docs/.vitepress/cache
 /.tabsets-backend-prd.env
 /.env.tmp
 /src/assets/firebase/
+
+# Sentry Config File
+.env.sentry-build-plugin
+
+# Sentry Config File
+.sentryclirc
