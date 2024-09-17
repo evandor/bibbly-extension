@@ -1,27 +1,29 @@
 <template>
   <form>
 
-
     <div class="q-pa-md example-column-equal-width">
 
-      <div class="column q-mt-xl">
-        <div class="text-caption">
-          Please log in or create an account @
-        </div>
-        <div class="text-h6">
-          Bibbly
-        </div>
-        <div class="col q-mt-md">
-          Your Email Address
-        </div>
-        <div class="col">
-          <q-input id="username" square filled type="email"
-                   v-model="email"
-                   dense tabindex="1" autofocus
-                   autocomplete="on"/>
-        </div>
 
-        <template v-if="isValidEmail(email)">
+      <q-tabs
+        v-model="tab"
+        dense>
+        <q-tab name="login" label="Login"/>
+        <q-tab name="register" label="Register"/>
+      </q-tabs>
+
+      <q-tab-panels v-model="tab" animated>
+        <q-tab-panel name="login">
+
+          <div class="col q-mt-md">
+            Your Email Address
+          </div>
+          <div class="col">
+            <q-input id="username" square filled type="email"
+                     v-model="email"
+                     dense tabindex="1" autofocus
+                     autocomplete="on"/>
+          </div>
+
           <div class="col q-mt-md">
             Password
           </div>
@@ -32,7 +34,7 @@
           </div>
 
           <div class="col q-mt-xl" v-if="password">
-            <q-btn :label="registerMode ? 'Register':'Log in'" style="width:100%"
+            <q-btn label="Log in" style="width:100%"
                    tabindex="3"
                    color="primary"
                    :loading="password.length === 0 && loading"
@@ -40,38 +42,48 @@
                    @click="signin()"/>
           </div>
 
-          <div v-if="registerMode" class="q-ma-sm text-body2">
+
+        </q-tab-panel>
+
+        <q-tab-panel name="register">
+
+          <div class="col q-mt-md">
+            Your Email Address
+          </div>
+          <div class="col">
+            <q-input id="username" square filled type="email"
+                     v-model="email"
+                     dense tabindex="1" autofocus
+                     autocomplete="on"/>
+          </div>
+
+          <div class="col q-mt-md">
+            Password
+          </div>
+          <div class="col">
+            <q-input id="password" square filled type="password"
+                     v-model="password"
+                     dense tabindex="2"/>
+          </div>
+
+          <div class="col q-mt-xl" v-if="password">
+            <q-btn label="Register" style="width:100%"
+                   tabindex="3"
+                   color="primary"
+                   :loading="password.length === 0 && loading"
+                   :disable="mailSent"
+                   @click="signin()"/>
+          </div>
+
+          <div class="q-ma-sm text-body2">
             By clicking on <em>Register</em> your comply with the Terms of service.
           </div>
 
-          <div v-if="password"
-               class="col q-mt-lg text-center cursor-pointer text-bold text-primary" @click="toggleRegister()"
-               v-html="registerMode ? 'Log in':'Register'">
-          </div>
-        </template>
 
-        <div v-if="showResetPassword" class="col q-mt-lg text-center cursor-pointer text-blue-10"
-             @click="resetPassword()">
-          Reset Password
-        </div>
+        </q-tab-panel>
 
-        <!--        <template v-if="!registerMode">-->
-        <!--          <div class="q-ma-sm text-body2 q-mt-xl text-grey">-->
-        <!--            If you do not want to create an account, use the-->
-        <!--          </div>-->
-        <!--          <div class="q-ma-sm text-body2 text-center text-blue-10 cursor-pointer" @click="useLocalMode()">-->
-        <!--            Local Mode-->
-        <!--          </div>-->
-        <!--          <div class="q-ma-sm text-body2 text-grey text-justify">-->
-        <!--            Some features like sharing will not work in this mode. Your data is stored-->
-        <!--            solely in your browser's local database. You can create an account later if-->
-        <!--            you wish and import your data.-->
-        <!--          </div>-->
+      </q-tab-panels>
 
-        <!--        </template>-->
-
-
-      </div>
     </div>
 
   </form>
@@ -102,6 +114,7 @@ const loading = ref<boolean>(false)
 const mailSent = ref<boolean>(false)
 const registerMode = ref(false)
 const showResetPassword = ref(false)
+const tab = ref('login')
 
 const router = useRouter()
 
