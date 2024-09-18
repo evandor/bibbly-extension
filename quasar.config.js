@@ -139,7 +139,9 @@ module.exports = configure(function (ctx) {
             authToken: process.env.SENTRY_AUTH_TOKEN,
             // telemetry: false,
             org: "skysail-dk",
-            project: "tabsets"
+            project: "tabsets",
+            disable: true,
+            debug: true
         }]
       ]
     },

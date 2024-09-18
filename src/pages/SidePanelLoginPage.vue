@@ -1,64 +1,90 @@
 <template>
   <form>
 
-    <div class="q-pa-md example-column-equal-width">
+    <div class="q-pa-md q-ma-md example-column-equal-width" style="border:1px solid #bfbfbf">
 
 
       <q-tabs
         v-model="tab"
         dense>
         <q-tab name="login" label="Login"/>
-        <q-tab name="register" label="Register"/>
+        <q-tab name="register" label="Create Account"/>
       </q-tabs>
 
       <q-tab-panels v-model="tab" animated>
         <q-tab-panel name="login">
 
-          <div class="col q-mt-md">
-            Your Email Address
+          <div class="col q-mt-sm">
+            <div class="row">
+              <div class="col-12">Your Email Address</div>
+            </div>
           </div>
           <div class="col">
             <q-input id="username" square filled type="email"
                      v-model="email"
+                     :rules="[val => !!val || 'Please provide a valid email address']"
                      dense tabindex="1" autofocus
                      autocomplete="on"/>
           </div>
 
-          <div class="col q-mt-md">
-            Password
+          <div class="col q-mt-sm">
+            <div class="row">
+              <div class="col-6">Your password</div>
+              <div class="col-6 text-right"
+                   :class="email && email.indexOf('@') > 0 ? 'text-blue-8 cursor-pointer':'text-blue-3'"
+                   @click="promptReset()">Forgot?
+              </div>
+            </div>
           </div>
-          <div class="col">
-            <q-input id="password" square filled type="password"
+          <div class="col q-mt-sm">
+            <q-input id="password" square filled :type="isPwd ? 'password' : 'text'"
                      v-model="password"
-                     dense tabindex="2"/>
+                     :rules="[val => !!val || 'the password must not be empty']"
+                     dense tabindex="2">
+              <template v-slot:append>
+                <q-icon v-if="password"
+                        :name="isPwd ? 'visibility_off' : 'visibility'"
+                        class="cursor-pointer"
+                        @click="isPwd = !isPwd"
+                />
+              </template>
+            </q-input>
           </div>
 
-          <div class="col q-mt-xl" v-if="password">
+          <div class="col q-mt-md">
             <q-btn label="Log in" style="width:100%"
                    tabindex="3"
                    color="primary"
                    :loading="password.length === 0 && loading"
-                   :disable="mailSent"
+                   :disable="!email || !password"
                    @click="signin()"/>
           </div>
 
+          <div class="col q-mt-sm text-right">
+            <q-checkbox :disable="email ? email.indexOf('@') < 0 : true" label="Remember Me" v-model="rememberMe"/>
+          </div>
 
         </q-tab-panel>
 
         <q-tab-panel name="register">
 
-          <div class="col q-mt-md">
-            Your Email Address
+          <div class="col q-mt-sm">
+            <div class="row">
+              <div class="col-12">Your Email Address</div>
+            </div>
           </div>
           <div class="col">
             <q-input id="username" square filled type="email"
                      v-model="email"
+                     :rules="[val => !!val || 'Please provide a valid email address']"
                      dense tabindex="1" autofocus
                      autocomplete="on"/>
           </div>
 
-          <div class="col q-mt-md">
-            Password
+          <div class="col q-mt-sm">
+            <div class="row">
+              <div class="col-12">Provide a password</div>
+            </div>
           </div>
           <div class="col">
             <q-input id="password" square filled type="password"
@@ -66,12 +92,12 @@
                      dense tabindex="2"/>
           </div>
 
-          <div class="col q-mt-xl" v-if="password">
+          <div class="col q-mt-xl">
             <q-btn label="Register" style="width:100%"
                    tabindex="3"
                    color="primary"
                    :loading="password.length === 0 && loading"
-                   :disable="mailSent"
+                   :disable="!email || !password"
                    @click="signin()"/>
           </div>
 
@@ -91,8 +117,8 @@
 
 <script lang="ts" setup>
 
-import {ref} from "vue";
-import {LocalStorage} from "quasar";
+import {ref, watchEffect} from "vue";
+import {LocalStorage, useQuasar} from "quasar";
 import {
   createUserWithEmailAndPassword,
   getAuth,
@@ -104,23 +130,36 @@ import {CURRENT_USER_EMAIL} from "boot/constants";
 import {useAuthStore} from "stores/authStore";
 import {NotificationType, useNotificationHandler} from "src/core/services/ErrorHandler";
 import {useRouter} from "vue-router";
-import {useSettingsStore} from "stores/settingsStore";
-import AppService from "src/app/AppService";
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
 
-const email = ref('')//LocalStorage.getItem(CURRENT_USER_EMAIL))
+const $q = useQuasar()
+
+const email = ref<string>(LocalStorage.getItem(CURRENT_USER_EMAIL) as string)
 const password = ref('')
 const loading = ref<boolean>(false)
-const mailSent = ref<boolean>(false)
 const registerMode = ref(false)
+const isPwd = ref(true)
 const showResetPassword = ref(false)
+const rememberMe = ref(LocalStorage.getItem(CURRENT_USER_EMAIL) !== null)
 const tab = ref('login')
 
 const router = useRouter()
 
 const {handleError, handleSuccess} = useNotificationHandler()
 
-const toggleRegister = () => registerMode.value = !registerMode.value
+watchEffect(() => {
+  if (email.value && email.value.length === 0) {
+    LocalStorage.remove(CURRENT_USER_EMAIL)
+    rememberMe.value = false
+  }
+})
+
+watchEffect(() => {
+  if (!rememberMe.value) {
+    LocalStorage.remove(CURRENT_USER_EMAIL)
+    rememberMe.value = false
+  }
+})
 
 const signin = async () => {
   loading.value = true
@@ -134,7 +173,11 @@ const signin = async () => {
       userCredential = await signInWithEmailAndPassword(auth, email.value, password.value)
     }
     const user = userCredential.user;
-    LocalStorage.set(CURRENT_USER_EMAIL, email.value);
+    if (rememberMe.value) {
+      LocalStorage.set(CURRENT_USER_EMAIL, email.value);
+    } else {
+      LocalStorage.remove(CURRENT_USER_EMAIL)
+    }
     //console.log("user!!!", user)
     useAuthStore().setUser(user)
     loading.value = false
@@ -156,12 +199,6 @@ const signin = async () => {
   }
 }
 
-const useLocalMode = () => {
-  useSettingsStore().setFeatureToggle("localMode", true)
-  //router.push("/sidepanel/welcome")
-  AppService.restart("/sidepanel/welcome")
-}
-
 const resetPassword = () => {
   sendPasswordResetEmail(getAuth(), email.value)
     // .then((link:any) => {
@@ -179,5 +216,20 @@ const resetPassword = () => {
 const isValidEmail = (email: string) => {
   const regex = /^[a-zA-Z0-9_.±]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$/;
   return regex.test(email);
+}
+
+const promptReset = () => {
+  $q.dialog({
+    title: 'Reset Password?',
+    message: 'Your email',
+    prompt: {
+      model: email.value,
+      type: 'text' // optional
+    },
+    cancel: true,
+    persistent: true
+  }).onOk(data => {
+    resetPassword()
+  })
 }
 </script>
