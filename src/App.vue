@@ -46,6 +46,7 @@ if (!localMode) {
 
       try {
         await AppService.init($q, router, true, user)
+        info(`bibbly started: mode=${process.env.MODE}, version=${import.meta.env.PACKAGE_VERSION}`)
         useUiStore().networkOnline = true
       } catch (error: any) {
         console.log("%ccould not initialize appService due to " + error, "background-color:orangered")
@@ -112,7 +113,7 @@ if (currentUser && !localMode) {
     // triggers, but app should already have been started, no restart enforced
     console.debug("App.vue start fallback after 1000ms")
     AppService.init($q, router, false)
-    info(`bibbly started: mode=${process.env.MODE}, version=${import.meta.env.PACKAGE_VERSION}`)
+    info(`bibbly started: timeout=true, mode=${process.env.MODE}, version=${import.meta.env.PACKAGE_VERSION}`)
   }, 1000)
 }
 
