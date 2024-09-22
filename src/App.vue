@@ -14,6 +14,7 @@ import {CURRENT_USER_ID} from "boot/constants";
 import {useAppStore} from "stores/appStore";
 import {useSettingsStore} from "stores/settingsStore";
 import {useUiStore} from "src/ui/stores/uiStore";
+import {useLogger} from "src/services/Logger";
 
 const $q = useQuasar()
 const router = useRouter()
@@ -27,6 +28,12 @@ const localMode = settingsStore.isEnabled('localMode')
 console.log(` ...config: localMode=${localMode}`)
 
 useAppStore().init()
+
+const {info} = useLogger()
+
+// https://stackoverflow.com/questions/9768444/possible-eventemitter-memory-leak-detected
+// const emitter = new EventEmitter()
+// emitter.setMaxListeners(12)
 
 if (!localMode) {
   FirebaseServices.init()
@@ -105,6 +112,7 @@ if (currentUser && !localMode) {
     // triggers, but app should already have been started, no restart enforced
     console.debug("App.vue start fallback after 1000ms")
     AppService.init($q, router, false)
+    info(`bibbly started: mode=${process.env.MODE}, version=${import.meta.env.PACKAGE_VERSION}`)
   }, 1000)
 }
 

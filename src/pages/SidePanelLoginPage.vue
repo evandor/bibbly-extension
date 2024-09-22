@@ -1,8 +1,11 @@
 <template>
+  <div class="q-ma-md text-h6">
+    Bibbly
+  </div>
+
   <form>
 
-    <div class="q-pa-md q-ma-md example-column-equal-width" style="border:1px solid #bfbfbf">
-
+    <div class="q-ma-md example-column-equal-width" style="border:1px solid #bfbfbf">
 
       <q-tabs
         v-model="tab"
@@ -10,6 +13,8 @@
         <q-tab name="login" label="Login"/>
         <q-tab name="register" label="Create Account"/>
       </q-tabs>
+
+      <q-separator />
 
       <q-tab-panels v-model="tab" animated>
         <q-tab-panel name="login">
@@ -57,7 +62,7 @@
                    color="primary"
                    :loading="password.length === 0 && loading"
                    :disable="!email || !password"
-                   @click="signin()"/>
+                   @click="signin(false)"/>
           </div>
 
           <div class="col q-mt-sm text-right">
@@ -98,7 +103,7 @@
                    color="primary"
                    :loading="password.length === 0 && loading"
                    :disable="!email || !password"
-                   @click="signin()"/>
+                   @click="signin(true)"/>
           </div>
 
           <div class="q-ma-sm text-body2">
@@ -137,7 +142,6 @@ const $q = useQuasar()
 const email = ref<string>(LocalStorage.getItem(CURRENT_USER_EMAIL) as string)
 const password = ref('')
 const loading = ref<boolean>(false)
-const registerMode = ref(false)
 const isPwd = ref(true)
 const showResetPassword = ref(false)
 const rememberMe = ref(LocalStorage.getItem(CURRENT_USER_EMAIL) !== null)
@@ -161,13 +165,13 @@ watchEffect(() => {
   }
 })
 
-const signin = async () => {
+const signin = async (registerMode: boolean) => {
   loading.value = true
   const auth = getAuth();
   try {
     let userCredential: UserCredential = null as unknown as UserCredential
     //console.log(`signing with ${email.value} and password length ${password.value.length}`)
-    if (registerMode.value) {
+    if (registerMode) {
       userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value)
     } else {
       userCredential = await signInWithEmailAndPassword(auth, email.value, password.value)
