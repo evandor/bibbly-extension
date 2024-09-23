@@ -26,6 +26,8 @@ import {toRef, watch} from "vue";
 import {useEntityRegistryStore} from "src/core/stores/entityRegistryStore";
 import _ from "lodash"
 import {TabsetInfo} from "src/core/models/TabsetInfo";
+import {useAppStore} from "stores/appStore";
+import {SpaceInfo} from "src/core/models/SpaceInfo";
 
 class AppService {
 
@@ -43,19 +45,18 @@ class AppService {
 
     if (this.initialized) {
       await ChromeListeners.resetListeners()
+      await useWindowsStore().resetListeners()
     }
 
     this.initialized = true
     await useAuthStore().setUser(user)
 
-    const uiStore = useUiStore()
-    const searchStore = useSearchStore()
 
     this.router = router
 
-    uiStore.appLoading = "loading projects..."
+    useUiStore().appLoading = "loading projects..."
 
-    // appStore.init()
+    useAppStore().init()
 
     // init of stores and some listeners
     //await usePermissionsStore().initialize(useDB(quasar).localDb)
@@ -72,9 +73,11 @@ class AppService {
 
     console.debug('')
 
-    await searchStore.init().catch((err) => console.error(err))
+    await useSearchStore().init().catch((err:any) => console.error(err))
 
 
+    // init services
+    //await useNotificationsStore().initialize(useDB(undefined).db)
     await useSuggestionsStore().init()
     console.debug('')
 
@@ -82,7 +85,7 @@ class AppService {
 
     //await this.initCoreSerivces(quasar, useDB(undefined).db, this.router)
 
-    await useFeaturesStore().initialize(new LocalStorageFeaturesPersistence(quasar))
+    //await useFeaturesStore().initialize(new LocalStorageFeaturesPersistence(quasar))
 
     if (useAuthStore().isAuthenticated()) {
 
@@ -94,14 +97,14 @@ class AppService {
 
       // await FsPersistenceService.init()
 
-      await this.initCoreSerivces(this.router)
+      await this.initCoreSerivces(quasar, this.router)
     } else {
       //await this.initCoreSerivces(quasar,  this.router)
     }
   }
 
-  restart(path: string) {
-    console.log("%crestarting tabsets", "font-weight:bold", window.location.href)
+  restart(ar: string) {
+    console.log("%crestarting tabsets", "font-weight:bold", window.location.href, ar)
     const baseLocation = window.location.href.split("?")[0]
     console.log("%cbaseLocation", "font-weight:bold", baseLocation)
     console.log("%cwindow.location.href", "font-weight:bold", window.location.href)
@@ -109,7 +112,7 @@ class AppService {
       const tsIframe = window.parent.frames[0]
       //log("iframe", tsIframe)
       if (tsIframe) {
-        const location = chrome.runtime.getURL("/www/index.html#" + path)
+        const location = chrome.runtime.getURL("/www/index.html#" + ar)
         console.debug("%cnew window.location.href", "font-weight:bold", location)
         tsIframe.location.href = location
         tsIframe.location.reload()
@@ -117,7 +120,7 @@ class AppService {
     }
   }
 
-  private async initCoreSerivces(router: Router) {
+  private async initCoreSerivces(quasar: any, router: Router) {
 
     console.log(`%cinitializing AppService: initCoreSerivces`, "font-weight:bold")
 
@@ -126,12 +129,14 @@ class AppService {
       useWindowsStore().initListeners()
     }
 
-    const registryStore = useEntityRegistryStore()
+    /**
+     * features store: passing storage for better testing.
+     * make sure features are not used before this line in code.
+     */
+    const featuresStorage = useDB(quasar).featuresDb
+    await useFeaturesStore().initialize(featuresStorage)
 
     await useNotesStore().initialize(useDB().notesDb)
-    console.debug('')
-
-    await useSpacesStore().initialize(useDB().spacesDb)
     console.debug('')
 
     /**
@@ -141,10 +146,17 @@ class AppService {
      * no persistence for service!
      */
 
+    watch(useSpacesStore().spaces, (newSpaces:Map<string,any>) => {
+      const spacesInfo = _.map([...newSpaces.values()], (ts: any) => new SpaceInfo(ts.id, ts.name))
+      useEntityRegistryStore().spacesRegistry = spacesInfo
+    })
+    await useSpacesStore().initialize(useDB().spacesDb)
+    console.debug('')
+
     const tabsetsStore = useTabsetsStore()
     watch(tabsetsStore.tabsets, (newTabsets:Map<string,any>) => {
       const tsInfo =_.map([...newTabsets.values()], (ts: any) => new TabsetInfo(ts.id, ts.name, ts.window, ts.tabs.length))
-      registryStore.tabsetRegistry = tsInfo
+      useEntityRegistryStore().tabsetRegistry = tsInfo
     })
     await tabsetsStore.initialize(useDB().tabsetsDb)
     await useTabsetService().init(false)
@@ -153,7 +165,6 @@ class AppService {
     await useTabsStore2().initialize()
     console.debug('')
 
-    //await useGroupsStore().initialize(useDB().groupsIndexedDb)
 
     const existingUrls = useTabsetsStore().getAllUrls()
     await useContentService().populateSearch(existingUrls)
@@ -161,6 +172,11 @@ class AppService {
     console.debug('')
 
     ChromeApi.init(router)
+
+    // if (useFeaturesStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
+    //   await useGroupsStore().initialize(useDB().groupsIndexedDb)
+    //   useGroupsStore().initListeners()
+    // }
 
     useUiStore().appLoading = undefined
     console.debug('')

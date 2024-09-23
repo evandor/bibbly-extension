@@ -13,6 +13,9 @@ import IndexedDbThumbnailsPersistence from "src/thumbnails/persistence/IndexedDb
 import FirestoreThumbnailsPersistence from "src/thumbnails/persistence/FirestoreThumbnailsPersistence";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {FeatureIdent} from "src/app/models/FeatureIdent";
+import FeaturesPersistence from "src/features/persistence/FeaturesPersistence";
+import FirestoreFeaturesPersistence from "src/features/persistence/FirestoreFeaturesPersistence";
+import {LocalStorageFeaturesPersistence} from "src/features/persistence/LocalStorageFeaturesPersistence";
 
 function determineTabsetsDb(localMode: boolean) {
   if (localMode) {
@@ -28,7 +31,7 @@ function determineTabsetsDb(localMode: boolean) {
   return FirestoreTabsetsPersistence
 }
 
-export function useDB() {
+export function useDB(quasar: any = undefined) {
 
   const db: PersistenceService = IndexedDbPersistenceService
 
@@ -42,7 +45,7 @@ export function useDB() {
   const snapshotsDb = localMode ? IndexedDbSnapshotPersistence : FirestoreSnapshotsPersistence
   const notesDb = localMode ? IndexedDbNotesPersistence : FirestoreNotesPersistence
   const thumbnailsDb = localMode ? IndexedDbThumbnailsPersistence: FirestoreThumbnailsPersistence
-  // const featuresDb: FeaturesPersistence = LocalStorageFeaturesPersistence
+  const featuresDb: FeaturesPersistence = localMode ? new LocalStorageFeaturesPersistence(quasar) : FirestoreFeaturesPersistence
 
   return {
     db,
@@ -50,8 +53,8 @@ export function useDB() {
     tabsetsDb,
     snapshotsDb,
     notesDb,
-    thumbnailsDb
-    // featuresDb
+    thumbnailsDb,
+    featuresDb
   }
 
 }
