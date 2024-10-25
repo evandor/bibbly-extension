@@ -80,7 +80,7 @@ import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {ExecutionFailureResult, ExecutionResult} from "src/core/domain/ExecutionResult";
 import ProjectForm from "src/projects/forms/ProjectForm.vue";
-import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
+import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabsetCommand";
 import {useRouter} from "vue-router";
 
 const {t} = useI18n({locale: navigator.language, useScope: "global"})

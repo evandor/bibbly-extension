@@ -30,6 +30,13 @@ const CURRENT_USER_EMAIL = "current.user.email"
 
 const UI_WINDOWS_ITEMS_PER_PAGE = 'ui.windows.itemsPerPage'
 
+const GITHUB_USERNAME = "github.username"
+const GITHUB_REPONAME = "github.reponame"
+const GITHUB_TOKEN = "github.token"
+const GITHUB_AUTO_BACKUP = "github.autobackup"
+const GITHUB_LOG = "github.log"
+const GITHUB_PATH = "github.path"
+
 export default boot(({}) => {
 })
 
@@ -43,8 +50,9 @@ export {
   APP_INSTALLATION_ID,
   TITLE_IDENT,
   EMAIL_LINK_REDIRECT_DOMAIN,
-  CURRENT_USER_EMAIL,
   CURRENT_USER_ID,
-  UI_WINDOWS_ITEMS_PER_PAGE
+  CURRENT_USER_EMAIL,
+  UI_WINDOWS_ITEMS_PER_PAGE,
+  GITHUB_USERNAME, GITHUB_REPONAME, GITHUB_TOKEN, GITHUB_AUTO_BACKUP,GITHUB_LOG,GITHUB_PATH
 }
 

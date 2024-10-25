@@ -136,7 +136,7 @@ import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
 import {ExecutionFailureResult, ExecutionResult} from "src/core/domain/ExecutionResult";
 import ProjectForm from "src/projects/forms/ProjectForm.vue";
-import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
+import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabsetCommand";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {useRouter} from "vue-router";
 import OfflineInfo from "src/core/components/helper/offlineInfo.vue";

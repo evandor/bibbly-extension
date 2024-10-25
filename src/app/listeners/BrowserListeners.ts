@@ -163,7 +163,10 @@ class BrowserListeners {
       }
       const url = tab.url
       if (url) {
-       // useTabsetService().urlWasActivated(url)
+        // useTabsetService().urlWasActivated(url)
+
+        // matching tabs for url
+        useTabsetsUiStore().setMatchingTabsFor(url)
       }
     })
   }
